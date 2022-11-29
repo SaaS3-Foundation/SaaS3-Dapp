@@ -12,7 +12,7 @@ module.exports = {
       spacing: {},
       width: {},
       screens: {
-        md: { max: '1023px' },
+        // md: { max: '1023px' },
       },
     },
   },

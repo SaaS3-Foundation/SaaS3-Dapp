@@ -1,11 +1,10 @@
 {
-  "name": "saas3dapp",
+  "name": "saas3-dapp",
   "version": "1.0.0",
   "repository": "git@github.com:SaaS3-Foundation/SaaS3-Dapp.git",
   "author": "Jupiteriana <xiong0201y@163.com>",
   "license": "MIT",
   "scripts": {},
   "devDependencies": {
-    "husky": "^8.0.2"
   }
 }
