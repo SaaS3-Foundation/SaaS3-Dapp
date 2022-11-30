@@ -1,1 +1,37 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 @import '@/assets/styles/base.css';
+
+input {
+  background: none;
+  outline: 0;
+  border: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', STHeiti, 'Microsoft Yahei', Tahoma, Simsun, sans-serif;
+  color: white;
+
+  &[theme-mode='dark'] {
+    // --semi-color-focus-border: @color-primary;
+  }
+}
+
+.wrap-container {
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  // @media (min-width: 1024px) {
+  //   padding-left: 80px;
+  //   padding-right: 80px;
+  // }
+  @media (max-width: 1023px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

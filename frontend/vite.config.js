@@ -4,6 +4,7 @@ import postcssImport from 'postcss-import';
 import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import inject from '@rollup/plugin-inject';
+import svgr from 'vite-plugin-svgr';
 import path from 'path';
 
 const r = (p) => path.resolve(__dirname, p);
@@ -26,7 +27,10 @@ export default defineConfig({
       },
     ],
   },
-  plugins: [react()],
+  plugins: [
+    svgr(),
+    react(),
+  ],
   build: {
     sourcemap: false,
     rollupOptions: {
