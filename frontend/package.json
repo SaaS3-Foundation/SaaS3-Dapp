@@ -15,6 +15,7 @@
     "bignumber.js": "^9.1.0",
     "classnames": "^2.3.2",
     "dotenv": "^16.0.3",
+    "echarts": "^5.4.0",
     "echarts-for-react": "^3.0.2",
     "ethers": "^5.7.2",
     "iclipboard": "^1.0.1",

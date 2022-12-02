@@ -57,6 +57,10 @@ export const StyledCharWrap = styled.div`
     display: flex;
     align-items: center;
   }
+  
+  canvas {
+    border-radius: 20px;
+  }
 `;
 
 export const StyledCollapse = styled(Collapse)`

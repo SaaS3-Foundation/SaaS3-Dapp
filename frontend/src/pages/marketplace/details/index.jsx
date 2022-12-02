@@ -1,13 +1,112 @@
-import { Col, Collapse, Row } from '@douyinfe/semi-ui';
+import {
+  Checkbox, CheckboxGroup, Col, Collapse, Row,
+} from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
-// import ReactECharts from 'echarts-for-react';
+import ReactECharts from 'echarts-for-react';
+import { useEffect, useState } from 'react';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledCharWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/ChainIcon';
 import { CHAINS_CHAINID } from '@/config/chain';
 
+const data1 = [
+  ['Jan', 2],
+  ['Feb', 5],
+  ['Mar', 7],
+  ['Apr', 5],
+  ['May', 2],
+  ['Jun', 3],
+  ['Jul', 4],
+  ['Aug', 3],
+  ['Sep', 1],
+  ['Oct', 4],
+  ['Nov', 2],
+  ['Dec', 5],
+];
+
+const data2 = [
+  ['Jan', 20],
+  ['Feb', 56],
+  ['Mar', 75],
+  ['Apr', 58],
+  ['May', 25],
+  ['Jun', 30],
+  ['Jul', 45],
+  ['Aug', 30],
+  ['Sep', 10],
+  ['Oct', 40],
+  ['Nov', 20],
+  ['Dec', 50],
+];
+
+const data3 = [
+  ['Jan', 2],
+  ['Feb', 5],
+  ['Mar', 7],
+  ['Apr', 5],
+  ['May', 2],
+  ['Jun', 3],
+  ['Jul', 4],
+  ['Aug', 3],
+  ['Sep', 1],
+  ['Oct', 4],
+  ['Nov', 2],
+  ['Dec', 5],
+];
+
+const option = (_data, _label) => ({
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+  },
+  yAxis: {
+    type: 'value',
+    boundaryGap: [0, 1],
+    splitLine: { show: false },
+    axisLabel: { formatter: _label },
+  },
+  visualMap: {
+    type: 'piecewise',
+    show: false,
+    dimension: 0,
+    seriesIndex: 0,
+  },
+  grid: {
+    left: '10%', top: '10%', bottom: '10%', right: '5%',
+  },
+  series: [
+    {
+      type: 'line',
+      smooth: 0.6,
+      symbol: 'none',
+      lineStyle: {
+        color: '#7B61FF',
+        width: 3,
+      },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0, color: '#7B61FF', // 0%
+          }, {
+            offset: 1, color: '#2663FF00', // 100%
+          }],
+          global: false,
+        },
+      },
+      data: _data,
+    },
+  ],
+});
+
 function MarketplaceDetails() {
+  const [succ, setSucc] = useState(true);
+
   return (
     <BaseLayout>
       <div className="container pb-16">
@@ -46,6 +145,15 @@ function MarketplaceDetails() {
               <div className="header">
                 <h1>Oracle TVL Performance</h1>
               </div>
+              <ReactECharts
+                className="mt-2"
+                option={option(data1, '{value}M')}
+                notMerge
+                lazyUpdate
+                theme="dark"
+                // onChartReady={this.onChartReadyCallback}
+                // onEvents={EventsDict}
+              />
             </StyledCharWrap>
           </Col>
 
@@ -54,14 +162,36 @@ function MarketplaceDetails() {
               <div className="header">
                 <h1>Oracle APR performance</h1>
               </div>
+              <ReactECharts
+                className="mt-2"
+                option={option(data2, '{value}%')}
+                notMerge
+                lazyUpdate
+                theme="dark"
+                // onChartReady={this.onChartReadyCallback}
+                // onEvents={EventsDict}
+              />
             </StyledCharWrap>
           </Col>
 
           <Col lg={12} span={24}>
             <StyledCharWrap>
-              <div className="header">
+              <div className="header flex justify-between">
                 <h1>Oracle Call performance chart</h1>
+                <div className="inline-block flex">
+                  <Checkbox checked={succ} className="mr-5" value="succ" onChange={(e) => { setSucc(e.target.checked); }}>Successful Only</Checkbox>
+                  <Checkbox checked={!succ} value="fail" onChange={(e) => { setSucc(e.target.checked); }}>Failed Only</Checkbox>
+                </div>
               </div>
+              <ReactECharts
+                className="mt-2"
+                option={option(data3, '{value}K')}
+                notMerge
+                lazyUpdate
+                theme="dark"
+                // onChartReady={this.onChartReadyCallback}
+                // onEvents={EventsDict}
+              />
             </StyledCharWrap>
           </Col>
         </Row>
