@@ -20,19 +20,18 @@ const StyledWrap = styled.span`
   background-color: var(--color-dark-bg-1);
   cursor: pointer;
   &:hover{
-    filter: grayscale(1);
-    /* opacity: 0.8; */
-    /* background-color: var(--color-dark-bg-1); */
+    background-color: var(--color-hover-gray);
+    /* filter: grayscale(1); */
   }
 `;
 
 function ChainIcon(props) {
-  const { chainId = CHAINS_CHAINID.ETH } = props;
+  const { chainId, iconClassName, fill = 'white' } = props;
 
-  const IconComponent = useMemo(() => CHAINS[chainId]?.SvgComponent, [chainId]);
+  const IconComponent = useMemo(() => CHAINS[chainId || CHAINS_CHAINID.ETH]?.SvgComponent, [chainId]);
   return (
     <StyledWrap className={classNames(props.className)}>
-      <IconComponent fill="white" {...props} className={props.iconClassName} />
+      <IconComponent fill={fill} className={iconClassName} />
     </StyledWrap>
   );
 }

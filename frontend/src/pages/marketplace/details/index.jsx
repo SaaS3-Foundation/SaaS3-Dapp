@@ -75,6 +75,12 @@ const option = (_data, _label) => ({
   grid: {
     left: '10%', top: '10%', bottom: '10%', right: '5%',
   },
+  axisPointer: {
+    link: { xAxisIndex: 'all' },
+    label: {
+      backgroundColor: '#777',
+    },
+  },
   series: [
     {
       type: 'line',
@@ -111,7 +117,7 @@ function MarketplaceDetails() {
     <BaseLayout>
       <div className="container pb-16">
         <Row className="!mt-5" type="flex" align="middle" gutter={[0, 50]}>
-          <Col lg={12} span={24} className="bg-dark-bg-1 py-7 px-16 rounded-tl-[20px] rounded-bl-[20px]">
+          <Col lg={12} span={24} className="bg-dark-bg-1 py-7 px-16 rounded-tl-[20px] rounded-bl-[20px] relative z-10">
             <h1 className="text-2xl font-bold">FIFA 2022<br />WORLD CUP RESULT </h1>
             <p className="text-base mt-3">
               This Oracle reports the results of FIFA world cup.
@@ -140,7 +146,7 @@ function MarketplaceDetails() {
             </p>
           </Col>
 
-          <Col lg={12} span={24}>
+          <Col lg={12} span={24} className="relative z-20">
             <StyledCharWrap>
               <div className="header">
                 <h1>Oracle TVL Performance</h1>
@@ -154,8 +160,17 @@ function MarketplaceDetails() {
                 // onChartReady={this.onChartReadyCallback}
                 // onEvents={EventsDict}
               />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
             </StyledCharWrap>
           </Col>
+
+        </Row>
+        <Row className="!mt-10" type="flex" gutter={[20, 20]}>
 
           <Col lg={12} span={24}>
             <StyledCharWrap>
@@ -168,8 +183,6 @@ function MarketplaceDetails() {
                 notMerge
                 lazyUpdate
                 theme="dark"
-                // onChartReady={this.onChartReadyCallback}
-                // onEvents={EventsDict}
               />
             </StyledCharWrap>
           </Col>
@@ -217,10 +230,8 @@ function MarketplaceDetails() {
               <div className="mb-5 flex items-center">
                 <h2 className="text-lg font-bold">DEPLOYMENT DETAILS</h2>
                 <div className="flex ml-auto">
-                  <ChainIcon className="ml-2" />
+                  <ChainIcon className="mr-2" />
                   <ChainIcon chainId={CHAINS_CHAINID.BSC} />
-                  {/* <span className=''><BscIcon /></span>
-                  <span><EthIcon /></span> */}
                 </div>
               </div>
               <StyledAddressItem>
