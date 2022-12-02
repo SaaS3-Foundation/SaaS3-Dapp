@@ -2,7 +2,7 @@ import { Col, Row } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ReactComponent as ListSvg } from '@/assets/imgs/svg/Icon/List.svg';
-import MarketItem from './MarketItem';
+import MarketItem from './components/MarketItem';
 
 function Marketplace() {
   return (

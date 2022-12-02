@@ -1,7 +1,7 @@
 import { Button } from '@douyinfe/semi-ui';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { StyledMarketItem } from './styled';
+import { StyledMarketItem } from '../styled';
 
 function MarketItem() {
   const items = useMemo(() => [{
@@ -39,11 +39,18 @@ function MarketItem() {
     <StyledMarketItem>
       <h1>FIFA 2022</h1>
       <div className="content-items-wrap">
-        {useMemo(() => items.map((item, i) => <div key={i}><span>{item.title}</span>{item.rightRender}</div>), [items])}
+        {useMemo(
+          () => items.map((item, i) => (
+            <div key={i}>
+              <span className="font-bold">{item.title}</span>{item.rightRender}
+            </div>
+          )),
+          [items],
+        )}
       </div>
       <div className="footer-wrap">
-        <Button size="large" className="flex-1">STAKE</Button>
-        <Button onClick={handleDetails} size="large" className="ml-2.5">DETAILS</Button>
+        <Button size="large" className="flex-1 bg-primary-linear">STAKE</Button>
+        <Button theme="borderless" onClick={handleDetails} size="large" className="ml-2.5">DETAILS</Button>
       </div>
     </StyledMarketItem>
   );

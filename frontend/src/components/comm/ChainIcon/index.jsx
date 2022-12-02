@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import classNames from 'classnames';
 import styled from 'styled-components';
-import { ReactComponent as BscIcon } from '@/assets/imgs/svg/Icon/BAN.svg';
-import { ReactComponent as EthIcon } from '@/assets/imgs/svg/Icon/Ethereum.svg';
+// import { ReactComponent as BscIcon } from '@/assets/imgs/svg/Icon/BAN.svg';
+// import { ReactComponent as EthIcon } from '@/assets/imgs/svg/Icon/Ethereum.svg';
+import { CHAINS, CHAINS_CHAINID } from '@/config/chain';
 
-const CHAIN_ICON = {
-  bsc: BscIcon,
-  eth: EthIcon,
-};
+// const CHAIN_ICON = {
+//   bsc: BscIcon,
+//   eth: EthIcon,
+// };
 
 const StyledWrap = styled.span`
   width: 36px;
@@ -26,9 +27,9 @@ const StyledWrap = styled.span`
 `;
 
 function ChainIcon(props) {
-  const { name = 'bsc' } = props;
+  const { chainId = CHAINS_CHAINID.ETH } = props;
 
-  const IconComponent = useMemo(() => CHAIN_ICON[name], [name]);
+  const IconComponent = useMemo(() => CHAINS[chainId]?.SvgComponent, [chainId]);
   return (
     <StyledWrap className={classNames(props.className)}>
       <IconComponent fill="white" {...props} className={props.iconClassName} />

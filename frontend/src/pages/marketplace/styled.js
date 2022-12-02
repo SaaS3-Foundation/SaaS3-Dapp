@@ -4,7 +4,9 @@ import styled from 'styled-components';
 export const StyledMarketItem = styled.div`
   padding: 20px 24px;
   border-radius: 12px;
-  background: rgba(66, 54, 142, 0.33);
+  background: rgba(0, 0, 0, 0.33);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  /* background: rgba(66, 54, 142, 0.33); */
   backdrop-filter: blur(5px);
   >h1{
     font-weight: bold;
@@ -22,16 +24,14 @@ export const StyledMarketItem = styled.div`
       }
     }
     &.footer-wrap{
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       align-items: center;
       >.semi-button{
         border-radius: 6px;
-        &:first-child{
-          background: linear-gradient(267.71deg, #2663FF 0%, #8000FF 100%);
-        }
+        border-radius: 60px;
         &:last-child{
-          background-color: var(--color-cancel);
+          border: 1px solid rgba(255, 255, 255, 0.13);
         }
         &:hover{
           opacity: 0.8;
@@ -72,7 +72,7 @@ export const StyledCollapse = styled(Collapse)`
       margin-top: 12px;
     }
     &:has(.semi-collapse-header[aria-expanded=true]){
-      border-color: var(--color-primary);
+      border-color: var(--color-primary-2);
     }
   }
 `;

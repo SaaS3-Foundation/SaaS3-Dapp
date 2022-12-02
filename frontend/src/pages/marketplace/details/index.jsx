@@ -5,6 +5,7 @@ import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledCharWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/ChainIcon';
+import { CHAINS_CHAINID } from '@/config/chain';
 
 function MarketplaceDetails() {
   return (
@@ -86,8 +87,8 @@ function MarketplaceDetails() {
               <div className="mb-5 flex items-center">
                 <h2 className="text-lg font-bold">DEPLOYMENT DETAILS</h2>
                 <div className="flex ml-auto">
-                  <ChainIcon name="eth" />
-                  <ChainIcon className="ml-2" name="bsc" />
+                  <ChainIcon className="ml-2" />
+                  <ChainIcon chainId={CHAINS_CHAINID.BSC} />
                   {/* <span className=''><BscIcon /></span>
                   <span><EthIcon /></span> */}
                 </div>

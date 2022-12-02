@@ -21,8 +21,20 @@ export const StyledNavLink = styled.li`
       left: 50%;
       height: 4px;
       transform: translateX(-50%);
-      background: linear-gradient(267.71deg, #2663FF 0%, #8000FF 100%);
+      background: linear-gradient(267.71deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%);
       border-radius: 60px;
+      animation: scale 300ms ;
+      transform-origin: center;
+    }
+  }
+
+
+  @keyframes scale {
+    from {
+      transform: translateX(-50%) scaleX(0);
+    }
+    to{
+      transform: translateX(-50%) scaleX(1);
     }
   }
 `;
