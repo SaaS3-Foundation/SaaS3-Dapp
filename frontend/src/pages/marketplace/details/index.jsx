@@ -55,12 +55,18 @@ const data3 = [
   ['Dec', 5],
 ];
 
-const option = (_data, _label) => ({
+const option = (_data, _label, _axisLabel) => ({
   xAxis: {
+    label: {
+      show: false,
+    },
     type: 'category',
     boundaryGap: false,
   },
   yAxis: {
+    label: {
+      show: false,
+    },
     type: 'value',
     boundaryGap: [0, 1],
     splitLine: { show: false },
@@ -75,10 +81,15 @@ const option = (_data, _label) => ({
   grid: {
     left: '10%', top: '10%', bottom: '10%', right: '5%',
   },
-  axisPointer: {
-    link: { xAxisIndex: 'all' },
-    label: {
-      backgroundColor: '#777',
+  tooltip: {
+    extraCssText: 'width: max-content; white-space: pre; color: black; font-family: Nunito; font-weight: 700;',
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+      axis: 'x',
+    },
+    formatter: function f(params, ticket, callback) {
+      return `TVL: ${params[0].data[1]} M SAAS \r\nCreator Stake: 100K SAAS \r\nDate: ${params[0].data[0]} ${new Date().getFullYear()}`;
     },
   },
   series: [
