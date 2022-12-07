@@ -1,13 +1,13 @@
 import {
-  Checkbox, CheckboxGroup, Col, Collapse, Row,
+  Checkbox, CheckboxGroup, Col, Collapse, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
-import BaseLayout from '@/components/layout/BaseLayout';
-import { StyledAddressItem, StyledCharWrap, StyledCollapse } from '../styled';
+import BaseLayout from '@/components/layout/baseLayout';
+import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
-import ChainIcon from '@/components/comm/ChainIcon';
+import ChainIcon from '@/components/comm/chainIcon';
 import { CHAINS_CHAINID } from '@/config/chain';
 
 const data1 = [
@@ -87,7 +87,7 @@ const option = (_data, _label) => ({
       smooth: 0.6,
       symbol: 'none',
       lineStyle: {
-        color: '#7B61FF',
+        color: '#0047FF',
         width: 3,
       },
       areaStyle: {
@@ -98,7 +98,7 @@ const option = (_data, _label) => ({
           x2: 0,
           y2: 1,
           colorStops: [{
-            offset: 0, color: '#7B61FF', // 0%
+            offset: 0, color: '#0047FF', // 0%
           }, {
             offset: 1, color: '#2663FF00', // 100%
           }],
@@ -117,7 +117,7 @@ function MarketplaceDetails() {
     <BaseLayout>
       <div className="container pb-16">
         <Row className="!mt-5" type="flex" align="middle" gutter={[0, 50]}>
-          <Col lg={12} span={24} className="bg-dark-bg-1 py-7 px-16 rounded-tl-[20px] rounded-bl-[20px] relative z-10">
+          <Col lg={12} span={24} className="py-7 px-16">
             <h1 className="text-2xl font-bold">FIFA 2022<br />WORLD CUP RESULT </h1>
             <p className="text-base mt-3">
               This Oracle reports the results of FIFA world cup.
@@ -147,7 +147,7 @@ function MarketplaceDetails() {
           </Col>
 
           <Col lg={12} span={24} className="relative z-20">
-            <StyledCharWrap>
+            <StyledChartsWrap>
               <div className="header">
                 <h1>Oracle TVL Performance</h1>
               </div>
@@ -166,14 +166,14 @@ function MarketplaceDetails() {
               <br />
               <br />
               <br />
-            </StyledCharWrap>
+            </StyledChartsWrap>
           </Col>
 
         </Row>
         <Row className="!mt-10" type="flex" gutter={[20, 20]}>
 
           <Col lg={12} span={24}>
-            <StyledCharWrap>
+            <StyledChartsWrap>
               <div className="header">
                 <h1>Oracle APR performance</h1>
               </div>
@@ -184,11 +184,11 @@ function MarketplaceDetails() {
                 lazyUpdate
                 theme="dark"
               />
-            </StyledCharWrap>
+            </StyledChartsWrap>
           </Col>
 
           <Col lg={12} span={24}>
-            <StyledCharWrap>
+            <StyledChartsWrap>
               <div className="header flex justify-between">
                 <h1>Oracle Call performance chart</h1>
                 <div className="inline-block flex">
@@ -205,69 +205,70 @@ function MarketplaceDetails() {
                 // onChartReady={this.onChartReadyCallback}
                 // onEvents={EventsDict}
               />
-            </StyledCharWrap>
+            </StyledChartsWrap>
           </Col>
         </Row>
-        <h1 className="text-2xl font-bold mt-14 indent-1">INFORMATION</h1>
-        <StyledCharWrap className=" !py-10 mt-4">
 
-          <div className="flex">
-            <div className="flex-1">
-              <h2 className="text-lg mb-5 font-bold">API DETAILS</h2>
-              <StyledCollapse accordion>
-                <Collapse.Panel header="1. FIFA Official WORLD CUP Result API" itemKey="1">
-                  123
-                </Collapse.Panel>
-                <Collapse.Panel header="2. FIFA YOYO WORLD CUP Result API" itemKey="2">
-                  123
-                </Collapse.Panel>
-                <Collapse.Panel header="3. Binance FIFA WORLD CUP Result API" itemKey="3">
-                  123
-                </Collapse.Panel>
-              </StyledCollapse>
-            </div>
-            <div className="flex-1 ml-[72px]">
-              <div className="mb-5 flex items-center">
-                <h2 className="text-lg font-bold">DEPLOYMENT DETAILS</h2>
-                <div className="flex ml-auto">
-                  <ChainIcon className="mr-2" />
-                  <ChainIcon chainId={CHAINS_CHAINID.BSC} />
-                </div>
+        <StyledChartsWrap className="!bg-white/10 mt-8">
+          <Typography.Title heading={3} className="indent-1">INFORMATION</Typography.Title>
+          <div className="!py-10 mt-4">
+            <div className="flex">
+              <div className="flex-1">
+                <Typography.Title heading={5}>API DETAILS</Typography.Title>
+                <StyledCollapse className="mt-5" accordion>
+                  <Collapse.Panel header="1. FIFA Official WORLD CUP Result API" itemKey="1">
+                    123
+                  </Collapse.Panel>
+                  <Collapse.Panel header="2. FIFA YOYO WORLD CUP Result API" itemKey="2">
+                    123
+                  </Collapse.Panel>
+                  <Collapse.Panel header="3. Binance FIFA WORLD CUP Result API" itemKey="3">
+                    123
+                  </Collapse.Panel>
+                </StyledCollapse>
               </div>
-              <StyledAddressItem>
-                <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                <IconCopy />
-              </StyledAddressItem>
-              <StyledAddressItem>
-                <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                <IconCopy />
-              </StyledAddressItem>
-              <StyledAddressItem>
-                <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                <IconCopy />
-              </StyledAddressItem>
-              <StyledAddressItem>
-                <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                <IconCopy />
-              </StyledAddressItem>
+              <div className="flex-1 ml-[72px]">
+                <div className="mb-5 flex items-center">
+                  <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
+                  <div className="flex ml-auto">
+                    <ChainIcon className="mr-2" />
+                    <ChainIcon chainId={CHAINS_CHAINID.BSC} />
+                  </div>
+                </div>
+                <StyledAddressItem>
+                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
+                  <IconCopy />
+                </StyledAddressItem>
+                <StyledAddressItem>
+                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
+                  <IconCopy />
+                </StyledAddressItem>
+                <StyledAddressItem>
+                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
+                  <IconCopy />
+                </StyledAddressItem>
+                <StyledAddressItem>
+                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
+                  <IconCopy />
+                </StyledAddressItem>
+              </div>
             </div>
           </div>
-        </StyledCharWrap>
-
-        <h1 className="text-2xl font-bold mt-14 indent-1">CREATORS NOTES</h1>
-        <StyledCharWrap className="mt-4 !py-6">
-          <p className="text-lg">
-            While integrating with the oracle make sure to interact the
-            correct roll up contract. Fund your wallet with SAAS and make
-            sure to test the oracles before going production level. In regards
-            to how to integrate with oracles you should refer to the SaaS3 documentation,
-            despite how different each oracle with different apis are they have the sam eend
-            integrartion method on the smart contract layer. In input parameter per oracle may differ,
-            to understand the input parameters click the drop down button next to the respective API in the
-            above “INFORMATION” section, on further inquiry you can refer to the API documentation using the
-            document icon placed next to teh respective API in the “INFORMATION” section.
-          </p>
-        </StyledCharWrap>
+          <Typography.Title heading={3} className="indent-1">CREATORS NOTES</Typography.Title>
+          <div className="mt-4 !py-6">
+            <Typography.Text className="text-lg">
+              While integrating with the oracle make sure to interact the
+              correct roll up contract. Fund your wallet with SAAS and make
+              sure to test the oracles before going production level. In regards
+              to how to integrate with oracles you should refer to the SaaS3 documentation,
+              despite how different each oracle with different apis are they have the sam eend
+              integrartion method on the smart contract layer. In input parameter per oracle may differ,
+              to understand the input parameters click the drop down button next to the respective API in the
+              above “INFORMATION” section, on further inquiry you can refer to the API documentation using the
+              document icon placed next to teh respective API in the “INFORMATION” section.
+            </Typography.Text>
+          </div>
+        </StyledChartsWrap>
       </div>
     </BaseLayout>
   );

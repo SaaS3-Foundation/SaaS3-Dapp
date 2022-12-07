@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const StyledPanel = styled.div`
-  background: rgba(0, 0, 0, 0.33);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: var(--color-bg-blacm-opacity);
+  border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
   height: 300px;
   display: flex;
@@ -12,7 +12,7 @@ export const StyledPanel = styled.div`
   border-radius: 20px;
   cursor: pointer;
   &:hover{
-    background: rgba(255 255 255 / 0.1);
+    background-color: var(--color-border-white-opacity);
   }
   >span{
     margin-top: 24px;
@@ -25,15 +25,15 @@ export const DeployWrap = styled.div`
   margin-bottom: 52px;
   padding: 20px;
   border-radius: 20px;
-  background: rgba(0, 0, 0, 0.33);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: var(--color-bg-blacm-opacity);
+  border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
 
   >.header{
     display: flex;
     align-items: center;
     padding: 14px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+    border-bottom: 1px solid var(--color-border-white-opacity);
     >.semi-icon{
       margin-left: auto;
     }
@@ -62,13 +62,13 @@ export const DeployWrap = styled.div`
     }
   }
   .border{
-    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    border: 1px solid var(--color-border-white-opacity) !important;
   }
   .round{
     border-radius: 20px;
   }
   .semi-button{
-    border: 1px solid rgba(255, 255, 255, 0.13);
+    border: 1px solid var(--color-border-white-opacity);
     border-radius: 60px;
   }
 `;

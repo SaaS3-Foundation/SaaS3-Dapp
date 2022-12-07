@@ -17,20 +17,22 @@ const StyledWrap = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-dark-bg-1);
+  background-color: rgba(47, 73, 138, 0.34);
   cursor: pointer;
-  &:hover{
-    background-color: var(--color-hover-gray);
+  &:hover,&.active{
+    background-color: var(--color-primary-2);
     /* filter: grayscale(1); */
   }
 `;
 
 function ChainIcon(props) {
-  const { chainId, iconClassName, fill = 'white' } = props;
+  const {
+    chainId, iconClassName, fill = 'white', active,
+  } = props;
 
   const IconComponent = useMemo(() => CHAINS[chainId || CHAINS_CHAINID.ETH]?.SvgComponent, [chainId]);
   return (
-    <StyledWrap className={classNames(props.className)}>
+    <StyledWrap className={classNames({ active }, props.className)}>
       <IconComponent fill={fill} className={iconClassName} />
     </StyledWrap>
   );

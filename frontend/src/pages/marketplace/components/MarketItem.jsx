@@ -1,15 +1,18 @@
-import { Button } from '@douyinfe/semi-ui';
+import { Button, Image, Typography } from '@douyinfe/semi-ui';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { StyledMarketItem } from '../styled';
+import ChainIcon from '@/components/comm/chainIcon';
+import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
+import { StyledMarketItem, StyledCancelButton } from '../styled';
 
-function MarketItem() {
+function MarketItem(props) {
+  const { className } = props;
   const items = useMemo(() => [{
     title: 'Creator',
     rightRender: <span>Fifa Whale</span>,
   }, {
     title: 'Chain',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <div> <ChainIcon className="!bg-transparent" chainId={56} /> <ChainIcon className="!bg-transparent" /> </div>,
   }, {
     title: 'Creator Stake($SaaS)',
     rightRender: <span>Fifa Whale</span>,
@@ -36,8 +39,11 @@ function MarketItem() {
   };
 
   return (
-    <StyledMarketItem>
-      <h1>FIFA 2022</h1>
+    <StyledMarketItem className={className}>
+      <div className="header-wrap">
+        <Image className="mr-2.5" width={40} height={40} src={defaultItemAvatar} preview={false} />
+        <Typography.Title heading={2}>FIFA 2022</Typography.Title>
+      </div>
       <div className="content-items-wrap">
         {useMemo(
           () => items.map((item, i) => (
@@ -49,8 +55,8 @@ function MarketItem() {
         )}
       </div>
       <div className="footer-wrap">
+        <StyledCancelButton theme="borderless" onClick={handleDetails} size="large">DETAILS</StyledCancelButton>
         <Button size="large" className="flex-1 bg-primary-linear">STAKE</Button>
-        <Button theme="borderless" onClick={handleDetails} size="large" className="ml-2.5">DETAILS</Button>
       </div>
     </StyledMarketItem>
   );

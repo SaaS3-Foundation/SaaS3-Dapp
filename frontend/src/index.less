@@ -9,8 +9,12 @@ input {
   border: 0;
 }
 
+*,
+.semi-typography {
+  font-family: Nunito, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', STHeiti, 'Microsoft Yahei', Tahoma, Simsun, sans-serif;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', STHeiti, 'Microsoft Yahei', Tahoma, Simsun, sans-serif;
   color: white;
 
   &[theme-mode='dark'] {
@@ -26,6 +30,7 @@ body {
 .container {
   margin-left: auto;
   margin-right: auto;
+
   @media (max-width: 1023px) {
     padding-left: 20px;
     padding-right: 20px;

@@ -1,16 +1,28 @@
-import { Collapse } from '@douyinfe/semi-ui';
+import { Button, Collapse } from '@douyinfe/semi-ui';
 import styled from 'styled-components';
+
+export const StyledSearchWrap = styled.div`
+  width: 610px;
+  padding: 16px;
+  background-color: var(--color-bg-black-opacity);
+  display: flex;
+  align-items: center;
+  border-radius: 20px;
+  border: 1px solid var(--color-border-white-opacity);
+  &:has(input:focus){
+    border-color: var(--color-primary-2);
+  }
+`;
 
 export const StyledMarketItem = styled.div`
   padding: 20px 24px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.33);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  /* background: rgba(66, 54, 142, 0.33); */
+  background: var(--color-bg-black-opacity);
+  border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
-  >h1{
-    font-weight: bold;
-    font-size: 27px;
+  >.header-wrap{
+    display: flex;
+    align-items: center;
   }
   >div{
     &.content-items-wrap{
@@ -28,10 +40,9 @@ export const StyledMarketItem = styled.div`
       display: flex;
       align-items: center;
       >.semi-button{
-        border-radius: 6px;
         border-radius: 60px;
         &:last-child{
-          border: 1px solid rgba(255, 255, 255, 0.13);
+          margin-left: 10px;
         }
         &:hover{
           opacity: 0.8;
@@ -44,11 +55,21 @@ export const StyledMarketItem = styled.div`
   }
 `;
 
-export const StyledCharWrap = styled.div`
-  background: var(--color-dark-bg-2);
+export const StyledCancelButton = styled(Button)`
+  border-radius: 60px;
+  background: linear-gradient(263.17deg, rgba(104, 104, 104, 0.33) 6.45%, rgba(97, 97, 97, 0.33) 100%);
+  .semi-button-content{
+    color: white;
+  }
+`;
+
+export const StyledChartsWrap = styled.div`
+  background: var(--color-bg-black-opacity);
   backdrop-filter: blur(5px);
   border-radius: 20px;
   padding: 16px 28px;
+  border: 1px solid var(--color-border-white-opacity);
+
   >.header{
     >h1{
       font-size: 18px;
@@ -59,7 +80,7 @@ export const StyledCharWrap = styled.div`
   }
   
   canvas {
-    border-radius: 20px;
+    border-radius: 6px;
   }
 `;
 
@@ -67,16 +88,14 @@ export const StyledCollapse = styled(Collapse)`
   .semi-collapse-item{
     border-bottom: 0;
     background-color: var(--color-dark-bg-1);
-    border: 2px solid transparent;
-    border-radius: 6px;
+    border: 1px solid var(--color-border-white-opacity);
+    border-radius: 20px;
+    overflow: hidden;
     .semi-collapse-header{
       margin: 0;
     }
     &+.semi-collapse-item{
       margin-top: 12px;
-    }
-    &:has(.semi-collapse-header[aria-expanded=true]){
-      border-color: var(--color-primary-2);
     }
   }
 `;

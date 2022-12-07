@@ -1,10 +1,10 @@
 import { Button, Typography } from '@douyinfe/semi-ui';
 
-import BaseLayout from '@/components/layout/BaseLayout';
+import BaseLayout from '@/components/layout/baseLayout';
 import { ProfileContentWrap } from './styled';
 import DefaultAvatar from '@/assets/imgs/default-avatar.png';
-import Table from './components/Table';
 import { DEPLOYED_INFORMATION_COLUMNS, STAKE_INFORMATION_COLUMNS, WALLET_INFORMATION_COLUMNS } from './config';
+import { StyledSemiTable } from '@/components/styled/table';
 
 function Profile() {
   const walletData = [
@@ -79,17 +79,17 @@ function Profile() {
 
         <Typography.Title heading={2}>WALLET INFORMATION</Typography.Title>
         <ProfileContentWrap className="!pt-0">
-          <Table pagination={null} columns={WALLET_INFORMATION_COLUMNS} dataSource={walletData} />
+          <StyledSemiTable pagination={null} columns={WALLET_INFORMATION_COLUMNS} dataSource={walletData} />
         </ProfileContentWrap>
 
         <Typography.Title heading={2}>STAKE INFORMATION</Typography.Title>
         <ProfileContentWrap className="!pt-0">
-          <Table pagination={null} columns={STAKE_INFORMATION_COLUMNS} dataSource={stakeData} />
+          <StyledSemiTable pagination={null} columns={STAKE_INFORMATION_COLUMNS} dataSource={stakeData} />
         </ProfileContentWrap>
 
         <Typography.Title heading={2}>DEPLOYED ORACLES</Typography.Title>
         <ProfileContentWrap className="!pt-0">
-          <Table pagination={null} columns={DEPLOYED_INFORMATION_COLUMNS} dataSource={deployedData} />
+          <StyledSemiTable pagination={null} columns={DEPLOYED_INFORMATION_COLUMNS} dataSource={deployedData} />
         </ProfileContentWrap>
       </div>
 
