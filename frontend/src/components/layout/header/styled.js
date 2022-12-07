@@ -21,7 +21,7 @@ export const StyledNavLink = styled.li`
       left: 50%;
       height: 4px;
       transform: translateX(-50%);
-      background: linear-gradient(267.71deg, var(--color-primary-1) 0%, var(--color-primary-2) 100%);
+      background: var(--linear-primary);
       border-radius: 60px;
       animation: scale 300ms ;
       transform-origin: center;
@@ -39,18 +39,12 @@ export const StyledNavLink = styled.li`
   }
 `;
 
-export const StyledNetworkBtn = styled.div`
-  background-color: var(--color-dark-bg-1);
-  border-radius: 6px;
-  margin-left: 32px;
-  height: 48px;
-  line-height: 48px;
-  padding: 0 14px;
-  color: white;
-  cursor: pointer;
-  white-space: nowrap;
-  >span{
-    display: inline-block;
-    line-height: 24px;
+export const StyledRoundButton = styled.button`
+  border-radius: 20px;
+  padding: 10px 24px;
+  background: var(--color-bg-black-opacity);
+  border: 1px solid var(--color-border-white-opacity);
+  &:hover{
+    background-color: var(--color-border-white-opacity);
   }
 `;

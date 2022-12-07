@@ -1,12 +1,28 @@
-import { Button, Typography } from '@douyinfe/semi-ui';
+import {
+  Button, Typography, Upload,
+} from '@douyinfe/semi-ui';
 import { IconCopy, IconChevronUp } from '@douyinfe/semi-icons';
-import BaseLayout from '@/components/layout/BaseLayout';
+import BaseLayout from '@/components/layout/baseLayout';
 import { DeployWrap } from '../styled';
 
 function Deploy() {
+  const onDeploy = () => {
+
+  };
   return (
     <BaseLayout>
       <div className="container pt-5 pb-10">
+        <DeployWrap>
+          <Upload action="" uploadTrigger="custom">
+            <Button theme="light" style={{ marginRight: 8 }}>
+              Choose file
+            </Button>
+          </Upload>
+          <div>
+            <Button onClick={onDeploy}>deploy</Button>
+          </div>
+
+        </DeployWrap>
         <Typography.Title heading={2}>
           DEFINE DATA SOURCE
         </Typography.Title>
@@ -92,12 +108,11 @@ function Deploy() {
         </DeployWrap>
 
         <div className="text-center">
-          <Button className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">STAKE</Button>
+          <Button className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
         </div>
       </div>
 
     </BaseLayout>
   );
 }
-
 export default Deploy;

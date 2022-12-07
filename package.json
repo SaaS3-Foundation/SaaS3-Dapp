@@ -35,8 +35,5 @@
       "git add"
     ]
   },
-  "dependencies": {
-    "echarts": "^5.4.0",
-    "echarts-for-react": "^3.0.2"
-  }
+  "dependencies": {}
 }
