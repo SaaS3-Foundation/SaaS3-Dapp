@@ -1,9 +1,9 @@
 import {
-  Checkbox, CheckboxGroup, Col, Collapse, Row, Typography,
+  Checkbox, Col, Collapse, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import BaseLayout from '@/components/layout/baseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
