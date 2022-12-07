@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Header from '../header';
 import bgVideo from '@/assets/videos/bg-video.mp4';
 
-// import bgGif from '@/assets/imgs/bg-video.gif';
 const StyledBgVideoWrap = styled.div`
   position: fixed;
   top: 0;
@@ -14,16 +13,11 @@ const StyledBgVideoWrap = styled.div`
   z-index: -1;
   >video{
     width: 100%;
-    /* height: 100%; */
+    height: 100%;
+    object-fit: cover;
   }
 `;
 
-// const bgCss = {
-//   backgroundImage: `url(${bgGif})`,
-//   backgroundAttachment: 'fixed',
-//   backgroundSize: 'cover',
-//   backgroundRepeat: 'no-repeat',
-// };
 function BaseLayout(props) {
   const { children, className, contentClassName } = props;
   return (
