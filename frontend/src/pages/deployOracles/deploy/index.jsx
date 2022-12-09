@@ -1,22 +1,37 @@
 import {
-  Button, Form, Tabs, Typography, Upload,
+  Button, Form, Tabs, Typography,
 } from '@douyinfe/semi-ui';
 import { IconChevronUp, IconChevronDown } from '@douyinfe/semi-icons';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import classNames from 'classnames';
+import axios from 'axios';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap } from '../styled';
 import { deploy } from '@/contracts/deploy';
 import { readFileContent } from '@/utils/file';
 import { usePolkadotWallet } from '@/hooks/wallet';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
+import { REQUEST_METHODS } from '@/config/request';
+import { toggleCollapsible } from '@/utils/animation';
 
 function Deploy() {
+  const formRef = useRef();
+  const boxRef = useRef();
   const { account } = usePolkadotWallet();
+  const [isUnfolded, setIsUnfolded] = useState(false);
+  const [visiblity, setVisiblity] = useState('public');
   const [file, setFile] = useState();
   const onFileChange = (files) => {
     const [_file] = files;
     setFile(_file);
   };
+
+  const onFileDrap = (event) => {
+    event.preventDefault();
+    const [_file] = event.dataTransfer.files;
+    formRef.current.formApi.setValue('createrAvatar', [_file]);
+  };
+
   const onDeploy = async () => {
     const content = (await readFileContent(file))?.target?.result;
     const config = {
@@ -33,59 +48,131 @@ function Deploy() {
       config,
     );
   };
+  const onTestRun = async () => {
+    const { url, method } = formRef.current.formApi.getValues();
+    const apiResult = await axios({
+      url,
+      method,
+    });
+    console.log(apiResult);
+  };
+  const onSubmit = (values) => {
+    console.log(values);
+  };
   return (
     <BaseLayout>
       <div className="container pt-5 pb-10">
-        <Form>
+        <Form ref={formRef} onSubmit={onSubmit}>
           <div className="max-w-wrap mx-auto">
-            <DeployWrap>
-              <Upload limit={1} action="" uploadTrigger="custom" onFileChange={onFileChange}>
-                <Button theme="light" style={{ marginRight: 8 }}>
-                  Choose file
-                </Button>
-              </Upload>
-              <div>
-                <Button onClick={onDeploy}>deploy</Button>
-              </div>
-
-            </DeployWrap>
             <Typography.Title heading={2}>
-              DEFINE DATA SOURCE
+              CONTRACT INFORMATION
             </Typography.Title>
-            <DeployWrap className="!pt-0">
-              <div className="header">
-                <Typography.Title heading={4}>
-                  API 1
+            <DeployWrap>
+              <Form.Upload
+                rules={[
+                  { required: true, message: 'Required error' },
+                ]}
+                field="contractFile"
+                noLabel
+                limit={1}
+                action=""
+                uploadTrigger="custom"
+                onFileChange={onFileChange}
+              >
+                <Button theme="borderless" style={{ marginRight: 8 }}>
+                  Choose contract file
+                </Button>
+              </Form.Upload>
+              <div className="mt-5">
+                <Typography.Title heading={5}>
+                  CLUSTER ID
                 </Typography.Title>
-                <IconChevronUp className="hover" />
-              </div>
-              <div className="flex items-center mt-3">
-                <div className="flex items-center border border-white py-2 px-4 round cursor-pointer hover:bg-white/20">
-                  <Typography.Title heading={6}>GET</Typography.Title>
-                  <IconChevronDown className="ml-2" />
-                </div>
-                <div className="ml-4 flex-1">
-                  <Form.Input noLabel size="large" placeholder="https://********" />
-                </div>
 
+                <Form.Input
+                  size="large"
+                  field="clusterId"
+                  noLabel
+                  placeholder="0x0000000000000000000000000000000000000000000000000000000000000000"
+                />
               </div>
-              <div className="border rounded-[20px] mt-5 p-5">
-                <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
-                  <Tabs.TabPane tab="Body" itemKey="Body">
-                    <UrlHeaderInputs />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Auth" itemKey="Auth">
-                    <UrlHeaderInputs />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Params" itemKey="Params">
-                    <UrlHeaderInputs />
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="Header" itemKey="Header">
-                    <UrlHeaderInputs />
-                  </Tabs.TabPane>
-                </Tabs>
-              </div>
+              <Button onClick={onDeploy}> deploy test</Button>
+
             </DeployWrap>
+
+            <div className="mb-[52px]">
+              <Typography.Title heading={2}>
+                DEFINE DATA SOURCE
+              </Typography.Title>
+              <DeployWrap className="!pt-0 !mb-0">
+                <div className="header">
+                  <Typography.Title heading={4}>
+                    API 1
+                  </Typography.Title>
+                  <IconChevronDown
+                    className="hover transition-transform"
+                    style={{
+                      transform: `rotate(${isUnfolded ? '180deg' : '0deg'})`,
+                    }}
+                    onClick={() => {
+                      setIsUnfolded(!isUnfolded);
+                      toggleCollapsible(boxRef.current);
+                    }}
+                  />
+                </div>
+                <div className="flex items-center mt-3">
+                  <Form.Select field="method" noLabel className="round" size="large" initValue="GET">
+                    {REQUEST_METHODS.map((method) => <Form.Select.Option value={method} key={method}>{method}</Form.Select.Option>)}
+                  </Form.Select>
+                  <div className="ml-4 flex-1">
+                    <Form.Input
+                      initValue="https://baidu.com"
+                      field="url"
+                      rules={[
+                        { required: true, message: 'Required error' },
+                        { pattern: /^https?:\/\/.+/, message: 'Url matching error' },
+                      ]}
+                      noLabel
+                      size="large"
+                      placeholder="https://********"
+                      showClear
+                    />
+                  </div>
+
+                </div>
+                <div
+                  className="rounded-[20px] p-5 overflow-hidden"
+                  style={{
+                    transition: 'height 300ms',
+                  }}
+                  ref={boxRef}
+                >
+                  <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
+                    <Tabs.TabPane tab="Body" itemKey="Body">
+                      <UrlHeaderInputs field="body" />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Auth" itemKey="Auth">
+                      <UrlHeaderInputs field="auth" />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Params" itemKey="Params">
+                      <UrlHeaderInputs field="params" />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="Header" itemKey="Header">
+                      <UrlHeaderInputs field="header" />
+                    </Tabs.TabPane>
+                  </Tabs>
+                </div>
+              </DeployWrap>
+              <div className="text-right mt-4">
+                <Button
+                  onClick={onTestRun}
+                  theme="borderless"
+                  className="rounded-full w-[160px] bg-primary-linear !text-white hover:opacity-80"
+                  size="large"
+                >
+                  Test Run
+                </Button>
+              </div>
+            </div>
 
             <Typography.Title heading={2}>
               DEFINE DATA ENDPOINTS
@@ -114,26 +201,124 @@ function Deploy() {
               VISIBILITY
             </Typography.Title>
             <DeployWrap>
-              <Button className="!border round !text-white" size="large">PUBLIC</Button>
-              <Button className="!border round !text-white ml-5" size="large">PRIVATE</Button>
+              <Button
+                className={classNames('round !text-white', {
+                  '!border-white': visiblity === 'public',
+                })}
+                size="large"
+                onClick={() => setVisiblity('public')}
+              >
+                PUBLIC
+              </Button>
+              <Button
+                className={classNames('round !text-white ml-5', {
+                  '!border-white': visiblity === 'private',
+                })}
+                size="large"
+                onClick={() => setVisiblity('private')}
+              >
+                PRIVATE
+              </Button>
             </DeployWrap>
 
             <Typography.Title heading={2}>
               INFORMATION
             </Typography.Title>
             <DeployWrap>
-              <Typography.Title heading={3}>ORACLE TITLE</Typography.Title>
-              <div className="round border py-2 px-4 mt-4 mb-5">FIFA 2022</div>
-
-              <Typography.Title heading={3}>ORACLE DESCRIPTION</Typography.Title>
-              <div className="round border py-2 px-4 mt-4">
-                This Oracle reports the results of FIFA world cup. The official FIFA apis have been selected as the data feed for this oracle.
-                A total of 10 APIs with solid aggregation logic and a deviance percentage of 0.5 %  has been placed.
+              <div>
+                <Typography.Title heading={5}>ORACLE TITLE</Typography.Title>
+                <Form.Input
+                  field="oracleTitle"
+                  rules={[
+                    { required: true, message: 'Required error' },
+                  ]}
+                  size="large"
+                  noLabel
+                  placeholder="ORACALE TITLE"
+                  showClear
+                />
+              </div>
+              <div className="mt-5">
+                <Typography.Title heading={5}>ORACLE DESCRIPTION</Typography.Title>
+                <Form.TextArea
+                  rules={[
+                    { required: true, message: 'Required error' },
+                  ]}
+                  showClear
+                  className="rounded-xl"
+                  field="oracleDescription"
+                  size="large"
+                  noLabel
+                  placeholder="ORACALE DESCRIPTION"
+                />
+              </div>
+              <div className="mt-5">
+                <Typography.Title heading={5}>API 1 TITLE</Typography.Title>
+                <Form.Input
+                  rules={[
+                    { required: true, message: 'Required error' },
+                  ]}
+                  field="api1Title"
+                  size="large"
+                  noLabel
+                  placeholder="API 1 TITLE"
+                  showClear
+                />
               </div>
             </DeployWrap>
 
+            <Typography.Title heading={2}>
+              CREATOR’S NOTE
+            </Typography.Title>
+            <DeployWrap className="text-center" onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+              <Form.Upload
+                className="justify-center"
+                field="createrAvatar"
+                noLabel
+                limit={1}
+                action=""
+                uploadTrigger="custom"
+                listType="picture"
+              >
+                upload
+              </Form.Upload>
+              <Typography.Title heading={6} className="text-[#5B5B5D]">Drop file here or <span className="text-primary-2 underline">Choose File</span></Typography.Title>
+            </DeployWrap>
+
+            <Typography.Title heading={2}>
+              CREATOR’S NOTE
+            </Typography.Title>
+            <DeployWrap className="text-center" onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+              <Form.TextArea
+                rules={[
+                  { required: true, message: 'Required error' },
+                ]}
+                field="createrNote"
+                noLabel
+                placeholder="CREATOR’S NOTE"
+                showClear
+              />
+            </DeployWrap>
+
+            <Typography.Title heading={2}>
+              NETWORK
+            </Typography.Title>
+            <DeployWrap onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+              <Form.Select
+                field="network"
+                className=" rounded-full"
+                size="large"
+                label="network"
+                initValue="ETHEREUM"
+                noLabel
+                placeholder="CREATOR’S NOTE"
+              >
+                <Form.Select.Option value="ETHEREUM">ETHEREUM</Form.Select.Option>
+              </Form.Select>
+            </DeployWrap>
+
             <div className="text-center">
-              <Button className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
+              <Button htmlType="submit" className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
             </div>
           </div>
         </Form>

@@ -6,17 +6,14 @@ export function loadContractFile(contractFile) {
     const constructor = metadata.V3.spec.constructors.find(c => c.label == 'default').selector;
     const name = metadata.contract.name;
     const wasm = metadata.source.wasm;
-    return {default: { wasm, metadata, constructor, name }};
+    const hash = metadata.source.hash;
+    return {default: { hash, wasm, metadata, constructor, name }};
 }
 
 // artifacts: {FatBadges: {wasm, metadata, constructor}, ...}
 export async function deployContracts(api, txqueue, pair, artifacts, clusterId, salt) {
     salt = salt ? salt : hex(crypto.randomBytes(4)),
-  console.log('Contracts: uploading', contract.name);
-
-  const instantiateResult = api.createType('ContractInstantiateResult', queryResult.Ok.InkMessageReturn);
-  console.assert(instantiateResult.result.isOk);
-  console.log("gasRequired", instantiateResult.gasRequired);
+  console.log('Contracts: uploading', artifacts.default.name);
 
   // upload contracts
   const { events: deployEvents } = await txqueue.submit(
@@ -24,7 +21,7 @@ export async function deployContracts(api, txqueue, pair, artifacts, clusterId, 
       Object.entries(artifacts).flatMap(([_k, v]) => [
         api.tx.phalaFatContracts.clusterUploadResource(clusterId, 'InkCode', v.wasm),
         api.tx.phalaFatContracts.instantiateContract(
-          { WasmCode: v.wasm},
+          { WasmCode: v.hash},
           v.constructor,
           salt,
           clusterId,
