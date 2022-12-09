@@ -2,7 +2,7 @@ import {
   Col, Image, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { useNavigate } from 'react-router';
-import BaseLayout from '@/components/layout/baseLayout';
+import BaseLayout from '@/components/layout/BaseLayout';
 import dataFree from '@/assets/imgs/deploy-oracles/datafree.png';
 import dcmg from '@/assets/imgs/deploy-oracles/dcmg.png';
 import crossChain from '@/assets/imgs/deploy-oracles/cross-chain.png';

@@ -3,7 +3,7 @@ import {
 } from '@douyinfe/semi-ui';
 import { IconChevronUp, IconChevronDown } from '@douyinfe/semi-icons';
 import { useState } from 'react';
-import BaseLayout from '@/components/layout/baseLayout';
+import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap } from '../styled';
 import { deploy } from '@/contracts/deploy';
 import { readFileContent } from '@/utils/file';

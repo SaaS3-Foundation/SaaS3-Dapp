@@ -4,7 +4,7 @@ import {
 import { IconSearch } from '@douyinfe/semi-icons';
 import { useState } from 'react';
 import classNames from 'classnames';
-import BaseLayout from '@/components/layout/baseLayout';
+import BaseLayout from '@/components/layout/BaseLayout';
 import { ReactComponent as BlockViewSvg } from '@/assets/imgs/svg/Icon/block-view.svg';
 import { ReactComponent as GridViewSvg } from '@/assets/imgs/svg/Icon/grid-view.svg';
 import MarketItem from './components/MarketItem';

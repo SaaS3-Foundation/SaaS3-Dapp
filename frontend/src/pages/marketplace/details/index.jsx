@@ -4,7 +4,7 @@ import {
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
 import { useState } from 'react';
-import BaseLayout from '@/components/layout/baseLayout';
+import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/chainIcon';

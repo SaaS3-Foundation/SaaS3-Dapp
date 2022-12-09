@@ -1,6 +1,6 @@
 import { Button, Typography } from '@douyinfe/semi-ui';
 
-import BaseLayout from '@/components/layout/baseLayout';
+import BaseLayout from '@/components/layout/BaseLayout';
 import { ProfileContentWrap } from './styled';
 import DefaultAvatar from '@/assets/imgs/default-avatar.png';
 import { DEPLOYED_INFORMATION_COLUMNS, STAKE_INFORMATION_COLUMNS, WALLET_INFORMATION_COLUMNS } from './config';
