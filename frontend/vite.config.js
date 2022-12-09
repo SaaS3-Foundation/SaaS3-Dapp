@@ -19,10 +19,10 @@ export default defineConfig({
     alias: {
       '@': r('./src'),
       '@c': r('./src/components'),
-      // process: 'process/browser',
-      // stream: 'stream-browserify',
-      // zlib: 'browserify-zlib',
-      // util: 'util',
+      process: 'process/browser',
+      stream: 'stream-browserify',
+      zlib: 'browserify-zlib',
+      util: 'util',
     },
   },
   plugins: [

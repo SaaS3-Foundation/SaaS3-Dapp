@@ -47,8 +47,14 @@ export const DeployWrap = styled.div`
   .semi-button{
     border: 1px solid var(--color-border-white-opacity);
     border-radius: 60px;
+    &:hover{
+      border-width: 1px;
+    }
   }
   .semi-input-wrapper{
     border-radius: 12px;
+  }
+  &:hover{
+    background-color: rgb(255 255 255 / 10%);
   }
 `;

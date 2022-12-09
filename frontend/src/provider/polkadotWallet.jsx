@@ -34,15 +34,14 @@ function PolkadotWalletProvider(props) {
         await activeWallet.enable('SaaS3 Dapp');
         const accounts = await activeWallet.getAccounts();
         activeAccount = accounts.find(({ address }) => address === activeAccount);
-        console.log(activeAccount);
         setWallet(activeWallet);
         setAccount(activeAccount);
         //         const { ApiPromise, WsProvider } = require('@polkadot/api')
         // const { Keyring } = require('@polkadot/keyring')
 
         // Create a new instance of the API and connect to a node
-        const provider = new WsProvider('wss://pc-test-3.phala.network/khala/ws');
-        console.log(provider, 'provider');
+        // const provider = new WsProvider('wss://pc-test-3.phala.network/khala/ws');
+        // console.log(provider, 'provider');
         // const api = await ApiPromise.create({ provider });
         // await api.tx.balances
         //   .transfer('5C5555yEXUcmEJ5kkcCMvdZjUo7NGJiQJMS7vZXEeoMhj3VQ', 123456)
