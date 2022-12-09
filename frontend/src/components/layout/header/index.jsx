@@ -1,14 +1,15 @@
-import { useContext, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { Typography } from '@douyinfe/semi-ui';
+import { Dropdown, Image, Typography } from '@douyinfe/semi-ui';
 import { StyledNavLink, StyledRoundButton } from './styled';
 import SelectWalletModal from '@/components/comm/selectWalletModal';
 import { formatAddress } from '@/utils/address';
-import { polkadotWalletContext } from '@/provider/polkadotWallet';
+import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
+import { usePolkadotWallet } from '@/hooks/wallet';
 
 function Header() {
-  const { account } = useContext(polkadotWalletContext);
+  const { account, wallet } = usePolkadotWallet();
   const selectWalletModalRef = useRef();
   const location = useLocation();
   const navs = [{
@@ -48,12 +49,27 @@ function Header() {
                 [],
               )}
             </ul>
-            <StyledRoundButton>
-              <Typography.Text>NetWork</Typography.Text>
-              <IconChevronDown className="align-middle ml-[10px] !text-[20px]" />
-            </StyledRoundButton>
 
-            <StyledRoundButton className="ml-3" onClick={() => selectWalletModalRef.current.open()}>
+            <Dropdown
+              position="bottom"
+              render={(
+                <Dropdown.Menu>
+                  {
+                    POLKADOT_NETWORK_NODES.map((node) => <Dropdown.Item key={node.id}>{node.name}</Dropdown.Item>)
+                  }
+                </Dropdown.Menu>
+              )}
+            >
+              <StyledRoundButton>
+                <Typography.Text>NetWork</Typography.Text>
+                <IconChevronDown className="align-middle ml-[10px] !text-[20px]" />
+              </StyledRoundButton>
+            </Dropdown>
+
+            <StyledRoundButton className="ml-3 inline-flex items-center" onClick={() => selectWalletModalRef.current.open()}>
+              {
+                account?.address && <Image className="mr-2" width={20} height={20} {...wallet.logo} preview={false} />
+              }
               <Typography.Text>{account?.address ? formatAddress(account?.address) : 'Connect Wallet'}</Typography.Text>
             </StyledRoundButton>
           </div>

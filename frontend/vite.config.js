@@ -16,16 +16,14 @@ export default defineConfig({
     host: true,
   },
   resolve: {
-    alias: [
-      {
-        find: '@',
-        replacement: r('./src'),
-      },
-      {
-        find: '@c',
-        replacement: r('./src/components'),
-      },
-    ],
+    alias: {
+      '@': r('./src'),
+      '@c': r('./src/components'),
+      // process: 'process/browser',
+      // stream: 'stream-browserify',
+      // zlib: 'browserify-zlib',
+      // util: 'util',
+    },
   },
   plugins: [
     svgr(),

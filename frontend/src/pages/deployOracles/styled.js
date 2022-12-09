@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const StyledPanel = styled.div`
-  background: var(--color-bg-blacm-opacity);
+  background: var(--color-bg-black-opacity);
   border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
   height: 300px;
@@ -25,7 +25,7 @@ export const DeployWrap = styled.div`
   margin-bottom: 52px;
   padding: 20px;
   border-radius: 20px;
-  background: var(--color-bg-blacm-opacity);
+  background: var(--color-bg-black-opacity);
   border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
 
@@ -38,37 +38,17 @@ export const DeployWrap = styled.div`
       margin-left: auto;
     }
   }
-  .tabs{
-    display: flex;
-    >.tab-panel{
-      padding: 6px 24px;
-      cursor: pointer;
-      position: relative;
-      &.active{
-        font-weight: bold;
-      }
-      &.active,&:hover{
-        &::after{
-          content: '';
-          position: absolute;
-          height: 2px;
-          width: 36px;
-          left: 50%;
-          bottom: 0;
-          transform: translateX(-50%);
-          background-image: var(--linear-primary);
-        }
-      }
-    }
-  }
-  .border{
+  /* .border{
     border: 1px solid var(--color-border-white-opacity) !important;
-  }
+  } */
   .round{
     border-radius: 20px;
   }
   .semi-button{
     border: 1px solid var(--color-border-white-opacity);
     border-radius: 60px;
+  }
+  .semi-input-wrapper{
+    border-radius: 12px;
   }
 `;

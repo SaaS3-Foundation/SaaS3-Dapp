@@ -10,6 +10,16 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
   </head>
   <body theme-mode="dark">
+    <script>window.global = window;</script>
+    <!-- <script type="module">
+        import { Buffer } from "buffer/";
+        import process from "process";
+        import EventEmitter from "events";
+            
+        window.Buffer = Buffer;
+        window.process = process;
+        window.EventEmitter = EventEmitter;
+    </script> -->
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

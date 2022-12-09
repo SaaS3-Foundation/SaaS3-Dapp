@@ -25,7 +25,9 @@ module.exports = {
         'text-dark-1': 'var(--color-text-dark-1)',
       },
       spacing: {},
-      width: {},
+      maxWidth: {
+        wrap: '1280px',
+      },
       screens: {
         // md: { max: '1023px' },
       },

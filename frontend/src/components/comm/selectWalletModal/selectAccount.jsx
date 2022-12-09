@@ -46,14 +46,16 @@ function SelectAccount(props) {
               key={account.address}
               onClick={() => selectAccount(account)}
             >
-              <Identicon
-                value={account.address}
-                size={36}
-                theme="polkadot"
-                onCopy={() => {
-                  Toast.info('Address copied to clipboard');
-                }}
-              />
+              <div onClick={(event) => event.stopPropagation()}>
+                <Identicon
+                  value={account.address}
+                  size={36}
+                  theme="polkadot"
+                  onCopy={() => {
+                    Toast.info('Address copied to clipboard');
+                  }}
+                />
+              </div>
               <div className="ml-2 text-left">
                 <Typography.Title heading={5}>
                   {account.name}

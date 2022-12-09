@@ -1,12 +1,13 @@
-import crypto from 'crypto';
+import crypto from 'crypto-browserify';
 import { checkUntil, checkUntilEq, hex } from './utils';
 
 export function loadArtifacts(content) {
   const contract = JSON.parse(content);
+  console.log(contract, 'contract');
   const { wasm } = contract.source;
-  const constructor = contract.contract.V3.spec.constructors.find((c) => c.label === 'new').selector;
-  const { hash } = contract.metadata.source;
-  return { default: { wasm, hash, constructor } };
+  const constructor = contract.V3.spec.constructors.find((c) => ['new', 'default'].includes(c.label)).selector;
+  // const { hash } = contract.metadata.source;
+  return { default: { wasm, constructor } };
 }
 
 // artifacts: {FatBadges: {wasm, metadata, constructor}, ...}
@@ -14,6 +15,7 @@ export async function deployContracts(api, txqueue, pair, artifacts, clusterId) 
   console.log('Contracts: uploading');
   // upload contracts
   const contractNames = Object.keys(artifacts);
+
   const { events: deployEvents } = await txqueue.submit(
     api.tx.utility.batchAll(
       Object.entries(artifacts).flatMap(([_k, v]) => [

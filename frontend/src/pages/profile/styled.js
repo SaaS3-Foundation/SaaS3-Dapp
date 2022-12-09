@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const ProfileContentWrap = styled.div`
-  background: var(--color-bg-blacm-opacity);
+  background: var(--color-bg-black-opacity);
   border: 1px solid var(--color-border-white-opacity);
   backdrop-filter: blur(5px);
   border-radius: 20px;
