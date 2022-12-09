@@ -3,7 +3,7 @@ import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { ContractPromise } from '@polkadot/api-contract';
 import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
-import { loadArtifacts, deployContracts } from './common';
+import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_NEDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
 // import {} from '@polkadot/wasm-crypto';
 
@@ -30,7 +30,7 @@ export async function deploy(
   chainUrl = POLKADOT_NEDPOINT_DEFAULT,
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
-  const artifacts = loadArtifacts(contractContent);
+  const contractObj = loadContractFile(contractContent);
   const { signer } = account;
 
   // connect to the chain
@@ -70,7 +70,7 @@ export async function deploy(
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  await deployContracts(api, txqueue, signer, artifacts, clusterId);
+  await deployContracts(api, txqueue, signer, contractObj, clusterId);
 
   // create Fat Contract objects
   const contracts = {};

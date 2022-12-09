@@ -1,30 +1,35 @@
 import crypto from 'crypto-browserify';
 import { checkUntil, checkUntilEq, hex } from './utils';
 
-export function loadArtifacts(content) {
-  const contract = JSON.parse(content);
-  console.log(contract, 'contract');
-  const { wasm } = contract.source;
-  const constructor = contract.V3.spec.constructors.find((c) => ['new', 'default'].includes(c.label)).selector;
-  // const { hash } = contract.metadata.source;
-  return { default: { wasm, constructor } };
+export function loadContractFile(contractFile) {
+    const metadata = JSON.parse(contractFile);
+    const constructor = metadata.V3.spec.constructors.find(c => c.label == 'default').selector;
+    const name = metadata.contract.name;
+    const wasm = metadata.source.wasm;
+    return {default: { wasm, metadata, constructor, name }};
 }
 
 // artifacts: {FatBadges: {wasm, metadata, constructor}, ...}
-export async function deployContracts(api, txqueue, pair, artifacts, clusterId) {
-  console.log('Contracts: uploading');
-  // upload contracts
-  const contractNames = Object.keys(artifacts);
+export async function deployContracts(api, txqueue, pair, artifacts, clusterId, salt) {
+    salt = salt ? salt : hex(crypto.randomBytes(4)),
+  console.log('Contracts: uploading', contract.name);
 
+  const instantiateResult = api.createType('ContractInstantiateResult', queryResult.Ok.InkMessageReturn);
+  console.assert(instantiateResult.result.isOk);
+  console.log("gasRequired", instantiateResult.gasRequired);
+
+  // upload contracts
   const { events: deployEvents } = await txqueue.submit(
     api.tx.utility.batchAll(
       Object.entries(artifacts).flatMap(([_k, v]) => [
         api.tx.phalaFatContracts.clusterUploadResource(clusterId, 'InkCode', v.wasm),
         api.tx.phalaFatContracts.instantiateContract(
-          { WasmCode: v.hash },
+          { WasmCode: v.wasm},
           v.constructor,
-          hex(crypto.randomBytes(4).toString('hex')), // salt
+          salt,
           clusterId,
+          0,
+          "10000000000000", null
         ),
       ]),
     ),

@@ -88,7 +88,7 @@ function Deploy() {
             </DeployWrap>
 
             <Typography.Title heading={2}>
-              DEFINE DATA END POINTS
+              DEFINE DATA ENDPOINTS
             </Typography.Title>
 
             <DeployWrap>
