@@ -1,7 +1,7 @@
 import { Button, Image, Typography } from '@douyinfe/semi-ui';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import ChainIcon from '@/components/comm/chainIcon';
+import ChainIcon from '@/components/comm/ChainIcon';
 import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
 import { StyledMarketItem, StyledCancelButton } from '../styled';
 

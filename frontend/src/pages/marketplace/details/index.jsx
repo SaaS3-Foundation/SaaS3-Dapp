@@ -7,7 +7,7 @@ import { useState } from 'react';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
-import ChainIcon from '@/components/comm/chainIcon';
+import ChainIcon from '@/components/comm/ChainIcon';
 import { CHAINS_CHAINID } from '@/config/chain';
 
 const data1 = [

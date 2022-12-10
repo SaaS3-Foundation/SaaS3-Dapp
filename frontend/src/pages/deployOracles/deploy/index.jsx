@@ -301,7 +301,7 @@ function Deploy() {
             </DeployWrap>
 
             <Typography.Title heading={2}>
-              NETWORK
+              SOURCE NETWORK
             </Typography.Title>
             <DeployWrap onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
               <Form.Select
