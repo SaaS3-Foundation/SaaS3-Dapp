@@ -20,14 +20,13 @@ class TxQueue {
     }
   }
 
-  async submit(txBuilder, signer, waitForFinalization = false) {
-    const { address } = signer;
-    const nonce = await this.nextNonce(address);
-    this.nonceTracker[address] = nonce + 1;
+  async submit(txBuilder, account, waitForFinalization = false) {
+    const nonce = await this.nextNonce(account.address);
+    this.nonceTracker[account.address] = nonce + 1;
     let hash;
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      const unsub = await txBuilder.signAndSend(signer, { nonce }, (result) => {
+      const unsub = await txBuilder.signAndSend(account.address, {nonce, signer: account.signer}, (result) => {
         if (result.status.isInBlock) {
           for (const e of result.events) {
             const { event: { data, method, section } } = e;
@@ -113,14 +112,13 @@ async function blockBarrier(api, prpc, finalized = false, timeout = 4 * 6000) {
 }
 
 function hex(b) {
-  if (typeof b != "string") {
-      b = Buffer.from(b).toString('hex');
+  if (typeof b !== 'string') {
+    b = Buffer.from(b).toString('hex');
   }
   if (!b.startsWith('0x')) {
-      return '0x' + b;
-  } else {
-      return b;
+    return `0x${b}`;
   }
+  return b;
 }
 
 export {

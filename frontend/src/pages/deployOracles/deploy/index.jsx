@@ -1,25 +1,58 @@
 import {
-  Button, Form, Tabs, Typography,
+  Button, Collapsible, Form, Tabs, Typography,
 } from '@douyinfe/semi-ui';
 import { IconChevronUp, IconChevronDown } from '@douyinfe/semi-icons';
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import classNames from 'classnames';
 import axios from 'axios';
+import { JSONTree } from 'react-json-tree';
 import BaseLayout from '@/components/layout/BaseLayout';
-import { DeployWrap } from '../styled';
+import { DeployWrap, StyledJsonTreeWrap } from '../styled';
 import { deploy } from '@/contracts/deploy';
 import { readFileContent } from '@/utils/file';
 import { usePolkadotWallet } from '@/hooks/wallet';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
 import { REQUEST_METHODS } from '@/config/request';
-import { toggleCollapsible } from '@/utils/animation';
+import { findValueByKeyPath } from '@/utils/utils';
+
+const demoTree = {
+  code: 200,
+  data: {
+    chainId: true,
+    chainData: [
+      { chainId: 56, address: '0x0e4aa558665812143FFda0240447d0BE4a364f7A', name: 'Betting' },
+      { chainId: 1, address: '0x01e4a1A095b46C4131852567B61EDEc6805F0725', name: 'BallIdo' },
+      { chainId: 1, address: '', name: 'SportenPass' },
+      { chainId: 56, address: '0xDEaFeBF2159C70eB6EdC957327068d0dCf924138', name: 'BALL' },
+      { chainId: 56, address: '0x55d398326f99059fF775485246999027B3197955', name: 'USDT' },
+      { chainId: 56, address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', name: 'USDC' },
+      { chainId: 56, address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', name: 'DAI' },
+      { chainId: 56, address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', name: 'BUSD' },
+      { chainId: 1, address: '', name: 'WETH' },
+      { chainId: 1, address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', name: 'UniswapV2Router02' },
+      { chainId: 1, address: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', name: 'UniswapV2Factory' },
+      { chainId: 1, address: '', name: 'StakingRewardsFactory' }],
+  },
+  msg: '',
+};
 
 function Deploy() {
   const formRef = useRef();
-  const boxRef = useRef();
   const { account } = usePolkadotWallet();
-  const [isUnfolded, setIsUnfolded] = useState(false);
+  const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
+  const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
   const [visiblity, setVisiblity] = useState('public');
+  const [endpointPath, setEndpoint] = useState([]);
+
+  const endpointValue = useMemo(() => {
+    if (!endpointPath.length) {
+      return '--';
+    }
+    const value = findValueByKeyPath(demoTree, [...endpointPath].reverse());
+    if (value === undefined || value === null) return '';
+    return String(value);
+  }, [endpointPath, demoTree]);
+
   const [file, setFile] = useState();
   const onFileChange = (files) => {
     const [_file] = files;
@@ -59,6 +92,7 @@ function Deploy() {
   const onSubmit = (values) => {
     console.log(values);
   };
+
   return (
     <BaseLayout>
       <div className="container pt-5 pb-10">
@@ -109,14 +143,11 @@ function Deploy() {
                     API 1
                   </Typography.Title>
                   <IconChevronDown
-                    className="hover transition-transform"
+                    className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
                     style={{
-                      transform: `rotate(${isUnfolded ? '180deg' : '0deg'})`,
+                      transform: `rotate(${isParamsBoxOpen ? '180deg' : '0deg'})`,
                     }}
-                    onClick={() => {
-                      setIsUnfolded(!isUnfolded);
-                      toggleCollapsible(boxRef.current);
-                    }}
+                    onClick={() => setIsParamsBoxOpen(!isParamsBoxOpen)}
                   />
                 </div>
                 <div className="flex items-center mt-3">
@@ -125,7 +156,6 @@ function Deploy() {
                   </Form.Select>
                   <div className="ml-4 flex-1">
                     <Form.Input
-                      initValue="https://baidu.com"
                       field="url"
                       rules={[
                         { required: true, message: 'Required error' },
@@ -139,28 +169,27 @@ function Deploy() {
                   </div>
 
                 </div>
-                <div
-                  className="rounded-[20px] p-5 overflow-hidden"
-                  style={{
-                    transition: 'height 300ms',
-                  }}
-                  ref={boxRef}
+                <Collapsible
+                  isOpen={isParamsBoxOpen}
+                  keepDOM
                 >
-                  <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
-                    <Tabs.TabPane tab="Body" itemKey="Body">
-                      <UrlHeaderInputs field="body" />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="Auth" itemKey="Auth">
-                      <UrlHeaderInputs field="auth" />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="Params" itemKey="Params">
-                      <UrlHeaderInputs field="params" />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="Header" itemKey="Header">
-                      <UrlHeaderInputs field="header" />
-                    </Tabs.TabPane>
-                  </Tabs>
-                </div>
+                  <div className="rounded-[20px] p-5 overflow-hidden">
+                    <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
+                      <Tabs.TabPane tab="Body" itemKey="Body">
+                        <UrlHeaderInputs field="body" />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Auth" itemKey="Auth">
+                        <UrlHeaderInputs field="auth" />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Params" itemKey="Params">
+                        <UrlHeaderInputs field="params" />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Header" itemKey="Header">
+                        <UrlHeaderInputs field="header" />
+                      </Tabs.TabPane>
+                    </Tabs>
+                  </div>
+                </Collapsible>
               </DeployWrap>
               <div className="text-right mt-4">
                 <Button
@@ -185,15 +214,44 @@ function Deploy() {
                   API 1
                 </Typography.Title>
                 <div>
-                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT PATH:  details.winner</Typography.Text>
-                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT PATH:  details.winner</Typography.Text>
+                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
+                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
                 </div>
-                <IconChevronUp className="hover" />
+                <IconChevronUp
+                  className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
+                  style={{
+                    transform: `rotate(${isJSONBoxOpen ? '180deg' : '0deg'})`,
+                  }}
+                  onClick={() => setIsJSONBoxOpen(!isJSONBoxOpen)}
+                />
               </div>
 
-              <div className="mt-4 border rounded-[20px] p-5">
-                code....
-              </div>
+              <Collapsible isOpen={isJSONBoxOpen} keepDOM>
+                <StyledJsonTreeWrap>
+                  <JSONTree
+                    data={demoTree}
+                    hideRoot
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    labelRenderer={(keyPath, nodeType) => {
+                      const [key] = keyPath;
+                      return (
+                        <span
+                          className={classNames('cursor-pointer hover:underline', {
+                            underline: endpointPath.join('.') === keyPath.join('.'),
+                          })}
+                          onClick={() => {
+                            if (['Boolean', 'Number', 'String'].includes(nodeType)) {
+                              setEndpoint(keyPath);
+                            }
+                          }}
+                        >
+                          {key}
+                        </span>
+                      );
+                    }}
+                  />
+                </StyledJsonTreeWrap>
+              </Collapsible>
 
             </DeployWrap>
 
@@ -313,7 +371,8 @@ function Deploy() {
                 noLabel
                 placeholder="CREATOR’S NOTE"
               >
-                <Form.Select.Option value="ETHEREUM">ETHEREUM</Form.Select.Option>
+                <Form.Select.Option value="ETH">Ethereum</Form.Select.Option>
+                <Form.Select.Option value="BSC">Binance Smart Chain</Form.Select.Option>
               </Form.Select>
             </DeployWrap>
 

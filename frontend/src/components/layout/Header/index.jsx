@@ -9,7 +9,9 @@ import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
 import { usePolkadotWallet } from '@/hooks/wallet';
 
 function Header() {
-  const { account, wallet } = usePolkadotWallet();
+  const {
+    account, wallet, selectedTargetChain, setSelectedTargetChain,
+  } = usePolkadotWallet();
   const selectWalletModalRef = useRef();
   const location = useLocation();
   const navs = [{
@@ -55,13 +57,20 @@ function Header() {
               render={(
                 <Dropdown.Menu>
                   {
-                    POLKADOT_NETWORK_NODES.map((node) => <Dropdown.Item key={node.id}>{node.name}</Dropdown.Item>)
+                    POLKADOT_NETWORK_NODES.map((node) => (
+                      <Dropdown.Item
+                        key={node.id}
+                        onClick={() => setSelectedTargetChain(node)}
+                      >
+                        {node.name}
+                      </Dropdown.Item>
+                    ))
                   }
                 </Dropdown.Menu>
               )}
             >
               <StyledRoundButton>
-                <Typography.Text>NetWork</Typography.Text>
+                <Typography.Text>{selectedTargetChain.name}</Typography.Text>
                 <IconChevronDown className="align-middle ml-[10px] !text-[20px]" />
               </StyledRoundButton>
             </Dropdown>

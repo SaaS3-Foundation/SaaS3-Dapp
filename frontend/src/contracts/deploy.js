@@ -6,21 +6,11 @@ import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_NEDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
-// import {} from '@polkadot/wasm-crypto';
-
-// const keyring1 = new Keyring({ type: 'sr25519' });
-// console.log(keyring1.add);
-// // 0x180f0b2b8ba91b2a937ead4418f1fc810affc2ab82b23f36062b97dddf2da97e1e760b03a18eed8e3591d96ea7527c353380178fd90bdc8eeb36e503f67d4457
-// // gorilla edit accuse fat census rotate gym measure comic sentence wet permit
-// const pair = keyring1.addFromUri('entire material egg meadow latin bargain dutch coral blood melt acoustic thought');
-// console.log(pair);
-
-// deploy(
-//   '0x0000000000000000000000000000000000000000000000000000000000000000',
-// '//Alice',
-// 'wss://poc5.phala.network/ws',
-// 'https://poc5.phala.network/tee-api-1',
-// )
+import {
+  web3Accounts,
+  web3Enable,
+  web3FromSource,
+} from "@polkadot/extension-dapp";
 
 export async function deploy(
   // privkey,
@@ -32,9 +22,17 @@ export async function deploy(
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
   const contractObj = loadContractFile(contractContent);
-  const { signer } = account.signer;
-  console.log(`account`, account);
-  console.log('signer', signer);
+  console.log(account);
+
+  //const extensions = await web3Enable("local canvas");
+  //const allAccounts = await web3Accounts();
+  //const selectedAccount = allAccounts[0];
+  //// Create a signer 
+  //const signer = await web3FromSource(selectedAccount.meta.source).then(
+  //  (res) => res.signer
+  //);
+  //console.log(signer);
+
 
   // connect to the chain
   const wsProvider = new WsProvider(chainUrl);
@@ -42,13 +40,11 @@ export async function deploy(
     provider: wsProvider,
     types: {
       ...Phala.types,
-      GistQuote: {
-        username: 'String',
-        accountId: 'AccountId',
-      },
       ...typeDefinitions.contracts.types,
     },
+    signer: account.signer,
   });
+
   const txqueue = new TxQueue(api);
 
     // Prepare accounts
@@ -56,6 +52,7 @@ export async function deploy(
     const alice = keyring.addFromUri('//Alice')
     const treasury = keyring.addFromUri('//Treasury')
     const certAlice = await Phala.signCertificate({ api, pair: alice });
+    console.log(alice, certAlice);
 
   console.log('account.wallet.extension', account.wallet.extension);
   const cert = await Phala.signCertificate({
@@ -67,19 +64,22 @@ export async function deploy(
         source: 'polkadot-js',
       },
     },
-    signer,
+    signer: account.signer,
   });
-
+  console.log('after cert........', cert);
   // connect to pruntime
   const prpc = Phala.createPruntimeApi(pruntimeUrl);
   const connectedWorker = hex((await prpc.getInfo({})).publicKey);
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  await deployContracts(api, txqueue, signer, cert, contractObj, clusterId);
+  await deployContracts(api, txqueue, account, cert, contractObj, clusterId);
 
   // create Fat Contract objects
   const contracts = {};
+  // todo This line prevents errors.
+  const artifacts = {};
+
   for (const [name, contract] of Object.entries(artifacts)) {
     const contractId = contract.address;
     const newApi = await api.clone().isReady;
