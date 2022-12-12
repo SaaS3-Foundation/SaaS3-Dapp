@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
+import { typeDefinitions } from '@polkadot/types';
 import { ContractPromise } from '@polkadot/api-contract';
 import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
@@ -31,7 +32,9 @@ export async function deploy(
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
   const contractObj = loadContractFile(contractContent);
-  const { signer } = account;
+  const { signer } = account.signer;
+  console.log(`account`, account);
+  console.log('signer', signer);
 
   // connect to the chain
   const wsProvider = new WsProvider(chainUrl);
@@ -43,14 +46,17 @@ export async function deploy(
         username: 'String',
         accountId: 'AccountId',
       },
+      ...typeDefinitions.contracts.types,
     },
   });
   const txqueue = new TxQueue(api);
 
-  // prepare accounts
-  // const keyring = new Keyring({ type: 'sr25519' });
-  // const pair = keyring.addFromUri('privkey');
-  // console.log('Using account', pair.address);
+    // Prepare accounts
+    const keyring = new Keyring({ type: 'sr25519' })
+    const alice = keyring.addFromUri('//Alice')
+    const treasury = keyring.addFromUri('//Treasury')
+    const certAlice = await Phala.signCertificate({ api, pair: alice });
+
   console.log('account.wallet.extension', account.wallet.extension);
   const cert = await Phala.signCertificate({
     api,
@@ -70,7 +76,7 @@ export async function deploy(
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  await deployContracts(api, txqueue, signer, contractObj, clusterId);
+  await deployContracts(api, txqueue, signer, cert, contractObj, clusterId);
 
   // create Fat Contract objects
   const contracts = {};
