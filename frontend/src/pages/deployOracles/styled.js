@@ -58,3 +58,15 @@ export const DeployWrap = styled.div`
     background-color: rgb(255 255 255 / 10%);
   }
 `;
+
+export const StyledJsonTreeWrap = styled.div`
+/* mt-4 border rounded-[20px] p-5 */
+  margin-top: 16px;
+  border: 1px solid var(--color-border-white-opacity);
+  border-radius: 20px;
+  padding: 20px;
+  background-color: rgba(0,0,0);
+  >ul{
+    background-color: transparent !important;
+  }
+`;

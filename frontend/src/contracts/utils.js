@@ -113,14 +113,13 @@ async function blockBarrier(api, prpc, finalized = false, timeout = 4 * 6000) {
 }
 
 function hex(b) {
-  if (typeof b != "string") {
-      b = Buffer.from(b).toString('hex');
+  if (typeof b !== 'string') {
+    b = Buffer.from(b).toString('hex');
   }
   if (!b.startsWith('0x')) {
-      return '0x' + b;
-  } else {
-      return b;
+    return `0x${b}`;
   }
+  return b;
 }
 
 export {

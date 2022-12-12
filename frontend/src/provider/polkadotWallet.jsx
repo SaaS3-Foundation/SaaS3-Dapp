@@ -2,27 +2,31 @@ import {
   useEffect, useState, useMemo, createContext,
 } from 'react';
 import { getWallets } from '@talismn/connect-wallets';
-import { ApiPromise, Keyring, WsProvider } from '@polkadot/api';
-import { POLKADOT_NEDPOINT_DEFAULT } from '@/config/nerwork';
+import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
 
 const polkadotWalletContext = createContext({
   wallet: null,
   account: null,
+  selectedTargetChain: null,
   setWallet: () => {},
   setAccount: () => {},
+  setSelectedTargetChain: () => {},
 });
 
 function PolkadotWalletProvider(props) {
   const { children } = props;
   const [wallet, setWallet] = useState(null);
   const [account, setAccount] = useState(null);
+  const [selectedTargetChain, setSelectedTargetChain] = useState(POLKADOT_NETWORK_NODES[0]);
 
   const value = useMemo(() => ({
     wallet,
     account,
+    selectedTargetChain,
     setWallet,
     setAccount,
-  }), [wallet, account, setAccount, setWallet]);
+    setSelectedTargetChain,
+  }), [wallet, account, selectedTargetChain]);
 
   useEffect(() => {
     const setActive = async () => {

@@ -5,21 +5,6 @@ import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_NEDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
-// import {} from '@polkadot/wasm-crypto';
-
-// const keyring1 = new Keyring({ type: 'sr25519' });
-// console.log(keyring1.add);
-// // 0x180f0b2b8ba91b2a937ead4418f1fc810affc2ab82b23f36062b97dddf2da97e1e760b03a18eed8e3591d96ea7527c353380178fd90bdc8eeb36e503f67d4457
-// // gorilla edit accuse fat census rotate gym measure comic sentence wet permit
-// const pair = keyring1.addFromUri('entire material egg meadow latin bargain dutch coral blood melt acoustic thought');
-// console.log(pair);
-
-// deploy(
-//   '0x0000000000000000000000000000000000000000000000000000000000000000',
-// '//Alice',
-// 'wss://poc5.phala.network/ws',
-// 'https://poc5.phala.network/tee-api-1',
-// )
 
 export async function deploy(
   // privkey,
@@ -31,7 +16,8 @@ export async function deploy(
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
   const contractObj = loadContractFile(contractContent);
-  const { signer } = account;
+  const { signer, address } = account;
+  signer.address = address;
 
   // connect to the chain
   const wsProvider = new WsProvider(chainUrl);
@@ -63,7 +49,7 @@ export async function deploy(
     },
     signer,
   });
-
+  console.log('after cert........', cert);
   // connect to pruntime
   const prpc = Phala.createPruntimeApi(pruntimeUrl);
   const connectedWorker = hex((await prpc.getInfo({})).publicKey);
@@ -71,9 +57,12 @@ export async function deploy(
 
   // contracts
   await deployContracts(api, txqueue, signer, contractObj, clusterId);
-
+  console.log('after deployContracts....');
   // create Fat Contract objects
   const contracts = {};
+  // todo This line prevents errors.
+  const artifacts = {};
+
   for (const [name, contract] of Object.entries(artifacts)) {
     const contractId = contract.address;
     const newApi = await api.clone().isReady;
