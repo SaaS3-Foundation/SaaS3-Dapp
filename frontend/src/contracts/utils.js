@@ -26,7 +26,8 @@ class TxQueue {
     let hash;
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      const unsub = await txBuilder.signAndSend(account.address, {nonce, signer: account.signer}, (result) => {
+      const unsub = await txBuilder.signAndSend(account.address, { nonce, signer: account.signer }, (result) => {
+        console.log(result);
         if (result.status.isInBlock) {
           for (const e of result.events) {
             const { event: { data, method, section } } = e;

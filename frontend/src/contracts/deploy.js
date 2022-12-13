@@ -5,12 +5,7 @@ import { ContractPromise } from '@polkadot/api-contract';
 import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
-import { POLKADOT_NEDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
-import {
-  web3Accounts,
-  web3Enable,
-  web3FromSource,
-} from "@polkadot/extension-dapp";
+import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
 
 export async function deploy(
   // privkey,
@@ -18,21 +13,11 @@ export async function deploy(
   contractContent,
   config,
   clusterId = '0x0000000000000000000000000000000000000000000000000000000000000000',
-  chainUrl = POLKADOT_NEDPOINT_DEFAULT,
+  chainUrl = POLKADOT_ENDPOINT_DEFAULT,
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
-  const contractObj = loadContractFile(contractContent);
+  const artifacts = loadContractFile(contractContent);
   console.log(account);
-
-  //const extensions = await web3Enable("local canvas");
-  //const allAccounts = await web3Accounts();
-  //const selectedAccount = allAccounts[0];
-  //// Create a signer 
-  //const signer = await web3FromSource(selectedAccount.meta.source).then(
-  //  (res) => res.signer
-  //);
-  //console.log(signer);
-
 
   // connect to the chain
   const wsProvider = new WsProvider(chainUrl);
@@ -47,12 +32,12 @@ export async function deploy(
 
   const txqueue = new TxQueue(api);
 
-    // Prepare accounts
-    const keyring = new Keyring({ type: 'sr25519' })
-    const alice = keyring.addFromUri('//Alice')
-    const treasury = keyring.addFromUri('//Treasury')
-    const certAlice = await Phala.signCertificate({ api, pair: alice });
-    console.log(alice, certAlice);
+  // Prepare accounts
+  const keyring = new Keyring({ type: 'sr25519' });
+  const alice = keyring.addFromUri('//Alice');
+  const treasury = keyring.addFromUri('//Treasury');
+  const certAlice = await Phala.signCertificate({ api, pair: alice });
+  console.log(alice, certAlice);
 
   console.log('account.wallet.extension', account.wallet.extension);
   const cert = await Phala.signCertificate({
@@ -73,12 +58,13 @@ export async function deploy(
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  await deployContracts(api, txqueue, account, cert, contractObj, clusterId);
+  const address = await deployContracts(api, txqueue, account, cert, artifacts, clusterId);
+  artifacts.druntime.address = address;
+  console.log(address);
 
   // create Fat Contract objects
   const contracts = {};
   // todo This line prevents errors.
-  const artifacts = {};
 
   for (const [name, contract] of Object.entries(artifacts)) {
     const contractId = contract.address;
@@ -90,7 +76,7 @@ export async function deploy(
     );
   }
   console.log('Fat Contract: connected', contracts);
-  const { druntime } = contracts.default;
+  const { druntime } = contracts.druntime;
 
   // set up the contracts
   await txqueue.submit(
@@ -107,7 +93,7 @@ export async function deploy(
         config.api_key,
       ),
     ]),
-    signer,
+    account.signer,
     true,
   );
 

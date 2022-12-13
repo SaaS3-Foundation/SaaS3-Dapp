@@ -39,6 +39,6 @@ export const POLKADOT_NETWORK_NODES = [
     }),
 ].filter((node) => node !== false);
 
-export const POLKADOT_NEDPOINT_DEFAULT = 'wss://poc5.phala.network/ws';
+export const POLKADOT_ENDPOINT_DEFAULT = 'wss://poc5.phala.network/ws';
 
 export const POLKADOT_PRUNTIME_URL_DEFAULT = 'https://poc5.phala.network/tee-api-1';
