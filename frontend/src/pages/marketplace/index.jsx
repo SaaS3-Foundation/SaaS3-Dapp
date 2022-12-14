@@ -2,7 +2,7 @@ import {
   Button, Col, Image, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ReactComponent as BlockViewSvg } from '@/assets/imgs/svg/Icon/block-view.svg';
@@ -103,6 +103,20 @@ function Marketplace() {
     },
   ];
 
+  useEffect(() => {
+    const onresize = () => {
+      if (document.body.clientWidth <= 768) {
+        if (!isGridView) {
+          setIsGridView(true);
+        }
+      }
+    };
+    window.addEventListener('resize', onresize);
+    return () => {
+      window.removeEventListener('resize', onresize);
+    };
+  }, [isGridView]);
+
   return (
     <BaseLayout contentClassName="bg-dark-1">
       <div className="container pb-20">
@@ -113,7 +127,7 @@ function Marketplace() {
               <IconSearch className="ml-4" />
             </StyledSearchWrap>
             <div
-              className="rounded-[20px] bg-black/30 cursor-pointer ml-2.5 px-3.5 flex items-center border border-white/10 hover:border-primary-2"
+              className="rounded-[20px] bg-black/30 cursor-pointer ml-2.5 px-3.5 flex items-center border border-white/10 hover:border-primary-2 xmd:!hidden"
               onClick={() => setIsGridView(!isGridView)}
             >
               {

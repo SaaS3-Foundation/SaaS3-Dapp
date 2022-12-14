@@ -1,11 +1,10 @@
 import {
   Button, Collapsible, Form, Tabs, Typography,
 } from '@douyinfe/semi-ui';
-import { IconChevronUp, IconChevronDown } from '@douyinfe/semi-icons';
+import { IconChevronDown } from '@douyinfe/semi-icons';
 import { useState, useRef, useMemo } from 'react';
 import classNames from 'classnames';
 import axios from 'axios';
-import { JSONTree } from 'react-json-tree';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap, StyledJsonTreeWrap } from '../styled';
 import { deploy } from '@/contracts/deploy';
@@ -13,7 +12,8 @@ import { readFileContent } from '@/utils/file';
 import { usePolkadotWallet } from '@/hooks/wallet';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
 import { REQUEST_METHODS } from '@/config/request';
-import { findValueByKeyPath } from '@/utils/utils';
+import JsonTree from '@/components/comm/JsonTree';
+import LeadJsonSelect from '../components/LeadJsonSelect';
 
 const demoTree = {
   code: 200,
@@ -42,16 +42,17 @@ function Deploy() {
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
   const [visiblity, setVisiblity] = useState('public');
-  const [endpointPath, setEndpoint] = useState([]);
+  const [endpointPath, setEndpointPath] = useState([]);
+  const [endpointValue, setEndpointValue] = useState('--');
 
-  const endpointValue = useMemo(() => {
-    if (!endpointPath.length) {
-      return '--';
-    }
-    const value = findValueByKeyPath(demoTree, [...endpointPath].reverse());
-    if (value === undefined || value === null) return '';
-    return String(value);
-  }, [endpointPath, demoTree]);
+  // const endpointValue = useMemo(() => {
+  //   if (!endpointPath.length) {
+  //     return '--';
+  //   }
+  //   const value = findValueByKeyPath(demoTree, [...endpointPath].reverse());
+  //   if (value === undefined || value === null) return '';
+  //   return String(value);
+  // }, [endpointPath, demoTree]);
 
   const [file, setFile] = useState();
   const onFileChange = (files) => {
@@ -210,14 +211,14 @@ function Deploy() {
             <DeployWrap>
 
               <div className="header">
-                <Typography.Title heading={4}>
+                <Typography.Title heading={4} className="flex-shrink-0">
                   API 1
                 </Typography.Title>
-                <div>
-                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
-                  <Typography.Text className="border round py-2 px-3 ml-2 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
+                <div className="flex flex-wrap gap-2 ml-2">
+                  <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
+                  <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
                 </div>
-                <IconChevronUp
+                <IconChevronDown
                   className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
                   style={{
                     transform: `rotate(${isJSONBoxOpen ? '180deg' : '0deg'})`,
@@ -228,30 +229,18 @@ function Deploy() {
 
               <Collapsible isOpen={isJSONBoxOpen} keepDOM>
                 <StyledJsonTreeWrap>
-                  <JSONTree
+                  <JsonTree
                     data={demoTree}
-                    hideRoot
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    labelRenderer={(keyPath, nodeType) => {
-                      const [key] = keyPath;
-                      return (
-                        <span
-                          className={classNames('cursor-pointer hover:underline', {
-                            underline: endpointPath.join('.') === keyPath.join('.'),
-                          })}
-                          onClick={() => {
-                            if (['Boolean', 'Number', 'String'].includes(nodeType)) {
-                              setEndpoint(keyPath);
-                            }
-                          }}
-                        >
-                          {key}
-                        </span>
-                      );
+                    selectKeyPath={endpointPath}
+                    onClickValue={(keyPath, valueAsString) => {
+                      setEndpointPath(keyPath);
+                      setEndpointValue(valueAsString);
                     }}
                   />
                 </StyledJsonTreeWrap>
               </Collapsible>
+
+              <LeadJsonSelect />
 
             </DeployWrap>
 

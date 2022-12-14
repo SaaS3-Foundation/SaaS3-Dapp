@@ -4,8 +4,9 @@ import postcssImport from 'postcss-import';
 import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import inject from '@rollup/plugin-inject';
-import svgr from 'vite-plugin-svgr';
+// import svgr from 'vite-plugin-svgr';
 import path from 'path';
+import viteSvgComponentPlugin from './plugins/vite-svg-component/index';
 
 const r = (p) => path.resolve(__dirname, p);
 
@@ -26,8 +27,10 @@ export default defineConfig({
     },
   },
   plugins: [
-    svgr(),
     react(),
+    viteSvgComponentPlugin({
+      include: 'src/assets/imgs/**/*.svg*',
+    }),
   ],
   build: {
     sourcemap: false,

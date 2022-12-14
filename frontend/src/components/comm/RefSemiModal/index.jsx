@@ -10,7 +10,7 @@ function RefSemiModal(props, ref) {
     open: () => setVisibleSelf(true),
     close: () => setVisibleSelf(false),
     visible: visibleSelf,
-  }));
+  }), [visibleSelf, setVisibleSelf]);
 
   useEffect(() => {
     setVisibleSelf(Boolean(props.visible));

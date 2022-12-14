@@ -29,6 +29,9 @@ module.exports = {
         wrap: '1280px',
       },
       screens: {
+        xlg: { max: '992px' },
+        xmd: { max: '768px' },
+        nmd: { min: '769px' },
         // md: { max: '1023px' },
       },
     },

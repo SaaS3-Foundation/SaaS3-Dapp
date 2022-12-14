@@ -3,11 +3,14 @@ import {
   useState,
   useContext,
   useEffect,
+  useRef,
+  useImperativeHandle,
 } from 'react';
-import RefSemiModal from '../RefSemiModal';
+import { IconClose } from '@douyinfe/semi-icons';
 import SelectWallet from './selectWallet';
 import SelectAccount from './selectAccount';
 import { polkadotWalletContext } from '@/provider/polkadotWallet';
+import AdaptStyleModal from '../AdaptStyleModal';
 
 function SelectWalletModal(props, ref) {
   const { setWallet, setAccount, wallet } = useContext(polkadotWalletContext);
@@ -18,9 +21,9 @@ function SelectWalletModal(props, ref) {
   }, [wallet]);
 
   return (
-    <RefSemiModal
-      ref={ref}
+    <AdaptStyleModal
       {...props}
+      ref={ref}
       style={{
         '--semi-color-fill-0': 'rgba(0,0,0, 0.1)',
         '--semi-color-bg-2': 'white',
@@ -52,8 +55,9 @@ function SelectWalletModal(props, ref) {
             />
           ) : <SelectWallet onSelect={setActiveWallet} />
         }
+
       </div>
-    </RefSemiModal>
+    </AdaptStyleModal>
   );
 }
 
