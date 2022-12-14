@@ -29,18 +29,6 @@ export const WALLET_INFORMATION_COLUMNS = [
       );
     },
   },
-  {
-    title: (
-      <Button
-        theme="borderless"
-        className="w-[100px] !text-white !border !border-white rounded-full"
-        size="large"
-        type="primary"
-      > Add Wallet
-      </Button>
-    ),
-    dataIndex: 'options',
-  },
 ];
 
 export const STAKE_INFORMATION_COLUMNS = [
@@ -78,17 +66,6 @@ export const STAKE_INFORMATION_COLUMNS = [
   }, {
     title: 'REWARD',
     dataIndex: 'reward',
-  }, {
-    title: '',
-    render: () => (
-      <Button
-        theme="borderless"
-        className="w-[100px] !text-white !border !border-white rounded-full"
-        size="large"
-      >
-        Operate
-      </Button>
-    ),
   },
 ];
 
@@ -127,16 +104,26 @@ export const DEPLOYED_INFORMATION_COLUMNS = [
   }, {
     title: 'FEE PER CALL',
     dataIndex: 'fee_per_call',
-  }, {
-    title: '',
-    render: () => (
-      <Button
-        theme="borderless"
-        className="w-[100px] !text-white !border !border-white rounded-full"
-        size="large"
-      >
-        Operate
-      </Button>
-    ),
   },
 ];
+
+export function CustomButton(props) {
+  const {
+    theme,
+    className,
+    size,
+    content,
+    onClick,
+  } = props;
+
+  return (
+    <Button
+      theme={theme}
+      className={className}
+      size={size}
+      onClick={onClick}
+    >
+      {content}
+    </Button>
+  );
+}
