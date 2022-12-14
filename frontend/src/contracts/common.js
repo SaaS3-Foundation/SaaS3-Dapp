@@ -42,6 +42,21 @@ export async function deployContracts(api, txqueue, account, cert, artifacts, cl
     null,
   ), account);
 
+
+  deployEvents.forEach((record) => {
+    // Extract the phase, event and the event types
+    const { event, phase } = record;
+    const types = event.typeDef;
+
+    // Show what we are busy with
+    console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
+
+    // Loop through each of the parameters, displaying the type and data
+    event.data.forEach((data, index) => {
+      console.log(`\t\t\t${types[index].type}: ${data.toString()}`);
+    });
+  });
+
   const contractIds = deployEvents
     .filter((ev) => ev.event.section === 'phalaFatContracts' && ev.event.method === 'Instantiating')
     .map((ev) => ev.event.data[0].toString());
@@ -50,6 +65,14 @@ export async function deployContracts(api, txqueue, account, cert, artifacts, cl
   const numContracts = 1;
   console.assert(contractIds.length === numContracts, 'Incorrect length:', `${contractIds.length} vs ${numContracts}`);
   druntime.address = contractIds[0];
+
+  await checkUntilEq(
+    async () => (await api.query.phalaFatContracts.clusterContracts(clusterId))
+        .filter(c => contractIds.includes(c.toString()))
+        .length,
+    numContracts,
+    60 * 1000
+);
 
   console.log('Contracts: deployed');
   return druntime.address;

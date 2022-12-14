@@ -6,6 +6,7 @@ import * as Phala from '@phala/sdk';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 
 export async function deploy(
   // privkey,
@@ -58,7 +59,8 @@ export async function deploy(
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  const address = await deployContracts(api, txqueue, account, cert, artifacts, clusterId);
+  //  const address = await deployContracts(api, txqueue, account, cert, artifacts, clusterId);
+  const address = '0xcb22a0c52a35981f73e16930b90709ce76441b9b310599258c500856c832aed0';
   artifacts.druntime.address = address;
   console.log(address);
 
@@ -68,31 +70,34 @@ export async function deploy(
 
   for (const [name, contract] of Object.entries(artifacts)) {
     const contractId = contract.address;
+    console.log(api);
     const newApi = await api.clone().isReady;
+    console.log(newApi);
+    let t = await Phala.create({ api: newApi, baseURL: pruntimeUrl, contractId, autoDeposit: true });
+    console.log(t);
+    console.log(name);
     contracts[name] = new ContractPromise(
-      await Phala.create({ api: newApi, baseURL: pruntimeUrl, contractId }),
+      t.api,
       contract.metadata,
       contractId,
     );
   }
   console.log('Fat Contract: connected', contracts);
-  const { druntime } = contracts.druntime;
+  const { druntime } = contracts;
 
   // set up the contracts
   await txqueue.submit(
-    api.tx.utility.batchAll([
-      // target_chain_rpc: Option<String>,
-      // anchor_contract_addr: Option<H160>,
-      // web2_api_url_prefix: Option<String>,
-      // api_key: Option<String>,
-      druntime.tx.config(
-        {},
-        config.target_chain_rpc, // saas3 protocol rpc
-        config.anchor_contract_addr,
-        config.web2_api_url_prefix,
-        config.api_key,
-      ),
-    ]),
+    // target_chain_rpc: Option<String>,
+    // anchor_contract_addr: Option<H160>,
+    // web2_api_url_prefix: Option<String>,
+    // api_key: Option<String>,
+    druntime.api.tx.config(
+      {},
+      config.target_chain_rpc, // saas3 protocol rpc
+      config.anchor_contract_addr,
+      config.web2_api_url_prefix,
+      config.api_key,
+    ),
     account.signer,
     true,
   );
