@@ -4,7 +4,6 @@ import {
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { useState, useRef } from 'react';
 import classNames from 'classnames';
-import axios from 'axios';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap, StyledJsonTreeWrap } from '../styled';
 import { deploy } from '@/contracts/deploy';
@@ -16,27 +15,6 @@ import JsonTree from '@/components/comm/JsonTree';
 import LeadJsonSelect from '../components/LeadJsonSelect';
 import { testrun } from '@/api/deploy';
 import { checkHttpUrl } from '@/utils/check';
-
-const demoTree = {
-  code: 200,
-  data: {
-    chainId: true,
-    chainData: [
-      { chainId: 56, address: '0x0e4aa558665812143FFda0240447d0BE4a364f7A', name: 'Betting' },
-      { chainId: 1, address: '0x01e4a1A095b46C4131852567B61EDEc6805F0725', name: 'BallIdo' },
-      { chainId: 1, address: '', name: 'SportenPass' },
-      { chainId: 56, address: '0xDEaFeBF2159C70eB6EdC957327068d0dCf924138', name: 'BALL' },
-      { chainId: 56, address: '0x55d398326f99059fF775485246999027B3197955', name: 'USDT' },
-      { chainId: 56, address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', name: 'USDC' },
-      { chainId: 56, address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', name: 'DAI' },
-      { chainId: 56, address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', name: 'BUSD' },
-      { chainId: 1, address: '', name: 'WETH' },
-      { chainId: 1, address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', name: 'UniswapV2Router02' },
-      { chainId: 1, address: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f', name: 'UniswapV2Factory' },
-      { chainId: 1, address: '', name: 'StakingRewardsFactory' }],
-  },
-  msg: '',
-};
 
 function Deploy() {
   const formRef = useRef();
@@ -88,11 +66,17 @@ function Deploy() {
           method: method.toUpperCase(),
           headers: headers.reduce((ret, curr) => {
             const { key = '', value = '' } = curr || {};
+            if (!key && !value) {
+              return ret;
+            }
             ret[key] = value;
             return ret;
           }, {}),
           body: body.reduce((ret, curr) => {
             const { key = '', value = '' } = curr || {};
+            if (!key && !value) {
+              return ret;
+            }
             ret[key] = value;
             return ret;
           }, {}),
