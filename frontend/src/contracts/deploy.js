@@ -3,10 +3,10 @@ import { ApiPromise, WsProvider, Keyring } from '@polkadot/api';
 import { typeDefinitions } from '@polkadot/types';
 import { ContractPromise } from '@polkadot/api-contract';
 import * as Phala from '@phala/sdk';
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
-import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 
 export async function deploy(
   // privkey,
@@ -73,7 +73,9 @@ export async function deploy(
     console.log(api);
     const newApi = await api.clone().isReady;
     console.log(newApi);
-    let t = await Phala.create({ api: newApi, baseURL: pruntimeUrl, contractId, autoDeposit: true });
+    const t = await Phala.create({
+      api: newApi, baseURL: pruntimeUrl, contractId, autoDeposit: true,
+    });
     console.log(t);
     console.log(name);
     contracts[name] = new ContractPromise(

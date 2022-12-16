@@ -1,5 +1,7 @@
 import crypto from 'crypto-browserify';
-import { checkUntil, checkUntilEq, hex } from './utils';
+import {
+  checkUntil, checkUntilEq, hex, sleep,
+} from './utils';
 
 export function loadContractFile(contractFile) {
   const metadata = JSON.parse(contractFile);
@@ -16,7 +18,7 @@ export function loadContractFile(contractFile) {
 
 // artifacts: {FatBadges: {wasm, metadata, constructor}, ...}
 export async function deployContracts(api, txqueue, account, cert, artifacts, clusterId, salt) {
-  salt = salt || hex(crypto.randomBytes(4)),
+  salt = salt || hex(crypto.randomBytes(4));
   console.log('Contracts: uploading', artifacts.druntime.name);
 
   const { druntime } = artifacts;
@@ -28,7 +30,7 @@ export async function deployContracts(api, txqueue, account, cert, artifacts, cl
 
   // Not sure how much time it would take to sync the code into pruntime
   console.log('Waiting the code to be synced into pruntime to estmate the instantiation');
-  await new Promise((r) => setTimeout(r, 10000));
+  await sleep(10000);
   console.log(`Contracts: ${druntime.name} uploaded`);
 
   console.log('Contracts: instantiating', druntime.name);
@@ -41,7 +43,6 @@ export async function deployContracts(api, txqueue, account, cert, artifacts, cl
     '10000000000000',
     null,
   ), account);
-
 
   deployEvents.forEach((record) => {
     // Extract the phase, event and the event types
@@ -64,15 +65,16 @@ export async function deployContracts(api, txqueue, account, cert, artifacts, cl
 
   const numContracts = 1;
   console.assert(contractIds.length === numContracts, 'Incorrect length:', `${contractIds.length} vs ${numContracts}`);
+  // eslint-disable-next-line prefer-destructuring
   druntime.address = contractIds[0];
 
   await checkUntilEq(
     async () => (await api.query.phalaFatContracts.clusterContracts(clusterId))
-        .filter(c => contractIds.includes(c.toString()))
-        .length,
+      .filter((c) => contractIds.includes(c.toString()))
+      .length,
     numContracts,
-    60 * 1000
-);
+    60 * 1000,
+  );
 
   console.log('Contracts: deployed');
   return druntime.address;

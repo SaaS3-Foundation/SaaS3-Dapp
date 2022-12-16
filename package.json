@@ -5,7 +5,7 @@
   "author": "Jupiteriana <xiong0201y@163.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint . --ext .less,.js,.ts,.jsx,.tsx --fix frontend/src/",
+    "lint": "eslint . --ext .js,.ts,.jsx,.tsx --fix frontend/src/",
     "style:lint": "stylelint \"frontend/src/**/*.{css,less}\" --fix --custom-syntax postcss-less ",
     "lint:staged": "lint-staged"
   },
