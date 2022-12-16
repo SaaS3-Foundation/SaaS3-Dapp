@@ -8,67 +8,72 @@ export function loadContractFile(contractFile) {
   const { wasm } = metadata.source;
   const { hash } = metadata.source;
   return {
-    default: {
+    druntime: {
       hash, wasm, metadata, constructor, name,
     },
   };
 }
 
 // artifacts: {FatBadges: {wasm, metadata, constructor}, ...}
-export async function deployContracts(api, txqueue, pair, artifacts, clusterId, salt) {
-  salt = salt || hex(crypto.randomBytes(4));
+export async function deployContracts(api, txqueue, account, cert, artifacts, clusterId, salt) {
+  salt = salt || hex(crypto.randomBytes(4)),
+  console.log('Contracts: uploading', artifacts.druntime.name);
 
-  console.log('Contracts: uploading', api, txqueue, pair, artifacts, clusterId, salt);
-  const arg1 = Object.entries(artifacts).flatMap(([_k, v]) => [
-    api.tx.phalaFatContracts.clusterUploadResource(clusterId, 'InkCode', v.wasm),
-    api.tx.phalaFatContracts.instantiateContract(
-      { WasmCode: v.hash },
-      v.constructor,
-      salt,
-      clusterId,
-      0,
-      '10000000000000',
-      null,
-    ),
-  ]);
-  console.log('arg1', arg1);
-  const promiseBatchAll = api.tx.utility.batchAll(arg1);
-  console.log('promiseBatchAll', promiseBatchAll);
-
-  // upload contracts
-  // todo Error reported here with signer
-  const { events: deployEvents } = await txqueue.submit(
-    // api.tx.utility.batchAll(arg1),
-    promiseBatchAll,
-    pair,
+  const { druntime } = artifacts;
+  // upload the contract
+  await txqueue.submit(
+    api.tx.phalaFatContracts.clusterUploadResource(clusterId, 'InkCode', druntime.wasm),
+    account,
   );
-  console.log('after submit....');
+
+  // Not sure how much time it would take to sync the code into pruntime
+  console.log('Waiting the code to be synced into pruntime to estmate the instantiation');
+  await new Promise((r) => setTimeout(r, 10000));
+  console.log(`Contracts: ${druntime.name} uploaded`);
+
+  console.log('Contracts: instantiating', druntime.name);
+  const { events: deployEvents } = await txqueue.submit(api.tx.phalaFatContracts.instantiateContract(
+    { WasmCode: druntime.hash },
+    druntime.constructor,
+    salt,
+    clusterId,
+    0,
+    '10000000000000',
+    null,
+  ), account);
+
+
+  deployEvents.forEach((record) => {
+    // Extract the phase, event and the event types
+    const { event, phase } = record;
+    const types = event.typeDef;
+
+    // Show what we are busy with
+    console.log(`\t${event.section}:${event.method}:: (phase=${phase.toString()})`);
+
+    // Loop through each of the parameters, displaying the type and data
+    event.data.forEach((data, index) => {
+      console.log(`\t\t\t${types[index].type}: ${data.toString()}`);
+    });
+  });
+
   const contractIds = deployEvents
     .filter((ev) => ev.event.section === 'phalaFatContracts' && ev.event.method === 'Instantiating')
     .map((ev) => ev.event.data[0].toString());
+  console.log(contractIds);
 
-  // todo This line prevents errors.
-  const contractNames = [];
-  const numContracts = contractNames.length;
+  const numContracts = 1;
   console.assert(contractIds.length === numContracts, 'Incorrect length:', `${contractIds.length} vs ${numContracts}`);
-  for (const [i, id] of contractIds.entries()) {
-    artifacts[contractNames[i]].address = id;
-  }
+  druntime.address = contractIds[0];
+
   await checkUntilEq(
     async () => (await api.query.phalaFatContracts.clusterContracts(clusterId))
-      .filter((c) => contractIds.includes(c.toString()))
-      .length,
+        .filter(c => contractIds.includes(c.toString()))
+        .length,
     numContracts,
-    4 * 6000,
-  );
-  console.log('Contracts: uploaded');
-  for (const [name, contract] of Object.entries(artifacts)) {
-    // eslint-disable-next-line no-await-in-loop
-    await checkUntil(
-      async () => (await api.query.phalaRegistry.contractKeys(contract.address)).isSome,
-      4 * 6000,
-    );
-    console.log('Contracts:', contract.address, name, 'key ready');
-  }
+    60 * 1000
+);
+
   console.log('Contracts: deployed');
+  return druntime.address;
 }
