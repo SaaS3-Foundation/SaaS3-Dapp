@@ -24,7 +24,6 @@ const Wrap = styled.div`
       transition: all .3s;
       transition-timing-function: cubic-bezier(.55, 0, .85, .36);
       &.move1{
-        /* transform: matrix(); */
         transform: translate3d(100px,100px, 0);
       }
     }

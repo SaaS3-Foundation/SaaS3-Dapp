@@ -2,7 +2,7 @@ import {
   Button, Collapsible, Form, Tabs, Typography,
 } from '@douyinfe/semi-ui';
 import { IconChevronDown } from '@douyinfe/semi-icons';
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef } from 'react';
 import classNames from 'classnames';
 import axios from 'axios';
 import BaseLayout from '@/components/layout/BaseLayout';
@@ -14,6 +14,8 @@ import UrlHeaderInputs from '../components/UrlHeaderInputs';
 import { REQUEST_METHODS } from '@/config/request';
 import JsonTree from '@/components/comm/JsonTree';
 import LeadJsonSelect from '../components/LeadJsonSelect';
+import { testrun } from '@/api/deploy';
+import { checkHttpUrl } from '@/utils/check';
 
 const demoTree = {
   code: 200,
@@ -41,18 +43,10 @@ function Deploy() {
   const { account } = usePolkadotWallet();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
+  const [testData, setTestData] = useState();
   const [visiblity, setVisiblity] = useState('public');
   const [endpointPath, setEndpointPath] = useState([]);
   const [endpointValue, setEndpointValue] = useState('--');
-
-  // const endpointValue = useMemo(() => {
-  //   if (!endpointPath.length) {
-  //     return '--';
-  //   }
-  //   const value = findValueByKeyPath(demoTree, [...endpointPath].reverse());
-  //   if (value === undefined || value === null) return '';
-  //   return String(value);
-  // }, [endpointPath, demoTree]);
 
   const [file, setFile] = useState();
   const onFileChange = (files) => {
@@ -83,15 +77,68 @@ function Deploy() {
     );
   };
   const onTestRun = async () => {
-    const { url, method } = formRef.current.formApi.getValues();
-    const apiResult = await axios({
-      url,
-      method,
-    });
-    console.log(apiResult);
+    try {
+      const {
+        url = '', method = '', body, headers,
+      } = formRef.current.formApi.getValues();
+      // const _ = new URL(url);
+      if (checkHttpUrl(url)) {
+        const testResult = await testrun({
+          uri: url,
+          method: method.toUpperCase(),
+          headers: headers.reduce((ret, curr) => {
+            const { key = '', value = '' } = curr || {};
+            ret[key] = value;
+            return ret;
+          }, {}),
+          body: body.reduce((ret, curr) => {
+            const { key = '', value = '' } = curr || {};
+            ret[key] = value;
+            return ret;
+          }, {}),
+        });
+        if (testResult.code === 200) {
+          setTestData(testResult.data);
+        }
+      }
+    } catch (error) {
+
+    }
   };
+
   const onSubmit = (values) => {
     console.log(values);
+  };
+
+  const onChangeUrl = (href = '') => {
+    try {
+      const paramArr = href.slice(href.indexOf('?') + 1).split('&').map((str = '') => {
+        const [key, ...value] = str.split('=');
+        return { key, value: value.join('=') };
+      });
+      paramArr.push({});
+      formRef.current.formApi.setValue('params', paramArr);
+    } catch (error) {
+
+    }
+  };
+
+  const onChangeParams = () => {
+    setTimeout(() => {
+      const url = formRef.current.formApi.getValue('url') || '';
+      const origin = url.slice(0, url.indexOf('?'));
+      let res = '?';
+      const _params = [...(formRef.current.formApi.getValues()?.params || [])];
+      for (const param of _params) {
+        const { key = '', value = '' } = param || {};
+        if (!key && !value) {
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        res += `${key}=${value}&`;
+      }
+      formRef.current.formApi.setValue('url', origin + res);
+    });
   };
 
   return (
@@ -165,6 +212,7 @@ function Deploy() {
                       noLabel
                       size="large"
                       placeholder="https://********"
+                      onChange={onChangeUrl}
                       showClear
                     />
                   </div>
@@ -183,10 +231,10 @@ function Deploy() {
                         <UrlHeaderInputs field="auth" />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Params" itemKey="Params">
-                        <UrlHeaderInputs field="params" />
+                        <UrlHeaderInputs field="params" onChangeKey={onChangeParams} onChangeValue={onChangeParams} />
                       </Tabs.TabPane>
-                      <Tabs.TabPane tab="Header" itemKey="Header">
-                        <UrlHeaderInputs field="header" />
+                      <Tabs.TabPane tab="Headers" itemKey="Headers">
+                        <UrlHeaderInputs field="headers" />
                       </Tabs.TabPane>
                     </Tabs>
                   </div>
@@ -204,45 +252,50 @@ function Deploy() {
               </div>
             </div>
 
-            <Typography.Title heading={2}>
-              DEFINE DATA ENDPOINTS
-            </Typography.Title>
+            {
+              testData && (
+                <>
+                  <Typography.Title heading={2}>
+                    DEFINE DATA ENDPOINTS
+                  </Typography.Title>
 
-            <DeployWrap>
+                  <DeployWrap>
 
-              <div className="header">
-                <Typography.Title heading={4} className="flex-shrink-0">
-                  API 1
-                </Typography.Title>
-                <div className="flex flex-wrap gap-2 ml-2">
-                  <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
-                  <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
-                </div>
-                <IconChevronDown
-                  className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
-                  style={{
-                    transform: `rotate(${isJSONBoxOpen ? '180deg' : '0deg'})`,
-                  }}
-                  onClick={() => setIsJSONBoxOpen(!isJSONBoxOpen)}
-                />
-              </div>
+                    <div className="header">
+                      <Typography.Title heading={4} className="flex-shrink-0">
+                        API 1
+                      </Typography.Title>
+                      <div className="flex flex-wrap gap-2 ml-2">
+                        <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
+                        <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
+                      </div>
+                      <IconChevronDown
+                        className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
+                        style={{
+                          transform: `rotate(${isJSONBoxOpen ? '180deg' : '0deg'})`,
+                        }}
+                        onClick={() => setIsJSONBoxOpen(!isJSONBoxOpen)}
+                      />
+                    </div>
 
-              <Collapsible isOpen={isJSONBoxOpen} keepDOM>
-                <StyledJsonTreeWrap>
-                  <JsonTree
-                    data={demoTree}
-                    selectKeyPath={endpointPath}
-                    onClickValue={(keyPath, valueAsString) => {
-                      setEndpointPath(keyPath);
-                      setEndpointValue(valueAsString);
-                    }}
-                  />
-                </StyledJsonTreeWrap>
-              </Collapsible>
+                    <Collapsible isOpen={isJSONBoxOpen} keepDOM>
+                      <StyledJsonTreeWrap>
+                        <JsonTree
+                          data={testData}
+                          selectKeyPath={endpointPath}
+                          onClickValue={(keyPath, valueAsString) => {
+                            setEndpointPath(keyPath);
+                            setEndpointValue(valueAsString);
+                          }}
+                        />
+                      </StyledJsonTreeWrap>
+                    </Collapsible>
+                    <LeadJsonSelect />
+                  </DeployWrap>
 
-              <LeadJsonSelect />
-
-            </DeployWrap>
+                </>
+              )
+            }
 
             <Typography.Title heading={2}>
               VISIBILITY

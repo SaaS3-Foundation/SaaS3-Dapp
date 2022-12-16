@@ -3,6 +3,7 @@ import {
 } from 'react';
 import { getWallets } from '@talismn/connect-wallets';
 import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
+import { sleep } from '@/contracts/utils';
 
 const polkadotWalletContext = createContext({
   wallet: null,
@@ -33,6 +34,7 @@ function PolkadotWalletProvider(props) {
       let activeWallet = localStorage.getItem('activeWallet');
       let activeAccount = localStorage.getItem('activeAccount');
       if (activeWallet) {
+        await sleep(500);
         const wallets = await getWallets();
         activeWallet = wallets.find(({ extensionName }) => extensionName === activeWallet);
         await activeWallet.enable('SaaS3 Dapp');
