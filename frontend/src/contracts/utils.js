@@ -20,14 +20,14 @@ class TxQueue {
     }
   }
 
-  async submit(txBuilder, account, waitForFinalization = false) {
-    const { address, signer } = account;
+  async submit(txBuilder, signer, waitForFinalization = false) {
+    const address = signer.address;
     const nonce = await this.nextNonce(address);
     this.nonceTracker[address] = nonce + 1;
     let hash;
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      const unsub = await txBuilder.signAndSend(address, { nonce, signer }, (result) => {
+      const unsub = await txBuilder.signAndSend(signer, { nonce }, (result) => {
         console.log(result);
         if (result.status.isInBlock) {
           for (const e of result.events) {

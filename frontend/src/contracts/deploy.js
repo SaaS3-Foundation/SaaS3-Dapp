@@ -8,17 +8,23 @@ import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
 import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
 
+
 export async function deploy(
-  // privkey,
-  account,
+  sponsorMnemonic,
   contractContent,
   config,
   clusterId = '0x0000000000000000000000000000000000000000000000000000000000000000',
   chainUrl = POLKADOT_ENDPOINT_DEFAULT,
   pruntimeUrl = POLKADOT_PRUNTIME_URL_DEFAULT,
 ) {
+  // Create a keyring instance
+  const keyring = new Keyring({ type: 'sr25519' });
+
+  // Prepare accounts
+  const sponsor = keyring.addFromUri(sponsorMnemonic);
+  console.log(sponsor);
+
   const artifacts = loadContractFile(contractContent);
-  console.log(account);
 
   // connect to the chain
   const wsProvider = new WsProvider(chainUrl);
@@ -28,39 +34,19 @@ export async function deploy(
       ...Phala.types,
       ...typeDefinitions.contracts.types,
     },
-    signer: account.signer,
+    signer: sponsor,
   });
 
   const txqueue = new TxQueue(api);
 
-  // Prepare accounts
-  const keyring = new Keyring({ type: 'sr25519' });
-  const alice = keyring.addFromUri('//Alice');
-  const treasury = keyring.addFromUri('//Treasury');
-  const certAlice = await Phala.signCertificate({ api, pair: alice });
-  console.log(alice, certAlice);
-
-  console.log('account.wallet.extension', account.wallet.extension);
-  const cert = await Phala.signCertificate({
-    api,
-    account: {
-      ...account.wallet.extension,
-      address: account.address,
-      meta: {
-        source: 'polkadot-js',
-      },
-    },
-    signer: account.signer,
-  });
-  console.log('after cert........', cert);
   // connect to pruntime
   const prpc = Phala.createPruntimeApi(pruntimeUrl);
   const connectedWorker = hex((await prpc.getInfo({})).publicKey);
   console.log('Connected worker:', connectedWorker);
 
   // contracts
-  //  const address = await deployContracts(api, txqueue, account, cert, artifacts, clusterId);
-  const address = '0xcb22a0c52a35981f73e16930b90709ce76441b9b310599258c500856c832aed0';
+  const address = await deployContracts(api, txqueue, sponsor, null, artifacts, clusterId);
+  //const address = '0xcb22a0c52a35981f73e16930b90709ce76441b9b310599258c500856c832aed0';
   artifacts.druntime.address = address;
   console.log(address);
 

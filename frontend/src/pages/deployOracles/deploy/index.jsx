@@ -18,7 +18,7 @@ import { checkHttpUrl } from '@/utils/check';
 
 function Deploy() {
   const formRef = useRef();
-  const { account } = usePolkadotWallet();
+  // const { account } = usePolkadotWallet();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
   const [testData, setTestData] = useState();
@@ -42,14 +42,15 @@ function Deploy() {
     const content = (await readFileContent(file))?.target?.result;
     const config = {
       target_chain_rpc: '', // saas3 protocol rpc
-      anchor_contract_addr: account.address,
+      anchor_contract_addr: '',
       web2_api_url_prefix: '',
       api_key: '',
     };
     console.log(content, config);
+    const sponsorMnemonic = import.meta.env.VITE_APP_SPONSOR_MNEMONIC;
     await deploy(
+      sponsorMnemonic,
       // '0x180f0b2b8ba91b2a937ead4418f1fc810affc2ab82b23f36062b97dddf2da97e1e760b03a18eed8e3591d96ea7527c353380178fd90bdc8eeb36e503f67d4457',
-      account,
       content,
       config,
     );
