@@ -21,7 +21,7 @@ function Deploy() {
   // const { account } = usePolkadotWallet();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
-  const [testData, setTestData] = useState();
+  const [testData, setTestData] = useState({});
   const [visiblity, setVisiblity] = useState('public');
   const [endpointPath, setEndpointPath] = useState([]);
   const [endpointValue, setEndpointValue] = useState('--');

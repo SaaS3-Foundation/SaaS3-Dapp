@@ -20,26 +20,26 @@ function SelectPanels() {
       <div className="container mt-5">
         <Row type="flex" gutter={[10, 10]}>
           <Col lg={12} span={24}>
-            <StyledPanel onClick={() => toDelopyPage('datafeed')}>
+            <StyledPanel onClick={() => toDelopyPage('Data-Price')}>
               <Image preview={false} width="100" src={dataFree} alt="" />
               <Typography.Text>Data or Price Feed</Typography.Text>
             </StyledPanel>
           </Col>
           <Col lg={12} span={24}>
-            <StyledPanel>
+            <StyledPanel onClick={() => toDelopyPage('Decentralized-Computation')}>
               <Image preview={false} width="100" src={dcmg} />
               <Typography.Text>Decentralized Computation<br />for Metaverse & Games</Typography.Text>
             </StyledPanel>
           </Col>
           <Col lg={12} span={24}>
-            <StyledPanel>
+            <StyledPanel onClick={() => toDelopyPage('Relayer')}>
               <Image preview={false} width="100" src={crossChain} alt="" />
               <Typography.Text>Cross-chain Relayer</Typography.Text>
             </StyledPanel>
           </Col>
           <Col lg={12} span={24}>
 
-            <StyledPanel>
+            <StyledPanel onClick={() => toDelopyPage('Web2-Integration')}>
               <Image preview={false} width="100" src={apis} alt="" />
               <Typography.Text>Function Emitter Web2 Integration. <br />Call Web2 APIS based on Web3 activity.</Typography.Text>
             </StyledPanel>
