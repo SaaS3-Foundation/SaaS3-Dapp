@@ -2,7 +2,7 @@ import {
   Button, Input, Modal, Typography,
 } from '@douyinfe/semi-ui';
 import { IconPlus } from '@douyinfe/semi-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BaseLayout from '@/components/layout/BaseLayout';
 import {
   ConfirmButton, DeclineButton, ProfileContentWrap, ProfileShadowBox,
@@ -16,6 +16,38 @@ import sightIcon from '../../assets/imgs/svg/sight.svg';
 import disSightIcon from '../../assets/imgs/svg/disSight.svg';
 import addIcon from '../../assets/imgs/svg/addIcon.svg';
 import editIcon from '../../assets/imgs/svg/editIcon.svg';
+import pasteIcon from '../../assets/imgs/svg/pasteIcon.svg';
+
+function ProfileTable({
+  data, title, attri, operation, isPaste,
+}) {
+  return (
+    <div>
+      {data.map((item, index) => (
+        <ProfileContentWrap className="!pt-5" key={index}>
+          <div className="flex justify-between">
+            <Typography.Title heading={5}>{title} {index + 1}</Typography.Title>
+            {operation}
+          </div>
+          <div>
+            {Object.getOwnPropertyNames(item).map((attr, _index) => {
+              console.log(attr, index);
+              return (
+                <div className="mt-4 text-sm flex justify-between" key={_index}>
+                  <div>{attr}</div>
+                  <div className="inline-flex">
+                    <div>{item[attr].length > 15 ? item[attr].slice(0, 7).concat('...').concat(item[attr].slice(-8, -1)) : item[attr]}</div>
+                    &nbsp;{isPaste && <img src={pasteIcon} alt="" />}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </ProfileContentWrap>
+      ))}
+    </div>
+  );
+}
 
 function Profile() {
   const [FreePerCall, setFreePerCall] = useState('3 SAAS');
@@ -98,11 +130,81 @@ function Profile() {
 
   return (
     <BaseLayout>
-      <div className="container px-[106px] py-[64px]">
+      <div className="container nmd:px-[106px] nmd:py-[64px] xmd:pt-[2rem]">
         <Typography.Title heading={2}>USER INFORMATION</Typography.Title>
 
-        <ProfileContentWrap className="!rounded-tl-[60px]">
-          <div className="flex">
+        <ProfileContentWrap className="nmd:!rounded-tl-[60px] xmd:!rounded-[2rem]">
+          <div className="nmd:hidden">
+            <div className="flex justify-between">
+              <div className="avatar-wrap flex-shrink-0 flex items-center">
+                <img src={DefaultAvatar} className="h-[3rem] object-cover" alt="avatar" />
+              </div>
+              <Typography.Text className="mr-[3rem] block text-[1rem] font-bold self-center">FIFA Whale</Typography.Text>
+              <Button
+                theme="borderless"
+                className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center"
+                size="large"
+                type="primary"
+                onClick={() => {
+                  setEdit(!editStatus);
+                }}
+              >
+                {editStatus ? 'Edit' : 'Save'}
+              </Button>
+            </div>
+            <Typography.Paragraph className="mt-3 text-[.7rem]">
+              Hello guys! I am FIFA Whale, I have been producing oracles from 6 months now.
+              I am a good oracle developer and am awesome too.
+              If you have any questions please feel free to message me on twitter. Please use my oracles.
+            </Typography.Paragraph>
+            <Typography.Paragraph className="pr-20 mt-3 inline-block justify-between">
+              <div className="flex">
+                <div className="w-max" onClick={() => { IconHandleClick(visibleIcon1, setVisible1); }}>
+                  <img src={visibleIcon1} alt="sightIcon" />
+                </div>
+                <div className="flex flex-col ml-1 w-max">
+                  <div>E-Mail</div>
+                  {editStatus
+                    ? <div>{visibleIcon1 === sightIcon ? Email : '******'}</div>
+                    : <Input value={Email} onChange={(value, e) => { setEmail(e.target.value); }} placeholder="" size="small" />}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-max" onClick={() => { IconHandleClick(visibleIcon2, setVisible2); }}>
+                  <img src={visibleIcon2} alt="sightIcon" />
+                </div>
+                <div className="flex flex-col ml-1 w-max">
+                  <div>Twitter</div>
+                  {editStatus
+                    ? <div>{visibleIcon2 === sightIcon ? Twitter : '******'}</div>
+                    : <Input value={Twitter} onChange={(value, e) => { setTwitter(e.target.value); }} placeholder="" size="small" />}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-max" onClick={() => { IconHandleClick(visibleIcon3, setVisible3); }}>
+                  <img src={visibleIcon3} alt="disSightIcon" />
+                </div>
+                <div className="flex flex-col ml-1 w-max">
+                  <div>Github</div>
+                  {editStatus
+                    ? <div>{visibleIcon3 === sightIcon ? Github : '******'}</div>
+                    : <Input value={Github} onChange={(value, e) => { setGithub(e.target.value); }} placeholder="" size="small" />}
+                </div>
+              </div>
+              <div className="flex">
+                <div className="w-max" onClick={() => { IconHandleClick(visibleIcon4, setVisible4); }}>
+                  <img src={visibleIcon4} alt="disSightIcon" />
+                </div>
+                <div className="flex flex-col ml-1 w-max">
+                  <div>Telegram</div>
+                  {editStatus
+                    ? <div>{visibleIcon4 === sightIcon ? Telegram : '******'}</div>
+                    : <Input value={Telegram} onChange={(value, e) => { setTelegram(e.target.value); }} placeholder="" size="small" />}
+                </div>
+              </div>
+            </Typography.Paragraph>
+          </div>
+          <div className="xmd:hidden flex">
             <div className="avatar-wrap w-[100px] flex-shrink-0 flex items-center">
               <img src={DefaultAvatar} className="h-[100px] w-full object-cover" alt="avatar" />
             </div>
@@ -113,7 +215,7 @@ function Profile() {
                 I am a good oracle developer and am awesome too.
                 If you have any questions please feel free to message me on twitter. Please use my oracles.
               </Typography.Paragraph>
-              <Typography.Paragraph className="pr-20 mt-3 flex inline-block justify-between">
+              <Typography.Paragraph className="pr-20 mt-3 inline-block justify-between">
                 <div className="flex">
                   <div className="w-max" onClick={() => { IconHandleClick(visibleIcon1, setVisible1); }}>
                     <img src={visibleIcon1} alt="sightIcon" />
@@ -175,8 +277,57 @@ function Profile() {
             </div>
           </div>
         </ProfileContentWrap>
+        <ProfileShadowBox className="nmd:hidden w-[100vw] relative right-[20px] py-[1.5rem] px-[1.5rem] rounded-t-[2rem]">
+          <div className="flex justify-between">
+            <Typography.Title heading={4} className="">WALLET INFORMATION</Typography.Title>
+            <Button
+              theme="borderless"
+              className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center"
+              size="large"
+              type="primary"
+              onClick={() => {
+              }}
+            >
+              Add
+            </Button>
+          </div>
+          <ProfileTable data={walletData} title="Wallet" attri={['Address', 'Chain']} />
 
-        <ProfileShadowBox className="py-[22px] px-[25px] rounded-[30px]">
+          <Typography.Title heading={4}>STAKE INFORMATION</Typography.Title>
+          <ProfileTable
+            data={stakeData}
+            attri={Object.getOwnPropertyNames(stakeData[0])}
+            isPaste={false}
+            operation={(
+              <Button
+                theme="borderless"
+                className="w-max h-[2rem] !text-white !border !border-white rounded-full"
+                size="large"
+                onClick={() => { setStakeModal(true); }}
+              >
+                Operate
+              </Button>
+            )}
+          />
+
+          <Typography.Title heading={4}>DEPLOYED ORACLES</Typography.Title>
+          <ProfileTable
+            data={deployedData}
+            attri={Object.getOwnPropertyNames(deployedData[0])}
+            isPaste={false}
+            operation={(
+              <Button
+                theme="borderless"
+                className="w-max h-[2rem] !text-white !border !border-white rounded-full"
+                size="large"
+                onClick={() => { setNoteModal(true); }}
+              >
+                Operate
+              </Button>
+            )}
+          />
+        </ProfileShadowBox>
+        <ProfileShadowBox className="xmd:hidden py-[22px] px-[25px] rounded-[30px]">
           <Typography.Title heading={2}>WALLET INFORMATION</Typography.Title>
           <ProfileContentWrap className="!pt-0">
             <StyledSemiTable

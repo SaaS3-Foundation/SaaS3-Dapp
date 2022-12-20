@@ -25,7 +25,7 @@ function BaseLayout(props) {
       <Layout.Header>
         <Header />
       </Layout.Header>
-      <Layout.Content className={classNames('bg-black/10 relative', contentClassName)}>
+      <Layout.Content className={classNames('bg-black/10 nmd:relative', contentClassName)}>
         {children}
       </Layout.Content>
       <StyledBgVideoWrap>
