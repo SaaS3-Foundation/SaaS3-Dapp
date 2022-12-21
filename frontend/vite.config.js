@@ -5,6 +5,8 @@ import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import inject from '@rollup/plugin-inject';
 // import svgr from 'vite-plugin-svgr';
+import compressPlugin from 'vite-plugin-compression';
+import legacyPlugin from '@vitejs/plugin-legacy';
 import path from 'path';
 import viteSvgComponentPlugin from './plugins/vite-svg-component/index';
 
@@ -31,6 +33,18 @@ export default defineConfig({
     viteSvgComponentPlugin({
       include: 'src/assets/imgs/**/*.svg*',
     }),
+    compressPlugin({
+      verbose: true,
+      disable: true,
+      deleteOriginFile: false,
+      threshold: 10240,
+      algorithm: 'gzip',
+      ext: '.gz',
+    }),
+    legacyPlugin({
+      targets: ['chrome 52'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    }),
   ],
   build: {
     sourcemap: false,
@@ -40,9 +54,20 @@ export default defineConfig({
           { Buffer: ['buffer', 'Buffer'] },
         ),
       ],
+      output: {
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        chunkFileNames: 'assets/js/[name]-[hash].[ext]',
+        assetFileNames: 'assets/static/[name]-[hash].[ext]',
+      },
     },
     commonjsOptions: {
       transformMixedEsModules: true,
+    },
+    terserOptions: {
+      compress: {
+        drop_debugger: true,
+        drop_console: true,
+      },
     },
   },
   css: {
