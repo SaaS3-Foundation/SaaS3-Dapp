@@ -3,12 +3,14 @@ import {
 } from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/ChainIcon';
-import { CHAINS_CHAINID } from '@/config/chain';
+import { EVM_CHAINID } from '@/config/network';
+import { getDetail } from '@/api/marketplace';
 
 const data1 = [
   ['Jan', 2],
@@ -123,6 +125,25 @@ const option = (_data, _label, _axisLabel) => ({
 
 function MarketplaceDetails() {
   const [succ, setSucc] = useState(true);
+  const params = useParams();
+
+  const [detail, setDetail] = useState();
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const ret = await getDetail({ id: params.id });
+        if (ret.code === 200) {
+          setDetail(ret.data);
+        }
+      } catch (error) {
+
+      }
+    };
+    if (params.id) {
+      fetchDetail();
+    }
+  }, [params.id]);
 
   return (
     <BaseLayout>
@@ -243,7 +264,7 @@ function MarketplaceDetails() {
                   <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
                   <div className="flex ml-auto">
                     <ChainIcon className="mr-2" />
-                    <ChainIcon chainId={CHAINS_CHAINID.BSC} />
+                    <ChainIcon chainId={EVM_CHAINID.BSC} />
                   </div>
                 </div>
                 <StyledAddressItem>

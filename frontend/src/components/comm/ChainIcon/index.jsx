@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import styled from 'styled-components';
 // import { ReactComponent as BscIcon } from '@/assets/imgs/svg/Icon/BAN.svg';
 // import { ReactComponent as EthIcon } from '@/assets/imgs/svg/Icon/Ethereum.svg';
-import { CHAINS, CHAINS_CHAINID } from '@/config/chain';
+import { EVMNETWORKS, EVM_CHAINID } from '@/config/network';
 
 // const CHAIN_ICON = {
 //   bsc: BscIcon,
@@ -30,7 +30,7 @@ function ChainIcon(props) {
     chainId, iconClassName, fill = 'white', active,
   } = props;
 
-  const IconComponent = useMemo(() => CHAINS[chainId || CHAINS_CHAINID.ETH]?.SvgComponent, [chainId]);
+  const IconComponent = useMemo(() => EVMNETWORKS[chainId || EVM_CHAINID.ETH]?.SvgComponent, [chainId]);
   return (
     <StyledWrap className={classNames({ active }, props.className)}>
       <IconComponent fill={fill} className={iconClassName} />

@@ -1,36 +1,32 @@
 import {
-  Button, Collapsible, Form, Tabs, Typography,
+  Button, Collapsible, Form, Notification, Tabs, Typography,
 } from '@douyinfe/semi-ui';
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { useState, useRef } from 'react';
 import classNames from 'classnames';
+import { useNavigate } from 'react-router';
 import BaseLayout from '@/components/layout/BaseLayout';
-import { DeployWrap, StyledJsonTreeWrap } from '../styled';
-import { deploy } from '@/contracts/deploy';
-import { readFileContent } from '@/utils/file';
-import { usePolkadotWallet } from '@/hooks/wallet';
+import { DeployWrap } from '../styled';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
 import { REQUEST_METHODS } from '@/config/request';
-import JsonTree from '@/components/comm/JsonTree';
-import LeadJsonSelect from '../components/LeadJsonSelect';
-import { testrun } from '@/api/deploy';
+import { submitV2, testrun } from '@/api/deploy';
 import { checkHttpUrl } from '@/utils/check';
+import LoadingButton from '@/components/custom/LoadingButton';
+import ApiResultWrap from '../components/ApiResultWrap';
+import { usePolkadotWallet } from '@/hooks/wallet';
+import { EVMNETWORKS, POLKADOT_NETWORK_NODES } from '@/config/network';
+import { ArrayToObjectByKeyValue, typeTransferToSaaS3Type } from '@/utils/utils';
 
 function Deploy() {
+  const nav = useNavigate();
   const formRef = useRef();
-  // const { account } = usePolkadotWallet();
+  const apiResultRef = useRef();
+  const { selectedTargetChain } = usePolkadotWallet();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
-  const [isJSONBoxOpen, setIsJSONBoxOpen] = useState(false);
   const [testData, setTestData] = useState({});
+  const [fetching, setFetching] = useState(false);
   const [visiblity, setVisiblity] = useState('public');
-  const [endpointPath, setEndpointPath] = useState([]);
-  const [endpointValue, setEndpointValue] = useState('--');
-
-  const [file, setFile] = useState();
-  const onFileChange = (files) => {
-    const [_file] = files;
-    setFile(_file);
-  };
+  const [deploying, setDeploying] = useState(false);
 
   const onFileDrap = (event) => {
     event.preventDefault();
@@ -38,30 +34,16 @@ function Deploy() {
     formRef.current.formApi.setValue('createrAvatar', [_file]);
   };
 
-  const onDeploy = async () => {
-    const content = (await readFileContent(file))?.target?.result;
-    const config = {
-      target_chain_rpc: '', // saas3 protocol rpc
-      anchor_contract_addr: '',
-      web2_api_url_prefix: '',
-      api_key: '',
-    };
-    console.log(content, config);
-    const sponsorMnemonic = import.meta.env.VITE_APP_SPONSOR_MNEMONIC;
-    await deploy(
-      sponsorMnemonic,
-      // '0x180f0b2b8ba91b2a937ead4418f1fc810affc2ab82b23f36062b97dddf2da97e1e760b03a18eed8e3591d96ea7527c353380178fd90bdc8eeb36e503f67d4457',
-      content,
-      config,
-    );
-  };
   const onTestRun = async () => {
     try {
       const {
-        url = '', method = '', body, headers,
+        url = '', oracleInfo: { web2Info },
       } = formRef.current.formApi.getValues();
-      // const _ = new URL(url);
+      const {
+        method, headers, body,
+      } = web2Info;
       if (checkHttpUrl(url)) {
+        setFetching(true);
         const testResult = await testrun({
           uri: url,
           method: method.toUpperCase(),
@@ -82,27 +64,26 @@ function Deploy() {
             return ret;
           }, {}),
         });
-        if (testResult.code === 200) {
-          setTestData(testResult.data);
-        }
+        setTestData(testResult);
       }
     } catch (error) {
 
     }
-  };
-
-  const onSubmit = (values) => {
-    console.log(values);
+    setFetching(false);
   };
 
   const onChangeUrl = (href = '') => {
     try {
+      if (!href || !href.includes('?')) {
+        formRef.current.formApi.setValue('oracleInfo.web2Info.params', [{}]);
+        return;
+      }
       const paramArr = href.slice(href.indexOf('?') + 1).split('&').map((str = '') => {
         const [key, ...value] = str.split('=');
         return { key, value: value.join('=') };
       });
       paramArr.push({});
-      formRef.current.formApi.setValue('params', paramArr);
+      formRef.current.formApi.setValue('oracleInfo.web2Info.params', paramArr);
     } catch (error) {
 
     }
@@ -126,46 +107,89 @@ function Deploy() {
     });
   };
 
+  const onSubmit = async (values) => {
+    const {
+      evmChainId, oracleInfo, creatorInfo, logo,
+    } = values;
+    const { path: _path, value } = apiResultRef.current;
+    if (!_path?.length) {
+      Notification.error({
+        title: 'error',
+        content: 'Define data source and test run to be able to define end points.',
+      });
+      return;
+    }
+    const currEvmNetwork = EVMNETWORKS[evmChainId];
+    const _type = typeTransferToSaaS3Type(value);
+    const params = {
+      ...ArrayToObjectByKeyValue(oracleInfo.web2Info.params),
+      _type,
+      _path: _path.reverse().join('.'),
+    };
+    const body = ArrayToObjectByKeyValue(oracleInfo.web2Info.body);
+    const headers = ArrayToObjectByKeyValue(oracleInfo.web2Info.headers);
+    const sourceChain = {
+      type: 1,
+      name: selectedTargetChain.name,
+      wsProvider: selectedTargetChain.endpoint,
+    };
+
+    const targetChain = {
+      type: 0,
+      name: currEvmNetwork.chain.name,
+      httpProvider: currEvmNetwork.chain.rpcUrls.default,
+      id: evmChainId,
+    };
+    const data = {
+      oracleInfo: {
+        ...oracleInfo,
+        sourceChain,
+        targetChain,
+        web2Info: {
+          ...oracleInfo.web2Info,
+          params,
+          body,
+          headers,
+        },
+      },
+      createorInfo: {
+        ...creatorInfo,
+      },
+      visibility: visiblity === 'public' ? 0 : 1,
+      // logo_url: await fileToBase64(logo[0].fileInstance),
+    };
+    console.log(data, 'data');
+    try {
+      setDeploying(true);
+      const result = await submitV2(data);
+      if (result.code === 200) {
+        Notification.success({
+          title: 'Deployment',
+          content: 'Deployment successfully',
+        });
+        setTimeout(() => {
+          nav(-1);
+        }, 2000);
+        return;
+      }
+      Notification.error({
+        title: 'Deployment',
+        content: result?.msg || 'Deployment failed',
+      });
+    } catch (error) {
+      Notification.error({
+        title: 'Deployment',
+        content: error?.msg || 'Deployment failed',
+      });
+    }
+    setDeploying(false);
+  };
+
   return (
     <BaseLayout>
       <div className="container pt-5 pb-10">
         <Form ref={formRef} onSubmit={onSubmit}>
           <div className="max-w-wrap mx-auto">
-            <Typography.Title heading={2}>
-              CONTRACT INFORMATION
-            </Typography.Title>
-            <DeployWrap>
-              <Form.Upload
-                rules={[
-                  { required: true, message: 'Required error' },
-                ]}
-                field="contractFile"
-                noLabel
-                limit={1}
-                action=""
-                uploadTrigger="custom"
-                onFileChange={onFileChange}
-              >
-                <Button theme="borderless" style={{ marginRight: 8 }}>
-                  Choose contract file
-                </Button>
-              </Form.Upload>
-              <div className="mt-5">
-                <Typography.Title heading={5}>
-                  CLUSTER ID
-                </Typography.Title>
-
-                <Form.Input
-                  size="large"
-                  field="clusterId"
-                  noLabel
-                  placeholder="0x0000000000000000000000000000000000000000000000000000000000000000"
-                />
-              </div>
-              <Button onClick={onDeploy}> deploy test</Button>
-
-            </DeployWrap>
-
             <div className="mb-[52px]">
               <Typography.Title heading={2}>
                 DEFINE DATA SOURCE
@@ -184,7 +208,7 @@ function Deploy() {
                   />
                 </div>
                 <div className="flex items-center mt-3">
-                  <Form.Select field="method" noLabel className="round" size="large" initValue="GET">
+                  <Form.Select field="oracleInfo.web2Info.method" noLabel className="round" size="large" initValue="GET">
                     {REQUEST_METHODS.map((method) => <Form.Select.Option value={method} key={method}>{method}</Form.Select.Option>)}
                   </Form.Select>
                   <div className="ml-4 flex-1">
@@ -210,77 +234,31 @@ function Deploy() {
                   <div className="rounded-[20px] p-5 overflow-hidden">
                     <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
                       <Tabs.TabPane tab="Body" itemKey="Body">
-                        <UrlHeaderInputs field="body" />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="Auth" itemKey="Auth">
-                        <UrlHeaderInputs field="auth" />
+                        <UrlHeaderInputs field="oracleInfo.web2Info.body" />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Params" itemKey="Params">
-                        <UrlHeaderInputs field="params" onChangeKey={onChangeParams} onChangeValue={onChangeParams} />
+                        <UrlHeaderInputs field="oracleInfo.web2Info.params" onChangeKey={onChangeParams} onChangeValue={onChangeParams} />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Headers" itemKey="Headers">
-                        <UrlHeaderInputs field="headers" />
+                        <UrlHeaderInputs field="oracleInfo.web2Info.headers" />
                       </Tabs.TabPane>
                     </Tabs>
                   </div>
                 </Collapsible>
               </DeployWrap>
               <div className="text-right mt-4">
-                <Button
+                <LoadingButton
                   onClick={onTestRun}
                   theme="borderless"
                   className="rounded-full w-[160px] bg-primary-linear !text-white hover:opacity-80"
                   size="large"
                 >
                   Test Run
-                </Button>
+                </LoadingButton>
               </div>
             </div>
 
-            {
-              testData && (
-                <>
-                  <Typography.Title heading={2}>
-                    DEFINE DATA ENDPOINTS
-                  </Typography.Title>
-
-                  <DeployWrap>
-
-                    <div className="header">
-                      <Typography.Title heading={4} className="flex-shrink-0">
-                        API 1
-                      </Typography.Title>
-                      <div className="flex flex-wrap gap-2 ml-2">
-                        <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
-                        <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValue}</Typography.Text>
-                      </div>
-                      <IconChevronDown
-                        className="cursor-pointer transition-transform hover:bg-white/30 p-1 rounded-sm"
-                        style={{
-                          transform: `rotate(${isJSONBoxOpen ? '180deg' : '0deg'})`,
-                        }}
-                        onClick={() => setIsJSONBoxOpen(!isJSONBoxOpen)}
-                      />
-                    </div>
-
-                    <Collapsible isOpen={isJSONBoxOpen} keepDOM>
-                      <StyledJsonTreeWrap>
-                        <JsonTree
-                          data={testData}
-                          selectKeyPath={endpointPath}
-                          onClickValue={(keyPath, valueAsString) => {
-                            setEndpointPath(keyPath);
-                            setEndpointValue(valueAsString);
-                          }}
-                        />
-                      </StyledJsonTreeWrap>
-                    </Collapsible>
-                    <LeadJsonSelect />
-                  </DeployWrap>
-
-                </>
-              )
-            }
+            <ApiResultWrap ref={apiResultRef} fetching={fetching} testData={testData} />
 
             <Typography.Title heading={2}>
               VISIBILITY
@@ -313,7 +291,7 @@ function Deploy() {
               <div>
                 <Typography.Title heading={5}>ORACLE TITLE</Typography.Title>
                 <Form.Input
-                  field="oracleTitle"
+                  field="oracleInfo.title"
                   rules={[
                     { required: true, message: 'Required error' },
                   ]}
@@ -331,7 +309,7 @@ function Deploy() {
                   ]}
                   showClear
                   className="rounded-xl"
-                  field="oracleDescription"
+                  field="oracleInfo.description"
                   size="large"
                   noLabel
                   placeholder="ORACALE DESCRIPTION"
@@ -343,7 +321,7 @@ function Deploy() {
                   rules={[
                     { required: true, message: 'Required error' },
                   ]}
-                  field="api1Title"
+                  field="oracleInfo.web2Info.title"
                   size="large"
                   noLabel
                   placeholder="API 1 TITLE"
@@ -353,15 +331,19 @@ function Deploy() {
             </DeployWrap>
 
             <Typography.Title heading={2}>
-              CREATOR’S NOTE
+              UPLOAD IMAGE
             </Typography.Title>
             <DeployWrap className="text-center" onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
               <Form.Upload
                 className="justify-center"
-                field="createrAvatar"
+                field="logo"
                 noLabel
                 limit={1}
+                rules={[
+                  { required: true, message: 'Required error' },
+                ]}
                 action=""
+                accept="image/*"
                 uploadTrigger="custom"
                 listType="picture"
               >
@@ -378,7 +360,7 @@ function Deploy() {
                 rules={[
                   { required: true, message: 'Required error' },
                 ]}
-                field="createrNote"
+                field="creatorInfo.notes"
                 noLabel
                 placeholder="CREATOR’S NOTE"
                 showClear
@@ -390,21 +372,21 @@ function Deploy() {
             </Typography.Title>
             <DeployWrap onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
               <Form.Select
-                field="network"
-                className=" rounded-full"
+                field="evmChainId"
+                className="rounded-full"
                 size="large"
-                label="network"
-                initValue="ETHEREUM"
+                initValue={POLKADOT_NETWORK_NODES[0].id}
                 noLabel
                 placeholder="CREATOR’S NOTE"
               >
-                <Form.Select.Option value="ETH">Ethereum</Form.Select.Option>
-                <Form.Select.Option value="BSC">Binance Smart Chain</Form.Select.Option>
+                {
+                  POLKADOT_NETWORK_NODES.map((network) => <Form.Select.Option value={network.id}>{network.name}</Form.Select.Option>)
+                }
               </Form.Select>
             </DeployWrap>
 
             <div className="text-center">
-              <Button htmlType="submit" className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
+              <Button loading={deploying} htmlType="submit" className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
             </div>
           </div>
         </Form>

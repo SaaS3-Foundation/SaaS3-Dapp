@@ -1,6 +1,6 @@
 import { Button, Typography } from '@douyinfe/semi-ui';
 import { IconCopy } from '@douyinfe/semi-icons';
-import { CHAINS } from '@/config/chain';
+import { EVMNETWORKS } from '@/config/network';
 
 export const WALLET_INFORMATION_COLUMNS = [
   {
@@ -18,8 +18,8 @@ export const WALLET_INFORMATION_COLUMNS = [
     title: 'Chains',
     dataIndex: 'chains',
     render: () => {
-      const icons = Object.keys(CHAINS).map((key) => {
-        const Icon = CHAINS[key].SvgComponent;
+      const icons = Object.keys(EVMNETWORKS).map((key) => {
+        const Icon = EVMNETWORKS[key].SvgComponent;
         return <Icon fill="white" key={key} />;
       });
       return (
@@ -41,8 +41,8 @@ export const STAKE_INFORMATION_COLUMNS = [
   }, {
     title: 'CHAINS',
     render: () => {
-      const icons = Object.keys(CHAINS).map((key) => {
-        const Icon = CHAINS[key].SvgComponent;
+      const icons = Object.keys(EVMNETWORKS).map((key) => {
+        const Icon = EVMNETWORKS[key].SvgComponent;
         return <Icon fill="white" key={key} />;
       });
       return (
@@ -79,8 +79,8 @@ export const DEPLOYED_INFORMATION_COLUMNS = [
   }, {
     title: 'CHAINS',
     render: () => {
-      const icons = Object.keys(CHAINS).map((key) => {
-        const Icon = CHAINS[key].SvgComponent;
+      const icons = Object.keys(EVMNETWORKS).map((key) => {
+        const Icon = EVMNETWORKS[key].SvgComponent;
         return <Icon fill="white" key={key} />;
       });
       return (

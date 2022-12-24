@@ -1,20 +1,23 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { Link, useLocation } from 'react-router-dom';
-import { Dropdown, Image, Typography } from '@douyinfe/semi-ui';
+import { Dropdown, Typography } from '@douyinfe/semi-ui';
 import classNames from 'classnames';
-import { StyledNavLink, StyledRoundButton } from './styled';
-import SelectWalletModal from '@/components/comm/SelectWalletModal';
-import { formatAddress } from '@/utils/address';
-import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
+import { useAccount, useNetwork } from 'wagmi';
+import { useChainModal } from '@rainbow-me/rainbowkit';
+import { StyledNavLink } from './styled';
+import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { usePolkadotWallet } from '@/hooks/wallet';
-import { ReactComponent as WalletIcon } from '@/assets/imgs/svg/wallet.svg';
+import ConnectButton from '@/components/custom/ConnectButton';
+import { StyledRoundButton } from '@/components/styled/button';
 
 function Header() {
   const {
-    account, wallet, selectedTargetChain, setSelectedTargetChain,
+    selectedTargetChain, setSelectedTargetChain,
   } = usePolkadotWallet();
-  const selectWalletModalRef = useRef();
+  const { chain } = useNetwork();
+  console.log(chain);
+  const { openChainModal } = useChainModal();
   const location = useLocation();
   const navs = [{
     text: 'Marketplace',
@@ -28,85 +31,56 @@ function Header() {
   }];
 
   return (
-    <>
-      <header
-        className="bg-black/10 nmd:h-[100px] border-b border-white/[0.15] text-gray-300 xmd:py-4"
-        style={
-          { backdropFilter: 'blur(5px)' }
-        }
-      >
-        <div className="h-full flex items-center container mx-auto">
-          <div className="w-[150px] nmd:flex-shrink-0 mr-2 xmd:flex-1 xmd:max-w-[150px]">
-            <a href="https://saas3.io" className="w-full">
-              <img className="w-full" src="https://www.saas3.io/file/logo/logo-text-white.png" alt="saas-logo" />
-            </a>
-          </div>
-
-          <div className="ml-auto flex nmd:flex-wrap">
-            <ul className="flex-1 flex items-center text-white text-center xmd:hidden">
-              {useMemo(
-                () => navs.map((nav) => (
-                  <StyledNavLink key={nav.text} className={nav.href === location.pathname ? 'active' : ''}>
-                    <Link className="block w-full h-full" to={nav.href}>{nav.text}</Link>
-                  </StyledNavLink>
-                )),
-                [],
-              )}
-            </ul>
-
-            <Dropdown
-              position="bottom"
-              render={(
-                <Dropdown.Menu>
-                  {
-                    POLKADOT_NETWORK_NODES.map((node) => (
-                      <Dropdown.Item
-                        key={node.id}
-                        onClick={() => setSelectedTargetChain(node)}
-                      >
-                        {node.name}
-                      </Dropdown.Item>
-                    ))
-                  }
-                </Dropdown.Menu>
-              )}
-            >
-              <StyledRoundButton className="whitespace-nowrap">
-                <Typography.Text>{selectedTargetChain.name}</Typography.Text>
-                <IconChevronDown className="align-middle ml-[10px] !text-[20px]" />
-              </StyledRoundButton>
-            </Dropdown>
-
-            <StyledRoundButton className="ml-3 inline-flex items-center xmd:hidden" onClick={() => selectWalletModalRef.current.open()}>
-              {
-                account?.address && <Image className="mr-2" width={20} height={20} {...wallet.logo} preview={false} />
-              }
-              <Typography.Text>{account?.address ? formatAddress(account?.address) : 'Connect Wallet'}</Typography.Text>
-            </StyledRoundButton>
-
-            <StyledRoundButton className="ml-3 inline-flex items-center nmd:hidden " onClick={() => selectWalletModalRef.current.open()}>
-              <WalletIcon fill="white" />
-            </StyledRoundButton>
-          </div>
+    <header
+      className="bg-black/10 nmd:h-[100px] border-b border-white/[0.15] text-gray-300 xmd:py-4"
+      style={
+        { backdropFilter: 'blur(5px)' }
+      }
+    >
+      <div className="h-full flex items-center container mx-auto">
+        <div className="w-[150px] nmd:flex-shrink-0 mr-2 xmd:flex-1 xmd:max-w-[150px]">
+          <a href="https://saas3.io" className="w-full">
+            <img className="w-full" src="https://www.saas3.io/file/logo/logo-text-white.png" alt="saas-logo" />
+          </a>
         </div>
-        <ul className="flex justify-center pt-2 nmd:hidden items-center text-white text-center">
-          {useMemo(
-            () => navs.map((nav) => (
-              <StyledNavLink
-                key={nav.text}
-                className={classNames('!w-auto flex-1', {
-                  active: nav.href === location.pathname,
-                })}
-              >
-                <Link className="block w-full h-full" to={nav.href}>{nav.text}</Link>
-              </StyledNavLink>
-            )),
-            [],
+
+        <div className="ml-auto flex nmd:flex-wrap">
+          <ul className="flex-1 flex items-center text-white text-center xmd:hidden">
+            {useMemo(
+              () => navs.map((nav) => (
+                <StyledNavLink key={nav.text} className={nav.href === location.pathname ? 'active' : ''}>
+                  <Link className="block w-full h-full" to={nav.href}>{nav.text}</Link>
+                </StyledNavLink>
+              )),
+              [],
+            )}
+          </ul>
+
+          {chain?.name && (
+            <StyledRoundButton className="whitespace-nowrap" onClick={openChainModal}>
+              <Typography.Text>{chain.name}</Typography.Text>
+              <IconChevronDown className="align-middle ml-[10px] !text-[20px]" />
+            </StyledRoundButton>
           )}
-        </ul>
-      </header>
-      <SelectWalletModal ref={selectWalletModalRef} />
-    </>
+          <ConnectButton className="ml-3" />
+        </div>
+      </div>
+      <ul className="flex justify-center pt-2 nmd:hidden items-center text-white text-center">
+        {useMemo(
+          () => navs.map((nav) => (
+            <StyledNavLink
+              key={nav.text}
+              className={classNames('!w-auto flex-1', {
+                active: nav.href === location.pathname,
+              })}
+            >
+              <Link className="block w-full h-full" to={nav.href}>{nav.text}</Link>
+            </StyledNavLink>
+          )),
+          [],
+        )}
+      </ul>
+    </header>
   );
 }
 

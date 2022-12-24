@@ -139,7 +139,8 @@ const demoJson = {
   },
 };
 
-function LeadJsonSelect() {
+function LeadJsonSelect(props) {
+  const { onClick } = props;
   const [isMove, setMove] = useState(false);
   const [showAnimation, setShowAnimation] = useState(true);
 
@@ -157,7 +158,7 @@ function LeadJsonSelect() {
   }, [showAnimation]);
 
   return (
-    <Wrap>
+    <Wrap onClick={onClick}>
       <JsonTree
         data={demoJson}
         shouldExpandNode={() => true}

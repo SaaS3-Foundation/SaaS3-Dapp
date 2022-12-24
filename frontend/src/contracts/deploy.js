@@ -6,8 +6,7 @@ import * as Phala from '@phala/sdk';
 import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { TxQueue, blockBarrier, hex } from './utils';
 import { loadContractFile, deployContracts } from './common';
-import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/nerwork';
-
+import { POLKADOT_ENDPOINT_DEFAULT, POLKADOT_PRUNTIME_URL_DEFAULT } from '@/config/network';
 
 export async function deploy(
   sponsorMnemonic,
@@ -46,7 +45,7 @@ export async function deploy(
 
   // contracts
   const address = await deployContracts(api, txqueue, sponsor, null, artifacts, clusterId);
-  //const address = '0xcb22a0c52a35981f73e16930b90709ce76441b9b310599258c500856c832aed0';
+  // const address = '0xcb22a0c52a35981f73e16930b90709ce76441b9b310599258c500856c832aed0';
   artifacts.druntime.address = address;
   console.log(address);
 
@@ -86,7 +85,7 @@ export async function deploy(
       config.web2_api_url_prefix,
       config.api_key,
     ),
-    account.signer,
+    // account.signer,
     true,
   );
 

@@ -1,5 +1,5 @@
 import {
-  Button, Col, Image, Row, Typography,
+  Button, Col, Image, Pagination, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
 import { useEffect, useState } from 'react';
@@ -11,9 +11,36 @@ import MarketItem from './components/MarketItem';
 import { StyledCancelButton, StyledSearchWrap } from './styled';
 import { StyledSemiTable } from '@/components/styled/table';
 import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
+import { getMarketplaceList } from '@/api/marketplace';
 
 function Marketplace() {
   const [isGridView, setIsGridView] = useState(true);
+  const [data, setData] = useState([]);
+  const [fetching, setFetching] = useState(false);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [total, setTotal] = useState();
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        setFetching(true);
+        const ret = await getMarketplaceList({
+          page: pageIndex,
+          size: pageSize,
+        });
+        if (ret.code === 200) {
+          const { total: _total, list } = ret.data;
+          setData(list);
+          setTotal(_total);
+        }
+      } catch (error) {
+
+      }
+      setFetching(false);
+    };
+    fetch();
+  }, [pageIndex, pageSize]);
 
   const columns = [
     {
@@ -158,6 +185,11 @@ function Marketplace() {
               </Row>
             ) : <StyledSemiTable pagination={false} columns={columns} dataSource={[{}]} />}
           </div>
+
+          <div className="text-right">
+            <Pagination className="w-full justify-end" onPageChange={setPageIndex} total={30} pageSize={pageSize} currentPage={pageIndex} />
+          </div>
+
         </div>
       </div>
     </BaseLayout>

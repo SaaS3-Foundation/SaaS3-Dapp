@@ -2,13 +2,13 @@ import {
   useEffect, useState, useMemo, createContext,
 } from 'react';
 import { getWallets } from '@talismn/connect-wallets';
-import { POLKADOT_NETWORK_NODES } from '@/config/nerwork';
+import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { sleep } from '@/contracts/utils';
 
 const polkadotWalletContext = createContext({
   wallet: null,
   account: null,
-  selectedTargetChain: null,
+  selectedTargetChain: POLKADOT_NETWORK_NODES[0],
   setWallet: () => {},
   setAccount: () => {},
   setSelectedTargetChain: () => {},
