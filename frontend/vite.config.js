@@ -55,9 +55,11 @@ export default defineConfig({
         ),
       ],
       output: {
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        chunkFileNames: 'assets/js/[name]-[hash].[ext]',
-        assetFileNames: 'assets/static/[name]-[hash].[ext]',
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        },
       },
     },
     commonjsOptions: {

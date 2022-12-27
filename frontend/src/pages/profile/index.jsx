@@ -1,7 +1,7 @@
 import {
-  Button, Form, Input, Modal, Typography,
+  Button, Form, Input, Modal, Notification, TextArea, Typography,
 } from '@douyinfe/semi-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import BaseLayout from '@/components/layout/BaseLayout';
 import {
   ConfirmButton, DeclineButton, ProfileContentWrap, ProfileShadowBox,
@@ -16,6 +16,8 @@ import addIcon from '../../assets/imgs/svg/addIcon.svg';
 import editIcon from '../../assets/imgs/svg/editIcon.svg';
 import pasteIcon from '../../assets/imgs/svg/pasteIcon.svg';
 import PrivacyField from './components/PrivacyField';
+import { useUserInfo } from '@/hooks/profile';
+import { update } from '@/api/profile';
 
 function ProfileTable({
   data, title, attri, operation, isPaste,
@@ -46,6 +48,7 @@ function ProfileTable({
 }
 
 function Profile() {
+  const profileFormRef = useRef();
   const [FreePerCall, setFreePerCall] = useState('3 SAAS');
   const [FreeCallEdit, setFreeEdit] = useState(false);
 
@@ -101,12 +104,45 @@ function Profile() {
     },
   ];
 
+  // const {} =
+
   const [AddWalletModalVis, setAddModal] = useState(false);
   const [NoteModalVis, setNoteModal] = useState(false);
   const [StakeModalVis, setStakeModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [stakeAmount, setStakeAmount] = useState(0);
   const [stakeSwitch, setSwitch] = useState(1);
+  const { userInfo, updateUserInfo } = useUserInfo();
+
+  const onSave = () => {
+    profileFormRef.current.formApi.validate().then(async (values) => {
+      try {
+        const updateRet = await update(userInfo.id, {
+          profile: values,
+        });
+        if (updateRet.code === 200) {
+          await updateUserInfo();
+          Notification.success({
+            title: 'modify user info.',
+            content: 'Successfully modified personal data.',
+          });
+          setEditing(false);
+        } else {
+          Notification.error({
+            title: 'modify user info.',
+            content: updateRet.msg,
+          });
+        }
+      } catch (error) {
+        Notification.error({
+          title: 'modify user info.',
+          content: 'Failed to modify personal data.',
+        });
+      }
+    });
+    // const values = profileFormRef.current.formApi.getValues();
+    // console.log(values);
+  };
 
   return (
     <BaseLayout>
@@ -114,48 +150,63 @@ function Profile() {
         <Typography.Title heading={2}>USER INFORMATION</Typography.Title>
 
         <ProfileContentWrap className="nmd:!rounded-tl-[60px] xmd:!rounded-[2rem]">
-          <div className="nmd:flex">
-            <div className="avatar-wrap  flex-shrink-0 flex items-center xmd:justify-between">
-              <img src={DefaultAvatar} className="w-[100px] h-[100px] xmd:w-[50px] xmd:h-[50px] object-cover" alt="avatar" />
-              <Typography.Text className="block nmd:hidden text-xl font-bold">FIFA Whale</Typography.Text>
-              <Button
-                theme="borderless"
-                className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center nmd:hidden "
-                size="large"
-                type="primary"
-                onClick={() => setEditing(!editing)}
-              >
-                {!editing ? 'Edit' : 'Save'}
-              </Button>
-            </div>
-            <div className="nmd:ml-7 nmd:mr-20">
-              <Typography.Text className="block xmd:hidden text-xl font-bold">FIFA Whale</Typography.Text>
-              <Typography.Paragraph className="mt-4">
-                Hello guys! I am FIFA Whale, I have been producing oracles from 6 months now.
-                I am a good oracle developer and am awesome too.
-                If you have any questions please feel free to message me on twitter. Please use my oracles.
-              </Typography.Paragraph>
-              <Form>
-                <div className="pr-20 mt-4 nmd:flex flex-wrap justify-between">
-                  <PrivacyField editing={editing} label="E-Mail" />
-                  <PrivacyField editing={editing} label="Twitter" />
-                  <PrivacyField editing={editing} label="Github" />
-                  <PrivacyField editing={editing} label="Telegram" />
+          <Form ref={profileFormRef}>
+            <div className="nmd:flex">
+              <div className="avatar-wrap  flex-shrink-0 flex items-center xmd:justify-between">
+                <img src={DefaultAvatar} className="w-[100px] h-[100px] xmd:w-[50px] xmd:h-[50px] object-cover" alt="avatar" />
+                <div className="nmd:hidden flex-1 px-2">
+                  {editing
+                    ? <Form.Input initValue={userInfo?.profile?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
+                    : <Typography.Text className="block text-xl font-bold">{userInfo?.profile?.name}</Typography.Text>}
                 </div>
-              </Form>
+                <Button
+                  theme="borderless"
+                  className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center nmd:hidden "
+                  size="large"
+                  type="primary"
+                  onClick={() => (!editing ? setEditing(!editing) : onSave())}
+                >
+                  {!editing ? 'Edit' : 'Save'}
+                </Button>
+              </div>
+              <div className="nmd:ml-7 nmd:mr-20 flex-1">
+                <div className="xmd:hidden ">
+                  {editing ? <Form.Input initValue={userInfo?.profile?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
+                    : <Typography.Text className="block text-xl font-bold">{userInfo?.profile?.name}</Typography.Text>}
+                </div>
+                <div className="mt-4">
+                  {
+                    editing ? <Form.TextArea initValue={userInfo?.profile?.description} rules={[{ required: true }]} field="description" noLabel placeholder="description" /> : (
+                      <Typography.Paragraph>{userInfo?.profile?.description}</Typography.Paragraph>
+                    )
+                  }
+                </div>
+                <div className="pr-20 mt-4 nmd:flex flex-wrap gap-10">
+                  <PrivacyField
+                    editing={editing}
+                    field="email"
+                    label="E-Mail"
+                    value={userInfo?.profile?.email}
+                    inputProps={{ rules: [{ type: 'email' }] }}
+                  />
+                  <PrivacyField value={userInfo?.profile?.twitter} editing={editing} field="twitter" label="Twitter" />
+                  <PrivacyField value={userInfo?.profile?.github} editing={editing} field="github" label="Github" />
+                  <PrivacyField value={userInfo?.profile?.telegram} editing={editing} field="telegram" label="Telegram" />
+                </div>
+              </div>
+              <div>
+                <Button
+                  theme="borderless"
+                  className="w-[100px] !text-white !border !border-white rounded-full xmd:hidden"
+                  size="large"
+                  type="primary"
+                  onClick={() => (!editing ? setEditing(!editing) : onSave())}
+                >
+                  {!editing ? 'Edit' : 'Save'}
+                </Button>
+              </div>
             </div>
-            <div>
-              <Button
-                theme="borderless"
-                className="w-[100px] !text-white !border !border-white rounded-full xmd:hidden"
-                size="large"
-                type="primary"
-                onClick={() => setEditing(!editing)}
-              >
-                {!editing ? 'Edit' : 'Save'}
-              </Button>
-            </div>
-          </div>
+          </Form>
         </ProfileContentWrap>
 
         <ProfileShadowBox className="nmd:hidden w-[100vw] relative right-[20px] py-[1.5rem] px-[1.5rem] rounded-t-[2rem]">

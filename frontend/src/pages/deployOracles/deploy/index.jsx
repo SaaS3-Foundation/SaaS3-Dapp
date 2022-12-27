@@ -5,28 +5,28 @@ import { IconChevronDown } from '@douyinfe/semi-icons';
 import { useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router';
+import { useNetwork } from 'wagmi';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap } from '../styled';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
-import { REQUEST_METHODS } from '@/config/request';
+import { REQUEST_METHODS } from '@/config/config';
 import { submitV2, testrun } from '@/api/deploy';
 import { checkHttpUrl } from '@/utils/check';
 import LoadingButton from '@/components/custom/LoadingButton';
 import ApiResultWrap from '../components/ApiResultWrap';
-import { usePolkadotWallet } from '@/hooks/wallet';
-import { EVMNETWORKS, POLKADOT_NETWORK_NODES } from '@/config/network';
+import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { ArrayToObjectByKeyValue, typeTransferToSaaS3Type } from '@/utils/utils';
 
 function Deploy() {
   const nav = useNavigate();
   const formRef = useRef();
   const apiResultRef = useRef();
-  const { selectedTargetChain } = usePolkadotWallet();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [testData, setTestData] = useState({});
   const [fetching, setFetching] = useState(false);
   const [visiblity, setVisiblity] = useState('public');
   const [deploying, setDeploying] = useState(false);
+  const { chain } = useNetwork();
 
   const onFileDrap = (event) => {
     event.preventDefault();
@@ -94,7 +94,7 @@ function Deploy() {
       const url = formRef.current.formApi.getValue('url') || '';
       const origin = url.slice(0, url.indexOf('?'));
       let res = '?';
-      const _params = [...(formRef.current.formApi.getValues()?.params || [])];
+      const _params = [...(formRef.current.formApi.getValue('oracleInfo.web2Info.params') || [])];
       for (const param of _params) {
         const { key = '', value = '' } = param || {};
         if (!key && !value) {
@@ -109,7 +109,7 @@ function Deploy() {
 
   const onSubmit = async (values) => {
     const {
-      evmChainId, oracleInfo, creatorInfo, logo,
+      sourceChainId, oracleInfo, creatorInfo, logo,
     } = values;
     const { path: _path, value } = apiResultRef.current;
     if (!_path?.length) {
@@ -119,7 +119,7 @@ function Deploy() {
       });
       return;
     }
-    const currEvmNetwork = EVMNETWORKS[evmChainId];
+    const sourceNetwork = POLKADOT_NETWORK_NODES.find((node) => node.id === sourceChainId);
     const _type = typeTransferToSaaS3Type(value);
     const params = {
       ...ArrayToObjectByKeyValue(oracleInfo.web2Info.params),
@@ -130,15 +130,15 @@ function Deploy() {
     const headers = ArrayToObjectByKeyValue(oracleInfo.web2Info.headers);
     const sourceChain = {
       type: 1,
-      name: selectedTargetChain.name,
-      wsProvider: selectedTargetChain.endpoint,
+      name: sourceNetwork.name,
+      wsProvider: sourceNetwork.endpoint,
     };
 
     const targetChain = {
       type: 0,
-      name: currEvmNetwork.chain.name,
-      httpProvider: currEvmNetwork.chain.rpcUrls.default,
-      id: evmChainId,
+      name: chain.name,
+      httpProvider: chain.rpcUrls.default,
+      id: chain.id,
     };
     const data = {
       oracleInfo: {
@@ -372,15 +372,14 @@ function Deploy() {
             </Typography.Title>
             <DeployWrap onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
               <Form.Select
-                field="evmChainId"
+                field="sourceChainId"
                 className="rounded-full"
                 size="large"
                 initValue={POLKADOT_NETWORK_NODES[0].id}
                 noLabel
-                placeholder="CREATOR’S NOTE"
               >
                 {
-                  POLKADOT_NETWORK_NODES.map((network) => <Form.Select.Option value={network.id}>{network.name}</Form.Select.Option>)
+                  POLKADOT_NETWORK_NODES.map((network) => <Form.Select.Option value={network.id} key={network.id}>{network.name}</Form.Select.Option>)
                 }
               </Form.Select>
             </DeployWrap>

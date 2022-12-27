@@ -13,6 +13,7 @@ export const StyledSemiTable = styled(Table)`
 
 .semi-table-thead{
   th{
+    text-align: center !important;
     font-size: 16px;
     font-weight: bold !important;
     color: white !important;
