@@ -6,43 +6,51 @@ import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
 import { StyledMarketItem, StyledCancelButton } from '../styled';
 
 function MarketItem(props) {
-  const { className } = props;
+  const { className, data } = props;
+
   const items = useMemo(() => [{
     title: 'Creator',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <Typography.Text>{data.creator.profile.name}</Typography.Text>,
   }, {
     title: 'Chain',
-    rightRender: <div> <ChainIcon className="!bg-transparent" chainId={56} /> <ChainIcon className="!bg-transparent" /> </div>,
+    rightRender: <div> <ChainIcon className="!cursor-default !bg-transparent" chainId={data.oracleInfo.targetChain.id} /></div>,
   }, {
     title: 'Creator Stake($SaaS)',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }, {
     title: 'Stake Pool($SaaS)',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }, {
     title: 'ARP',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }, {
     title: 'Called',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }, {
     title: 'Accuracy',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }, {
     title: 'Price Per Call($SaaS)',
-    rightRender: <span>Fifa Whale</span>,
+    rightRender: <span>--</span>,
   }], []);
   const nav = useNavigate();
 
   const handleDetails = () => {
-    nav('details/id');
+    nav(`details/${data.id}`);
   };
 
   return (
     <StyledMarketItem className={className}>
       <div className="header-wrap">
-        <Image className="mr-2.5" width={40} height={40} src={defaultItemAvatar} preview={false} />
-        <Typography.Title heading={2}>FIFA 2022</Typography.Title>
+        <Image className="flex-shrink-0 mr-2.5" width={40} height={40} src={defaultItemAvatar} preview={false} />
+        <Typography.Title
+          ellipsis={{
+            rows: 1,
+          }}
+          heading={3}
+        >
+          {data.oracleInfo.title}
+        </Typography.Title>
       </div>
       <div className="content-items-wrap">
         {useMemo(

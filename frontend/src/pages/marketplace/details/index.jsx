@@ -1,16 +1,20 @@
 import {
-  Checkbox, Col, Collapse, Row, Typography,
+  Checkbox, Col, Collapse, Row, Tabs, Typography,
 } from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import classNames from 'classnames';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/ChainIcon';
 import { EVM_CHAINID } from '@/config/network';
 import { getDetail } from '@/api/marketplace';
+import { copy } from '@/utils/utils';
+import UrlPropsView from '../components/UrlPropsView';
+import { toGithub, toTwitter } from '@/utils/toPlatform';
 
 const data1 = [
   ['Jan', 2],
@@ -127,7 +131,29 @@ function MarketplaceDetails() {
   const [succ, setSucc] = useState(true);
   const params = useParams();
 
-  const [detail, setDetail] = useState();
+  const [detail, setDetail] = useState({
+    oracleInfo: {
+      title: '--',
+      web2Info: { },
+      sourceChain: { },
+      targetChain: { },
+    },
+    creator: {
+      id: '--',
+      profile: {
+        name: '--',
+        email: '--',
+        github: '--',
+        twitter: '--',
+        telegram: '--',
+        description: '--',
+      },
+      walletInfo: [],
+      oracles: null,
+      create_at: '--',
+      update_at: '--',
+    },
+  });
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -148,34 +174,28 @@ function MarketplaceDetails() {
   return (
     <BaseLayout>
       <div className="container pb-16">
-        <Row className="!mt-5" type="flex" align="middle" gutter={[0, 50]}>
+        <Row className="!mt-5" type="flex" gutter={[0, 50]}>
           <Col lg={12} span={24} className="py-7 px-16">
-            <h1 className="text-2xl font-bold">FIFA 2022<br />WORLD CUP RESULT </h1>
-            <p className="text-base mt-3">
-              This Oracle reports the results of FIFA world cup.
-              The official FIFA apis have been selected as the data feed for this oracle.
-              A total of 10 APIs with solid aggregation logic and a deviance percentage of 0.5 %  has been placed.
-              This Oracle reports the results of FIFA world cup. The official FIFA apis have been selected as the data feed for this oracle.
-              A total of 10 APIs with solid aggregation logic and a deviance percentage of 0.5 %  has been placed.
-              This Oracle reports the results of FIFA world cup. The official FIFA apis have been selected as the data feed for this oracle.
-              A total of 10 APIs with solid aggregation logic and a deviance percentage of 0.5 %  has been placed.
-            </p>
-            <hr className="opacity-10 mt-5 mb-6" />
-            <div className="flex">
-              <img className="w-10" src={DefaultAvatar} alt="avatar" />
-              <div className="flex-1 flex items-center ml-4">
-                <h1 className="font-bold text-2xl">FIFA Whale</h1>
-                <div className="ml-auto">
-                  <IconTwitter className="text-2xl" />
-                  <IconGithubLogo className="text-2xl" />
+            <div className="flex flex-col h-full">
+
+              <Typography.Title heading={1} className="text-2xl font-bold">{detail.oracleInfo.title}</Typography.Title>
+              <Typography.Text className="text-base mt-3 mb-4">{detail.oracleInfo.description || '--'}</Typography.Text>
+
+              <div className="mb-6 mt-auto">
+                <hr className="opacity-10 mb-6" />
+                <div className="flex">
+                  <img className="w-10" src={DefaultAvatar} alt="avatar" />
+                  <div className="flex-1 flex items-center ml-4">
+                    <Typography.Title heading={4} className="font-bold text-2xl">{detail.creator.profile.name}</Typography.Title>
+                    <div className="ml-auto">
+                      <IconTwitter onClick={() => toTwitter(detail.creator.profile.twitter)} className="hover:text-gray-400 cursor-pointer text-2xl" />
+                      <IconGithubLogo onClick={() => toGithub(detail.creator.profile.github)} className="hover:text-gray-400 cursor-pointer text-2xl" />
+                    </div>
+                  </div>
                 </div>
+                <Typography.Text className="ml-14 text-text-dark-1 text-sm">{detail.creator.profile.description || '--'}</Typography.Text>
               </div>
             </div>
-            <p className="ml-14 text-text-dark-1 text-sm">
-              Hello guys! I am FIFA Whale, I have been producing oracles from 6 months now.
-              I am a good oracle developer and am awesome too.
-              If you have any questions please feel free to message me...
-            </p>
           </Col>
 
           <Col lg={12} span={24} className="relative z-20">
@@ -223,7 +243,7 @@ function MarketplaceDetails() {
             <StyledChartsWrap>
               <div className="header flex justify-between">
                 <h1>Oracle Call performance chart</h1>
-                <div className="inline-block flex">
+                <div className="flex">
                   <Checkbox checked={succ} className="mr-5" value="succ" onChange={(e) => { setSucc(e.target.checked); }}>Successful Only</Checkbox>
                   <Checkbox checked={!succ} value="fail" onChange={(e) => { setSucc(e.target.checked); }}>Failed Only</Checkbox>
                 </div>
@@ -248,14 +268,32 @@ function MarketplaceDetails() {
               <div className="flex-1">
                 <Typography.Title heading={5}>API DETAILS</Typography.Title>
                 <StyledCollapse className="mt-5" accordion>
-                  <Collapse.Panel header="1. FIFA Official WORLD CUP Result API" itemKey="1">
-                    123
-                  </Collapse.Panel>
-                  <Collapse.Panel header="2. FIFA YOYO WORLD CUP Result API" itemKey="2">
-                    123
-                  </Collapse.Panel>
-                  <Collapse.Panel header="3. Binance FIFA WORLD CUP Result API" itemKey="3">
-                    123
+                  <Collapse.Panel header={detail.oracleInfo.web2Info.title} itemKey="1">
+                    <div className="flex mt-2 items-center">
+                      <Typography.Text>{detail.oracleInfo.web2Info.method}</Typography.Text>
+                      <div className="ml-4 flex-1 flex items-center justify-between  border border-white/30 bg-black/30 rounded-md p-2">
+                        <Typography.Text
+                          style={{ '--semi-color-link': 'white' }}
+                        >
+                          {detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--'}
+                        </Typography.Text>
+                        <IconCopy
+                          className="cursor-pointer hover:text-gray-500"
+                          onClick={() => copy(detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--')}
+                        />
+                      </div>
+                    </div>
+                    <Tabs>
+                      <Tabs.TabPane tab="Body" itemKey="Body">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.body} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Params" itemKey="Params">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.params} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Headers" itemKey="Headers">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.headers} />
+                      </Tabs.TabPane>
+                    </Tabs>
                   </Collapse.Panel>
                 </StyledCollapse>
               </div>
@@ -263,42 +301,19 @@ function MarketplaceDetails() {
                 <div className="mb-5 flex items-center">
                   <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
                   <div className="flex ml-auto">
-                    <ChainIcon className="mr-2" />
-                    <ChainIcon chainId={EVM_CHAINID.BSC} />
+                    <ChainIcon className="active" chainId={detail.oracleInfo.targetChain.id || 1} />
                   </div>
                 </div>
                 <StyledAddressItem>
-                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                  <IconCopy />
-                </StyledAddressItem>
-                <StyledAddressItem>
-                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                  <IconCopy />
-                </StyledAddressItem>
-                <StyledAddressItem>
-                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                  <IconCopy />
-                </StyledAddressItem>
-                <StyledAddressItem>
-                  <span>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</span>
-                  <IconCopy />
+                  <Typography.Text>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</Typography.Text>
+                  <IconCopy onClick={() => copy('0x4A418110c1cd4391784508abF2c534Be887a61F7')} />
                 </StyledAddressItem>
               </div>
             </div>
           </div>
           <Typography.Title heading={3} className="indent-1">CREATORS NOTES</Typography.Title>
           <div className="mt-4 !py-6">
-            <Typography.Text className="text-lg">
-              While integrating with the oracle make sure to interact the
-              correct roll up contract. Fund your wallet with SAAS and make
-              sure to test the oracles before going production level. In regards
-              to how to integrate with oracles you should refer to the SaaS3 documentation,
-              despite how different each oracle with different apis are they have the sam eend
-              integrartion method on the smart contract layer. In input parameter per oracle may differ,
-              to understand the input parameters click the drop down button next to the respective API in the
-              above “INFORMATION” section, on further inquiry you can refer to the API documentation using the
-              document icon placed next to teh respective API in the “INFORMATION” section.
-            </Typography.Text>
+            <Typography.Text className="text-lg">{detail.creatorNote}</Typography.Text>
           </div>
         </StyledChartsWrap>
       </div>

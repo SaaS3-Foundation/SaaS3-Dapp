@@ -28,7 +28,9 @@ export const StyledSemiTable = styled(Table)`
   >tr{
     border-radius: 60px;
     overflow: hidden;
+    backdrop-filter: blur(15px);
     td{
+      text-align: center;
       border-top: 1px solid var(--color-border-white-opacity);
       border-bottom: 1px solid var(--color-border-white-opacity) !important;
       &:first-child{

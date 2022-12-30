@@ -85,9 +85,10 @@ export const StyledChartsWrap = styled.div`
 `;
 
 export const StyledCollapse = styled(Collapse)`
+  
   .semi-collapse-item{
     border-bottom: 0;
-    background-color: var(--color-dark-bg-1);
+    background-color: var(--color-bg-black-opacity);
     border: 1px solid var(--color-border-white-opacity);
     border-radius: 20px;
     overflow: hidden;

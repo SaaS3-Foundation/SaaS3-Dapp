@@ -4,6 +4,8 @@ import {
 import { IconSearch } from '@douyinfe/semi-icons';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import moment from 'moment';
+import { useNavigate } from 'react-router';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ReactComponent as BlockViewSvg } from '@/assets/imgs/svg/Icon/block-view.svg';
 import { ReactComponent as GridViewSvg } from '@/assets/imgs/svg/Icon/grid-view.svg';
@@ -12,8 +14,11 @@ import { StyledCancelButton, StyledSearchWrap } from './styled';
 import { StyledSemiTable } from '@/components/styled/table';
 import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
 import { getMarketplaceList } from '@/api/marketplace';
+import { formatDate } from '@/utils/utils';
+import ChainIcon from '@/components/comm/ChainIcon';
 
 function Marketplace() {
+  const nav = useNavigate();
   const [isGridView, setIsGridView] = useState(true);
   const [data, setData] = useState([]);
   const [fetching, setFetching] = useState(false);
@@ -47,56 +52,56 @@ function Marketplace() {
       title: '',
       width: '140px',
       align: 'center',
-      render: () => (
-        <div className="flex items-center">
-          <Image className="!flex-shrink-0" src={defaultItemAvatar} preview={false} width={20} height={20} />
-          <Typography.Title heading={6}>
-            FIFA 2022
+      render: (_, row) => (
+        <div className="flex items-center w-[140px]">
+          <Image className="!flex-shrink-0 mr-2" src={defaultItemAvatar} preview={false} width={40} height={40} />
+          <Typography.Title heading={6} ellipsis={{ rows: 1 }} className="flex-1">
+            {row.oracleInfo.title}
           </Typography.Title>
         </div>
       ),
     },
     {
-      title: 'Created',
+      title: 'Creator',
       width: '70px',
       align: 'center',
-      render: () => 'Fifa Whale',
+      render: (_, row) => row.creator.profile.name,
     },
     {
       title: 'Chain',
       width: '60px',
       align: 'center',
-      render: () => {},
+      render: (_, row) => <ChainIcon className="!cursor-default !bg-transparent" chainId={row.oracleInfo.targetChain.id} />,
     },
     {
       title: 'Creator Stake',
       width: '128px',
       align: 'center',
-      render: () => {},
+      render: () => '--',
     },
     {
       title: 'Stake Pool',
       width: '100px',
       align: 'center',
-      render: () => {},
+      render: () => '--',
     },
     {
       title: 'ARP',
       width: '60px',
       align: 'center',
-      render: () => '30%',
+      render: () => '--',
     },
     {
       title: 'Called',
       width: '100px',
       align: 'center',
-      render: () => '720 Times',
+      render: () => '--',
     },
     {
       title: 'Created',
-      width: '80px',
+      width: '180px',
       align: 'center',
-      render: () => '6months ago',
+      render: (_, row) => formatDate(row.create_at),
     },
     {
       title: 'Accuracy',
@@ -112,9 +117,16 @@ function Marketplace() {
     },
     {
       title: '',
-      render: () => (
+      render: (_, row) => (
         <div className="footer-wrap flex justify-center">
-          <StyledCancelButton className="w-[90px]" theme="borderless" size="large">DETAILS</StyledCancelButton>
+          <StyledCancelButton
+            className="w-[90px]"
+            theme="borderless"
+            size="large"
+            onClick={() => nav(`/marketplace/details/${row.id}`)}
+          >
+            DETAILS
+          </StyledCancelButton>
           <Button
             theme="borderless"
             style={{
@@ -167,27 +179,30 @@ function Marketplace() {
             {isGridView ? (
               <Row gutter={[10, 18]}>
                 {
-                  Array.from({ length: 40 }).fill().map((_, i) => (
+                  data.map((item, i) => (
                     <Col
                       key={i}
-                      // {...(isGridView ? {
-                      //   xl: 6, lg: 12, md: 12, span: 24,
-                      // } : {})}
                       xl={6}
                       lg={12}
                       md={12}
                       span={24}
                     >
-                      <MarketItem className={classNames({ block: !isGridView })} />
+                      <MarketItem data={item} className={classNames({ block: !isGridView })} />
                     </Col>
                   ))
                 }
               </Row>
-            ) : <StyledSemiTable pagination={false} columns={columns} dataSource={[{}]} />}
+            ) : <StyledSemiTable className="filter" pagination={false} columns={columns} dataSource={data} />}
           </div>
 
           <div className="text-right">
-            <Pagination className="w-full justify-end" onPageChange={setPageIndex} total={30} pageSize={pageSize} currentPage={pageIndex} />
+            <Pagination
+              className="w-full justify-end"
+              onPageChange={setPageIndex}
+              total={total}
+              pageSize={pageSize}
+              currentPage={pageIndex}
+            />
           </div>
 
         </div>

@@ -6,7 +6,7 @@ import { ReactComponent as DisSight } from '@/assets/imgs/svg/disSight.svg?keepF
 
 function PrivacyField(props) {
   const {
-    value, editing, placeholder, className, label, field, inputProps,
+    value, editing, placeholder, className, label, field, inputProps, link, onClick,
   } = props;
 
   const [visible, setVisible] = useState(false);
@@ -28,7 +28,7 @@ function PrivacyField(props) {
       <div className="flex flex-col ml-1 w-max">
         <div>{label}</div>
         {!editing
-          ? <div>{visible ? value || '--' : '******'}</div>
+          ? <div onClick={onClick} className={link ? 'hover:underline cursor-pointer' : ''}>{visible ? value || '--' : '******'}</div>
           : <Form.Input initValue={value} field={field} noLabel value={value} placeholder={placeholder || label} {...inputProps} />}
       </div>
     </div>

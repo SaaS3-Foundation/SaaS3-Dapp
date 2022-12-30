@@ -16,6 +16,7 @@ import LoadingButton from '@/components/custom/LoadingButton';
 import ApiResultWrap from '../components/ApiResultWrap';
 import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { ArrayToObjectByKeyValue, typeTransferToSaaS3Type } from '@/utils/utils';
+import { useUserInfo } from '@/hooks/provider';
 
 function Deploy() {
   const nav = useNavigate();
@@ -27,6 +28,7 @@ function Deploy() {
   const [visiblity, setVisiblity] = useState('public');
   const [deploying, setDeploying] = useState(false);
   const { chain } = useNetwork();
+  const { userInfo } = useUserInfo();
 
   const onFileDrap = (event) => {
     event.preventDefault();
@@ -109,7 +111,7 @@ function Deploy() {
 
   const onSubmit = async (values) => {
     const {
-      sourceChainId, oracleInfo, creatorInfo, logo,
+      sourceChainId, oracleInfo, creatorNote, logo, url,
     } = values;
     const { path: _path, value } = apiResultRef.current;
     if (!_path?.length) {
@@ -150,18 +152,17 @@ function Deploy() {
           params,
           body,
           headers,
+          uri: url.split('?')[0],
         },
       },
-      createorInfo: {
-        ...creatorInfo,
-      },
+      creatorNote,
       visibility: visiblity === 'public' ? 0 : 1,
       // logo_url: await fileToBase64(logo[0].fileInstance),
     };
-    console.log(data, 'data');
+
     try {
       setDeploying(true);
-      const result = await submitV2(data);
+      const result = await submitV2(userInfo.id, data);
       if (result.code === 200) {
         Notification.success({
           title: 'Deployment',
@@ -360,7 +361,7 @@ function Deploy() {
                 rules={[
                   { required: true, message: 'Required error' },
                 ]}
-                field="creatorInfo.notes"
+                field="creatorNote"
                 noLabel
                 placeholder="CREATOR’S NOTE"
                 showClear

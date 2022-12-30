@@ -3,19 +3,14 @@ import { IconChevronDown } from '@douyinfe/semi-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { Typography } from '@douyinfe/semi-ui';
 import classNames from 'classnames';
-import {
-  useAccount, useDisconnect, useNetwork, useSignMessage,
-} from 'wagmi';
+import { useNetwork } from 'wagmi';
 import { useChainModal } from '@rainbow-me/rainbowkit';
 import { StyledNavLink } from './styled';
 import ConnectButton from '@/components/custom/ConnectButton';
 import { StyledRoundButton } from '@/components/styled/button';
-import { decodeTemplate, guid, verifyMessage } from '@/utils/utils';
-import { SIGN_MESSAGE } from '@/config/message';
 
 function Header() {
   const { chain } = useNetwork();
-  const { disconnect } = useDisconnect();
   const { openChainModal } = useChainModal();
   const location = useLocation();
   const navs = [{
@@ -28,28 +23,6 @@ function Header() {
     text: 'Profile',
     href: '/profile',
   }];
-  const { address, isConnected, connector } = useAccount();
-  const { signMessageAsync } = useSignMessage();
-  useEffect(() => {
-    if (address && isConnected && connector) {
-      if (verifyMessage(address, localStorage.getItem('__nonce'), localStorage.getItem('__userSign'))) {
-        return;
-      }
-      const __uuid = guid();
-      localStorage.setItem('__address', address);
-      localStorage.setItem('__nonce', __uuid);
-      const message = decodeTemplate(SIGN_MESSAGE, { address, nonce: __uuid });
-      signMessageAsync({ message }).then((sign) => {
-        localStorage.setItem('__userSign', sign);
-      });
-    }
-  }, [address, isConnected, connector]);
-
-  useEffect(() => {
-    if (chain?.unsupported) {
-      disconnect();
-    }
-  }, [chain]);
 
   return (
     <header
