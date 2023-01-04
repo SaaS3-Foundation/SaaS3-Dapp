@@ -130,23 +130,12 @@ function Deploy() {
     };
     const body = ArrayToObjectByKeyValue(oracleInfo.web2Info.body);
     const headers = ArrayToObjectByKeyValue(oracleInfo.web2Info.headers);
-    const sourceChain = {
-      type: 1,
-      name: sourceNetwork.name,
-      wsProvider: sourceNetwork.endpoint,
-    };
 
-    const targetChain = {
-      type: 0,
-      name: chain.name,
-      httpProvider: chain.rpcUrls.default,
-      id: chain.id,
-    };
     const data = {
       oracleInfo: {
         ...oracleInfo,
-        sourceChain,
-        targetChain,
+        sourceChain: { chainId: sourceNetwork.name },
+        targetChain: { chainId: chain.id },
         web2Info: {
           ...oracleInfo.web2Info,
           params,

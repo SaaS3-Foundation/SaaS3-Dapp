@@ -65,13 +65,13 @@ function Marketplace() {
       title: 'Creator',
       width: '70px',
       align: 'center',
-      render: (_, row) => row.creator.profile.name,
+      render: (_, row) => row.creator.name,
     },
     {
       title: 'Chain',
       width: '60px',
       align: 'center',
-      render: (_, row) => <ChainIcon className="!cursor-default !bg-transparent" chainId={row.oracleInfo.targetChain.id} />,
+      render: (_, row) => <ChainIcon className="!cursor-default !bg-transparent" chainId={row.oracleInfo.targetChain.chainId} />,
     },
     {
       title: 'Creator Stake',

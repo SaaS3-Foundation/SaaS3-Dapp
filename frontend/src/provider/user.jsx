@@ -21,14 +21,8 @@ function UserInfoProvider(props) {
   const loginUser = async () => {
     try {
       const loginRet = await login(address, {
-        profile: {},
-        walletInfo: [{
-          chain: {
-            type: 0,
-            name: chain.name,
-            id: chain.id,
-            httpProvider: chain.rpcUrls.default,
-          },
+        wallets: [{
+          chain: { chainId: chain.id },
           address,
         }],
       });

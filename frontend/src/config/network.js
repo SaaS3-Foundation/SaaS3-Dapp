@@ -88,3 +88,5 @@ export const EVMNETWORKS = {
     },
   },
 };
+
+console.log(EVMNETWORKS);

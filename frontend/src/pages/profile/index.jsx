@@ -116,9 +116,7 @@ function Profile() {
   const onSave = () => {
     profileFormRef.current.formApi.validate().then(async (values) => {
       try {
-        const updateRet = await update(userInfo.id, {
-          profile: values,
-        });
+        const updateRet = await update(userInfo.id, values);
         if (updateRet.code === 200) {
           await loginUser();
           Notification.success({
@@ -153,8 +151,8 @@ function Profile() {
                 <img src={DefaultAvatar} className="w-[100px] h-[100px] xmd:w-[50px] xmd:h-[50px] object-cover" alt="avatar" />
                 <div className="nmd:hidden flex-1 px-2">
                   {editing
-                    ? <Form.Input initValue={userInfo?.profile?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
-                    : <Typography.Text className="block text-xl font-bold">{userInfo?.profile?.name}</Typography.Text>}
+                    ? <Form.Input initValue={userInfo?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
+                    : <Typography.Text className="block text-xl font-bold">{userInfo?.name}</Typography.Text>}
                 </div>
                 <Button
                   theme="borderless"
@@ -168,13 +166,13 @@ function Profile() {
               </div>
               <div className="nmd:ml-7 nmd:mr-20 flex-1">
                 <div className="xmd:hidden ">
-                  {editing ? <Form.Input initValue={userInfo?.profile?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
-                    : <Typography.Text className="block text-xl font-bold">{userInfo?.profile?.name}</Typography.Text>}
+                  {editing ? <Form.Input initValue={userInfo?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
+                    : <Typography.Text className="block text-xl font-bold">{userInfo?.name}</Typography.Text>}
                 </div>
                 <div className="mt-4">
                   {
-                    editing ? <Form.TextArea initValue={userInfo?.profile?.description} rules={[{ required: true }]} field="description" noLabel placeholder="description" /> : (
-                      <Typography.Paragraph>{userInfo?.profile?.description}</Typography.Paragraph>
+                    editing ? <Form.TextArea initValue={userInfo?.description} rules={[{ required: true }]} field="description" noLabel placeholder="description" /> : (
+                      <Typography.Paragraph>{userInfo?.description}</Typography.Paragraph>
                     )
                   }
                 </div>
@@ -183,26 +181,26 @@ function Profile() {
                     editing={editing}
                     field="email"
                     label="E-Mail"
-                    value={userInfo?.profile?.email}
+                    value={userInfo?.email}
                     inputProps={{ rules: [{ type: 'email' }] }}
                   />
                   <PrivacyField
-                    value={userInfo?.profile?.twitter}
+                    value={userInfo?.twitter}
                     editing={editing}
                     field="twitter"
                     label="Twitter"
-                    onClick={() => toTwitter(userInfo?.profile?.twitter)}
+                    onClick={() => toTwitter(userInfo?.twitter)}
                     link
                   />
                   <PrivacyField
-                    value={userInfo?.profile?.github}
-                    onClick={() => toGithub(userInfo?.profile?.github)}
+                    value={userInfo?.github}
+                    onClick={() => toGithub(userInfo?.github)}
                     link
                     editing={editing}
                     field="github"
                     label="Github"
                   />
-                  <PrivacyField value={userInfo?.profile?.telegram} editing={editing} field="telegram" label="Telegram" />
+                  <PrivacyField value={userInfo?.telegram} editing={editing} field="telegram" label="Telegram" />
                 </div>
               </div>
               <div>

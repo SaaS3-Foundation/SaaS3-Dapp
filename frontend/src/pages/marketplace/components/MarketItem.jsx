@@ -10,10 +10,10 @@ function MarketItem(props) {
 
   const items = useMemo(() => [{
     title: 'Creator',
-    rightRender: <Typography.Text>{data.creator.profile.name}</Typography.Text>,
+    rightRender: <Typography.Text>{data.creator.name}</Typography.Text>,
   }, {
     title: 'Chain',
-    rightRender: <div> <ChainIcon className="!cursor-default !bg-transparent" chainId={data.oracleInfo.targetChain.id} /></div>,
+    rightRender: <div> <ChainIcon className="!cursor-default !bg-transparent" chainId={data.oracleInfo.targetChain.chainId} /></div>,
   }, {
     title: 'Creator Stake($SaaS)',
     rightRender: <span>--</span>,

@@ -140,15 +140,13 @@ function MarketplaceDetails() {
     },
     creator: {
       id: '--',
-      profile: {
-        name: '--',
-        email: '--',
-        github: '--',
-        twitter: '--',
-        telegram: '--',
-        description: '--',
-      },
-      walletInfo: [],
+      name: '--',
+      email: '--',
+      github: '--',
+      twitter: '--',
+      telegram: '--',
+      description: '--',
+      wallets: [],
       oracles: null,
       create_at: '--',
       update_at: '--',
@@ -186,14 +184,14 @@ function MarketplaceDetails() {
                 <div className="flex">
                   <img className="w-10" src={DefaultAvatar} alt="avatar" />
                   <div className="flex-1 flex items-center ml-4">
-                    <Typography.Title heading={4} className="font-bold text-2xl">{detail.creator.profile.name}</Typography.Title>
+                    <Typography.Title heading={4} className="font-bold text-2xl">{detail.creator.name}</Typography.Title>
                     <div className="ml-auto">
-                      <IconTwitter onClick={() => toTwitter(detail.creator.profile.twitter)} className="hover:text-gray-400 cursor-pointer text-2xl" />
-                      <IconGithubLogo onClick={() => toGithub(detail.creator.profile.github)} className="hover:text-gray-400 cursor-pointer text-2xl" />
+                      <IconTwitter onClick={() => toTwitter(detail.creator.twitter)} className="hover:text-gray-400 cursor-pointer text-2xl" />
+                      <IconGithubLogo onClick={() => toGithub(detail.creator.github)} className="hover:text-gray-400 cursor-pointer text-2xl" />
                     </div>
                   </div>
                 </div>
-                <Typography.Text className="ml-14 text-text-dark-1 text-sm">{detail.creator.profile.description || '--'}</Typography.Text>
+                <Typography.Text className="ml-14 text-text-dark-1 text-sm">{detail.creator.description || '--'}</Typography.Text>
               </div>
             </div>
           </Col>
@@ -301,7 +299,7 @@ function MarketplaceDetails() {
                 <div className="mb-5 flex items-center">
                   <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
                   <div className="flex ml-auto">
-                    <ChainIcon className="active" chainId={detail.oracleInfo.targetChain.id || 1} />
+                    <ChainIcon className="active" chainId={detail.oracleInfo.targetChain.chainId || 1} />
                   </div>
                 </div>
                 <StyledAddressItem>
