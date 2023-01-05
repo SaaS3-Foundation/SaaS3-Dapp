@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 export const StyledSearchWrap = styled.div`
   width: 610px;
-  padding: 16px;
+  padding: 0 16px;
   background-color: var(--color-bg-black-opacity);
   display: flex;
   align-items: center;

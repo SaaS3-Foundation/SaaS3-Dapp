@@ -1,5 +1,6 @@
 import { Button } from '@douyinfe/semi-ui';
 import styled from 'styled-components';
+import { DEVICE } from '@/config/device';
 
 export const ProfileContentWrap = styled.div`
   background: var(--color-bg-black-opacity);
@@ -9,6 +10,10 @@ export const ProfileContentWrap = styled.div`
   padding: 26px;
   margin-top: 16px;
   margin-bottom: 56px;
+  @media ${DEVICE.xmd} {
+    margin-bottom: 20px;
+    padding: 12px 26px;
+  }
 `;
 
 export const ProfileShadowBox = styled.div`

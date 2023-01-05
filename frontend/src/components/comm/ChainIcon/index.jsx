@@ -27,13 +27,20 @@ const StyledWrap = styled.span`
 
 function ChainIcon(props) {
   const {
-    chainId, iconClassName, fill = 'white', active,
+    chainId, iconClassName, fill = 'white', active, size = '18px',
   } = props;
 
   const IconComponent = useMemo(() => EVMNETWORKS[chainId || EVM_CHAINID.ETH]?.SvgComponent, [chainId]);
   return (
     <StyledWrap className={classNames({ active }, props.className)}>
-      <IconComponent fill={fill} className={iconClassName} />
+      <IconComponent
+        fill={fill}
+        className={iconClassName}
+        style={{
+          width: size,
+          height: size,
+        }}
+      />
     </StyledWrap>
   );
 }

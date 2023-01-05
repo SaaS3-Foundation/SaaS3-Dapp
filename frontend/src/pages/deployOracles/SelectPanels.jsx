@@ -2,6 +2,8 @@ import {
   Col, Image, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { useNavigate } from 'react-router';
+import { useAccount, useConnect } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import BaseLayout from '@/components/layout/BaseLayout';
 import dataFree from '@/assets/imgs/deploy-oracles/datafree.png';
 import dcmg from '@/assets/imgs/deploy-oracles/dcmg.png';
@@ -11,7 +13,12 @@ import { StyledPanel } from './styled';
 
 function SelectPanels() {
   const nav = useNavigate();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const toDelopyPage = (type) => {
+    if (!isConnected) {
+      return openConnectModal();
+    }
     nav(`/deploy-oracles/${type}`);
   };
 

@@ -115,6 +115,7 @@ function Deploy() {
     } = values;
     const { path: _path, value } = apiResultRef.current;
     if (!_path?.length) {
+      formRef.current.formApi.scrollToField('url');
       Notification.error({
         title: 'error',
         content: 'Define data source and test run to be able to define end points.',

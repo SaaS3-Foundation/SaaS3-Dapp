@@ -1,10 +1,9 @@
 import {
-  Button, Col, Image, Pagination, Row, Typography,
+  Button, Col, Image, Pagination, Row, Spin, Typography,
 } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import moment from 'moment';
 import { useNavigate } from 'react-router';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ReactComponent as BlockViewSvg } from '@/assets/imgs/svg/Icon/block-view.svg';
@@ -16,6 +15,7 @@ import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
 import { getMarketplaceList } from '@/api/marketplace';
 import { formatDate } from '@/utils/utils';
 import ChainIcon from '@/components/comm/ChainIcon';
+import NotResultImg from '@/assets/imgs/not-result.png';
 
 function Marketplace() {
   const nav = useNavigate();
@@ -23,28 +23,31 @@ function Marketplace() {
   const [data, setData] = useState([]);
   const [fetching, setFetching] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize] = useState(20);
+  const [searchValue, setSearchValue] = useState('');
   const [total, setTotal] = useState();
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        setFetching(true);
-        const ret = await getMarketplaceList({
-          page: pageIndex,
-          size: pageSize,
-        });
-        if (ret.code === 200) {
-          const { total: _total, list } = ret.data;
-          setData(list);
-          setTotal(_total);
-        }
-      } catch (error) {
-
+  const fetchMarketPlace = async () => {
+    try {
+      setFetching(true);
+      const ret = await getMarketplaceList({
+        page: pageIndex,
+        size: pageSize,
+        searchValue,
+      });
+      if (ret.code === 200) {
+        const { total: _total, list } = ret.data;
+        setTotal(_total);
+        setData(list);
       }
-      setFetching(false);
-    };
-    fetch();
+    } catch (error) {
+
+    }
+    setFetching(false);
+  };
+
+  useEffect(() => {
+    fetchMarketPlace();
   }, [pageIndex, pageSize]);
 
   const columns = [
@@ -142,6 +145,41 @@ function Marketplace() {
     },
   ];
 
+  const onSearch = () => {
+    fetchMarketPlace();
+  };
+
+  const ListRender = useMemo(() => (
+    <div className="text-center">
+      <Spin wrapperClassName="py-4" spinning={fetching} size="large" tip="Fetching data">
+        {!data.length
+        && (
+          <>
+            <img className="block mx-auto w-[160px] mb-2" src={NotResultImg} alt="Not Result " />
+            <Typography.Title heading={2}>Not Result</Typography.Title>
+          </>
+        )}
+        {isGridView ? (
+          <Row gutter={[10, 18]}>
+            {
+              data.map((item, i) => (
+                <Col
+                  key={i}
+                  xl={6}
+                  lg={12}
+                  md={12}
+                  span={24}
+                >
+                  <MarketItem data={item} className={classNames({ block: !isGridView })} />
+                </Col>
+              ))
+            }
+          </Row>
+        ) : <StyledSemiTable className="filter" pagination={false} columns={columns} dataSource={data} />}
+      </Spin>
+    </div>
+  ), [data, isGridView, fetching]);
+
   useEffect(() => {
     const onresize = () => {
       if (document.body.clientWidth <= 768) {
@@ -162,8 +200,21 @@ function Marketplace() {
         <div className="max-w-[1280px] mx-auto bg-white/10 py-4 px-6 rounded-[30px] mt-7">
           <div className="input-wrap mt-10 h-[56px] flex justify-center">
             <StyledSearchWrap>
-              <input className="flex-1" placeholder="input params" />
-              <IconSearch className="ml-4" />
+              <input
+                className="flex-1"
+                onChange={(e) => setSearchValue(e.target.value)}
+                onSubmit={onSearch}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter') onSearch();
+                }}
+                placeholder="Input params"
+              />
+              <div
+                className="ml-4 px-2 active:bg-gray-600 hover:bg-gray-400/20 h-[40px] w-[40px] rounded-full flex items-center justify-center cursor-pointer "
+                onClick={onSearch}
+              >
+                <IconSearch />
+              </div>
             </StyledSearchWrap>
             <div
               className="rounded-[20px] bg-black/30 cursor-pointer ml-2.5 px-3.5 flex items-center border border-white/10 hover:border-primary-2 xmd:!hidden"
@@ -176,32 +227,17 @@ function Marketplace() {
           </div>
 
           <div className="marketplace-list-wrap mt-10">
-            {isGridView ? (
-              <Row gutter={[10, 18]}>
-                {
-                  data.map((item, i) => (
-                    <Col
-                      key={i}
-                      xl={6}
-                      lg={12}
-                      md={12}
-                      span={24}
-                    >
-                      <MarketItem data={item} className={classNames({ block: !isGridView })} />
-                    </Col>
-                  ))
-                }
-              </Row>
-            ) : <StyledSemiTable className="filter" pagination={false} columns={columns} dataSource={data} />}
+            {ListRender}
           </div>
 
-          <div className="text-right">
+          <div>
             <Pagination
               className="w-full justify-end"
               onPageChange={setPageIndex}
               total={total}
               pageSize={pageSize}
               currentPage={pageIndex}
+              popoverPosition="bottomRight"
             />
           </div>
 

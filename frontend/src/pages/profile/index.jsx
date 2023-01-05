@@ -1,20 +1,14 @@
 import {
-  Button, Form, Input, Modal, Notification, TextArea, Typography,
+  Button, Form, Notification, Typography,
 } from '@douyinfe/semi-ui';
 import { useRef, useState } from 'react';
 import BaseLayout from '@/components/layout/BaseLayout';
-import {
-  ConfirmButton, DeclineButton, ProfileContentWrap, ProfileShadowBox,
-} from './styled';
+import { ProfileContentWrap, ProfileShadowBox } from './styled';
 import DefaultAvatar from '@/assets/imgs/default-avatar.png';
 import {
-  DEPLOYED_INFORMATION_COLUMNS, STAKE_INFORMATION_COLUMNS, WALLET_INFORMATION_COLUMNS,
+  DEPLOYED_INFORMATION_COLUMNS, MOBILE_DEPLOYED_INFORMATION_COLUMNS,
 } from './config';
-import { StyledSemiTable } from '@/components/styled/table';
 
-import addIcon from '../../assets/imgs/svg/addIcon.svg';
-import editIcon from '../../assets/imgs/svg/editIcon.svg';
-import pasteIcon from '../../assets/imgs/svg/pasteIcon.svg';
 import PrivacyField from './components/PrivacyField';
 import { update } from '@/api/profile';
 import AddWalletModal from './components/modal/AddWalletModal';
@@ -22,34 +16,7 @@ import { useUserInfo } from '@/hooks/provider';
 import { toGithub, toTwitter } from '@/utils/toPlatform';
 import OracleUpdateModal from './components/modal/OracleUpdateModal';
 import StakeModal from './components/modal/StakeModal';
-
-function ProfileTable({
-  data, title, attri, operation, isPaste,
-}) {
-  return (
-    <div>
-      {data.map((item, index) => (
-        <ProfileContentWrap className="!pt-5" key={index}>
-          <div className="flex justify-between">
-            <Typography.Title heading={5}>{title} {index + 1}</Typography.Title>
-            {operation}
-          </div>
-          <div>
-            {Object.getOwnPropertyNames(item).map((attr, _index) => (
-              <div className="mt-4 text-sm flex justify-between" key={_index}>
-                <div>{attr}</div>
-                <div className="inline-flex">
-                  <div>{item[attr].length > 15 ? item[attr].slice(0, 7).concat('...').concat(item[attr].slice(-8, -1)) : item[attr]}</div>
-                  {isPaste && <img src={pasteIcon} alt="" />}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ProfileContentWrap>
-      ))}
-    </div>
-  );
-}
+import Table from './components/Table';
 
 function Profile() {
   const profileFormRef = useRef();
@@ -59,71 +26,30 @@ function Profile() {
   const [FreePerCall, setFreePerCall] = useState('3 SAAS');
   const [FreeCallEdit, setFreeEdit] = useState(false);
 
-  const walletData = [
-    {
-      address: '0x4A418110c1cd4391784508abF2c534Be887a61F7',
-      chains: 'bsc',
-    }, {
-      address: '0x4A418110c1cd4391784508abF2c534Be887a61F7',
-      chains: 'bsc',
-    },
-  ];
-  const stakeData = [
-    {
-      oracle: 'BITCOIN... ORACLE',
-      creator: 'FIFA Whale',
-      chains: [1],
-      stake: '100K(SAAS)',
-      tvl: '2.2M SAAS',
-      apr: '102%',
-      roi: '10.13%',
-      reward: '202.7 SAAS',
-    },
-  ];
-
-  const deployedData = [
-    {
-      oracle: 'BITCOIN... ORACLE',
-      creator: 'FIFA Whale',
-      chains: [1],
-      stake: '100K(SAAS)',
-      tvl: '2.2M SAAS',
-      total_earning: '200,000 SAAS',
-      reward_distribution:
-  <div>
-    10% - Creator<br />
-    30% - Miner<br />
-    60% - Staker
-  </div>,
-      fee_per_call:
-  <div className="flex">
-    {FreeCallEdit
-      ? <Input placeholder={FreePerCall} value={FreePerCall} onChange={(value, e) => { setFreePerCall(value); }} />
-      : (
-        <div className="flex">
-          <div>{FreePerCall}</div>
-          <div className="cursor-pointer" onClick={() => { setFreeEdit(true); }}>
-            <img src={editIcon} alt="" />
-          </div>
-        </div>
-      )}
-  </div>,
-    },
-  ];
   const [editing, setEditing] = useState(false);
   const { userInfo, loginUser } = useUserInfo();
 
   const onSave = () => {
+    if (!Object.keys(profileFormRef.current.formApi.getFormState().touched).length) {
+      return setEditing(false);
+    }
     profileFormRef.current.formApi.validate().then(async (values) => {
       try {
-        const updateRet = await update(userInfo.id, values);
+        const updateRet = await update(userInfo.id, {
+          description: '',
+          email: '',
+          github: '',
+          name: '',
+          telegram: '',
+          twitter: '',
+          ...values,
+        });
         if (updateRet.code === 200) {
           await loginUser();
           Notification.success({
             title: 'modify user info.',
             content: 'Successfully modified personal data.',
           });
-          setEditing(false);
         } else {
           Notification.error({
             title: 'modify user info.',
@@ -136,12 +62,13 @@ function Profile() {
           content: 'Failed to modify personal data.',
         });
       }
+      setEditing(false);
     });
   };
 
   return (
     <BaseLayout>
-      <div className="container nmd:px-[106px] nmd:py-[64px] xmd:pt-[2rem]">
+      <div className="container nmd:px-[106px] nmd:py-[64px] xmd:py-[2rem]">
         <Typography.Title heading={2}>USER INFORMATION</Typography.Title>
 
         <ProfileContentWrap className="nmd:!rounded-tl-[60px] xmd:!rounded-[2rem]">
@@ -171,7 +98,7 @@ function Profile() {
                 </div>
                 <div className="mt-4">
                   {
-                    editing ? <Form.TextArea initValue={userInfo?.description} rules={[{ required: true }]} field="description" noLabel placeholder="description" /> : (
+                    editing ? <Form.TextArea initValue={userInfo?.description} field="description" noLabel placeholder="description" /> : (
                       <Typography.Paragraph>{userInfo?.description}</Typography.Paragraph>
                     )
                   }
@@ -218,12 +145,12 @@ function Profile() {
           </Form>
         </ProfileContentWrap>
 
-        <ProfileShadowBox className="nmd:hidden w-[100vw] relative right-[20px] py-[1.5rem] px-[1.5rem] rounded-t-[2rem]">
-          <div className="flex justify-between">
-            <Typography.Title heading={4} className="">WALLET INFORMATION</Typography.Title>
+        <ProfileShadowBox className="py-[22px] px-[25px] rounded-[30px]">
+          {/* <div className="flex justify-between">
+            <Typography.Title className="xmd:!text-xl" heading={2}>WALLET INFORMATION</Typography.Title>
             <Button
               theme="borderless"
-              className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center"
+              className="nmd:hidden w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full"
               size="large"
               type="primary"
               onClick={() => addWalletModalRef.current.open()}
@@ -231,100 +158,76 @@ function Profile() {
               Add
             </Button>
           </div>
-          <ProfileTable data={walletData} title="Wallet" attri={['Address', 'Chain']} />
+          <Table
+            pagination={null}
+            columns={WALLET_INFORMATION_COLUMNS.concat({
+              title: (
+                <div className="cursor-pointer" onClick={() => addWalletModalRef.current.open()}>
+                  <img src={addIcon} alt="" />
+                </div>
+              ),
+            })}
+            mobileColumns={MOBILE_WALLET_INFORMATION_COLUMNS}
+            // eslint-disable-next-line react/no-unstable-nested-components
+            mobileTitleRender={(_, index) => <Typography.Title heading={4}>Wallet {index + 1}</Typography.Title>}
+            dataSource={userInfo?.wallets}
+          /> */}
 
-          <Typography.Title heading={4}>STAKE INFORMATION</Typography.Title>
-          <ProfileTable
-            data={stakeData}
-            attri={Object.getOwnPropertyNames(stakeData[0])}
-            isPaste={false}
-            operation={(
-              <Button
-                theme="borderless"
-                className="w-max h-[2rem] !text-white !border !border-white rounded-full"
-                size="large"
-                onClick={() => stakeModalRef.current.open()}
-              >
-                Operate
-              </Button>
+          {/* <Typography.Title className="xmd:!text-xl" heading={2}>STAKE INFORMATION</Typography.Title>
+          <Table
+            pagination={null}
+            columns={STAKE_INFORMATION_COLUMNS.concat({
+              title: '',
+              render: () => (
+                <Button
+                  theme="borderless"
+                  className="w-[100px] !text-white !border !border-white rounded-full"
+                  size="large"
+                  onClick={() => stakeModalRef.current.open()}
+                >
+                  Operate
+                </Button>
+              ),
+            })}
+            dataSource={stakeData}
+          /> */}
+
+          <Typography.Title className="xmd:!text-xl" heading={2}>DEPLOYED ORACLES</Typography.Title>
+
+          <Table
+            pagination={null}
+            columns={DEPLOYED_INFORMATION_COLUMNS.concat({
+              title: '',
+              render: () => (
+                <Button
+                  theme="borderless"
+                  className="w-[100px] !text-white !border !border-white rounded-full"
+                  size="large"
+                  disabled
+                  onClick={() => oracleUpdateModalRef.current.open()}
+                >
+                  Update Now
+                </Button>
+              ),
+            })}
+            mobileColumns={MOBILE_DEPLOYED_INFORMATION_COLUMNS}
+            // eslint-disable-next-line react/no-unstable-nested-components
+            mobileTitleRender={(_, i) => (
+              <div className="flex items-center justify-between">
+                <Typography.Title heading={4}>ORACLES-{i}</Typography.Title>
+                <Button
+                  theme="borderless"
+                  className="w-[100px] !text-white !border !border-white rounded-full"
+                  size="large"
+                  disabled
+                  onClick={() => oracleUpdateModalRef.current.open()}
+                >
+                  Operation
+                </Button>
+              </div>
             )}
+            dataSource={userInfo?.dapis}
           />
-
-          <Typography.Title heading={4}>DEPLOYED ORACLES</Typography.Title>
-          <ProfileTable
-            data={deployedData}
-            attri={Object.getOwnPropertyNames(deployedData[0])}
-            isPaste={false}
-            operation={(
-              <Button
-                theme="borderless"
-                className="w-max h-[2rem] !text-white !border !border-white rounded-full"
-                size="large"
-                onClick={() => oracleUpdateModalRef.current.open()}
-              >
-                Operate
-              </Button>
-            )}
-          />
-        </ProfileShadowBox>
-
-        <ProfileShadowBox className="xmd:hidden py-[22px] px-[25px] rounded-[30px]">
-          <Typography.Title heading={2}>WALLET INFORMATION</Typography.Title>
-          <ProfileContentWrap className="!pt-0">
-            <StyledSemiTable
-              pagination={null}
-              columns={WALLET_INFORMATION_COLUMNS.concat({
-                title: (
-                  <div className="cursor-pointer" onClick={() => addWalletModalRef.current.open()}>
-                    <img src={addIcon} alt="" />
-                  </div>
-                ),
-              })}
-              dataSource={walletData}
-            />
-          </ProfileContentWrap>
-
-          <Typography.Title heading={2}>STAKE INFORMATION</Typography.Title>
-          <ProfileContentWrap className="!pt-0">
-            <StyledSemiTable
-              pagination={null}
-              columns={STAKE_INFORMATION_COLUMNS.concat({
-                title: '',
-                render: () => (
-                  <Button
-                    theme="borderless"
-                    className="w-[100px] !text-white !border !border-white rounded-full"
-                    size="large"
-                    onClick={() => stakeModalRef.current.open()}
-                  >
-                    Operate
-                  </Button>
-                ),
-              })}
-              dataSource={stakeData}
-            />
-          </ProfileContentWrap>
-
-          <Typography.Title heading={2}>DEPLOYED ORACLES</Typography.Title>
-          <ProfileContentWrap className="!pt-0">
-            <StyledSemiTable
-              pagination={null}
-              columns={DEPLOYED_INFORMATION_COLUMNS.concat({
-                title: '',
-                render: () => (
-                  <Button
-                    theme="borderless"
-                    className="w-[100px] !text-white !border !border-white rounded-full"
-                    size="large"
-                    onClick={() => oracleUpdateModalRef.current.open()}
-                  >
-                    Update Now
-                  </Button>
-                ),
-              })}
-              dataSource={userInfo?.oracles}
-            />
-          </ProfileContentWrap>
         </ProfileShadowBox>
       </div>
 

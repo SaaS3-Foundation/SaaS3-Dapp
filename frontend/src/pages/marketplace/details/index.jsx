@@ -186,8 +186,18 @@ function MarketplaceDetails() {
                   <div className="flex-1 flex items-center ml-4">
                     <Typography.Title heading={4} className="font-bold text-2xl">{detail.creator.name}</Typography.Title>
                     <div className="ml-auto">
-                      <IconTwitter onClick={() => toTwitter(detail.creator.twitter)} className="hover:text-gray-400 cursor-pointer text-2xl" />
-                      <IconGithubLogo onClick={() => toGithub(detail.creator.github)} className="hover:text-gray-400 cursor-pointer text-2xl" />
+                      <IconTwitter
+                        onClick={() => toTwitter(detail.creator.twitter)}
+                        className={classNames('hover:text-gray-400 cursor-pointer text-2xl', {
+                          hidden: !detail.creator.twitter,
+                        })}
+                      />
+                      <IconGithubLogo
+                        onClick={() => toGithub(detail.creator.github)}
+                        className={classNames('hover:text-gray-400 cursor-pointer text-2xl', {
+                          hidden: !detail.creator.github,
+                        })}
+                      />
                     </div>
                   </div>
                 </div>

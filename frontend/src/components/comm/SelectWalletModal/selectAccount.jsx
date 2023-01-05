@@ -5,7 +5,7 @@ import {
 import { Identicon } from '@polkadot/react-identicon';
 import classNames from 'classnames';
 import { polkadotWalletContext } from '@/provider/polkadotWallet';
-import { formatAddress } from '@/utils/address';
+import { omitText } from '@/utils/utils';
 import { RoundItemLink } from './styled';
 
 function SelectAccount(props) {
@@ -61,7 +61,7 @@ function SelectAccount(props) {
                   {account.name}
                 </Typography.Title>
                 <Typography.Text>
-                  {formatAddress(account.address)}
+                  {omitText(account.address)}
                 </Typography.Text>
               </div>
               <div className="ml-auto">
