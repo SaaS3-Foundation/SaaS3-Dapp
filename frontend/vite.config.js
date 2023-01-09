@@ -4,7 +4,6 @@ import postcssImport from 'postcss-import';
 import autoprefixer from 'autoprefixer';
 import tailwindcss from 'tailwindcss';
 import inject from '@rollup/plugin-inject';
-// import svgr from 'vite-plugin-svgr';
 import compressPlugin from 'vite-plugin-compression';
 import legacyPlugin from '@vitejs/plugin-legacy';
 import path from 'path';
@@ -65,6 +64,7 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+    minify: 'terser',
     terserOptions: {
       compress: {
         drop_debugger: true,

@@ -121,3 +121,14 @@ export function omitText(text = '') {
   }
   return text;
 }
+
+export function filterEmptyField(data = []) {
+  return data.reduce((ret, curr) => {
+    const { key = '', value = '' } = curr || {};
+    if (!key && !value) {
+      return ret;
+    }
+    ret[key] = value;
+    return ret;
+  }, {});
+}

@@ -1,56 +1,39 @@
 import {
-  createContext, useEffect, useMemo, useState,
+  createContext, useMemo,
 } from 'react';
-import { useNetwork } from 'wagmi';
-import { login } from '@/api/profile';
+import { useAccount, useNetwork } from 'wagmi';
 import { useUserSignMessage } from '@/hooks/signMessage';
+import { useLogin } from '@/hooks/api/user';
 
 const userInfoContext = createContext({
-  userInfo: null,
-  setUserInfo: () => {},
-  loginUser: () => {},
+  userInfo: {
+    name: '',
+    description: '',
+    email: '',
+    twitter: '',
+    github: '',
+    telegram: '',
+  },
+  error: null,
+  mutate: () => {},
+  isLoading: false,
 });
 
 function UserInfoProvider(props) {
   const { children } = props;
-  const [userInfo, setUserInfo] = useState();
-
   const { address } = useUserSignMessage();
   const { chain } = useNetwork();
-
-  const loginUser = async () => {
-    try {
-      const loginRet = await login(address, {
-        wallets: [{
-          chain: { chainId: chain.id },
-          address,
-        }],
-      });
-      if (loginRet.code === 200) {
-        setUserInfo(loginRet.data);
-      } else {
-        throw loginRet;
-      }
-    } catch (error) {
-      setUserInfo(null);
-      Notification.error({
-        title: 'fetch user info failed.',
-        content: error.msg,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (address) {
-      loginUser();
-    }
-  }, [address, chain]);
+  const { isConnected } = useAccount();
+  const {
+    data, error, isLoading, mutate,
+  } = useLogin(isConnected && chain ? address : null);
 
   const value = useMemo(() => ({
-    userInfo,
-    setUserInfo,
-    loginUser,
-  }), [userInfo, setUserInfo]);
+    userInfo: data,
+    isLoading,
+    error,
+    mutate,
+  }), [data, error, isLoading, mutate]);
 
   return (
     <userInfoContext.Provider value={value}>{children}</userInfoContext.Provider>

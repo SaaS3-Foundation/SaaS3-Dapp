@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { Link, useLocation } from 'react-router-dom';
 import { Typography } from '@douyinfe/semi-ui';

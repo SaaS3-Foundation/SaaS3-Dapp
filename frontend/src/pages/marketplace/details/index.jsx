@@ -3,18 +3,17 @@ import {
 } from '@douyinfe/semi-ui';
 import { IconTwitter, IconGithubLogo, IconCopy } from '@douyinfe/semi-icons';
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router';
 import classNames from 'classnames';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { StyledAddressItem, StyledChartsWrap, StyledCollapse } from '../styled';
 import DefaultAvatar from '@/assets/imgs/marketplace/default-avatar.png';
 import ChainIcon from '@/components/comm/ChainIcon';
-import { EVM_CHAINID } from '@/config/network';
-import { getDetail } from '@/api/marketplace';
 import { copy } from '@/utils/utils';
 import UrlPropsView from '../components/UrlPropsView';
 import { toGithub, toTwitter } from '@/utils/toPlatform';
+import { useMarketDetail } from '@/hooks/api/makeplace';
 
 const data1 = [
   ['Jan', 2],
@@ -131,43 +130,9 @@ function MarketplaceDetails() {
   const [succ, setSucc] = useState(true);
   const params = useParams();
 
-  const [detail, setDetail] = useState({
-    oracleInfo: {
-      title: '--',
-      web2Info: { },
-      sourceChain: { },
-      targetChain: { },
-    },
-    creator: {
-      id: '--',
-      name: '--',
-      email: '--',
-      github: '--',
-      twitter: '--',
-      telegram: '--',
-      description: '--',
-      wallets: [],
-      oracles: null,
-      create_at: '--',
-      update_at: '--',
-    },
-  });
-
-  useEffect(() => {
-    const fetchDetail = async () => {
-      try {
-        const ret = await getDetail({ id: params.id });
-        if (ret.code === 200) {
-          setDetail(ret.data);
-        }
-      } catch (error) {
-
-      }
-    };
-    if (params.id) {
-      fetchDetail();
-    }
-  }, [params.id]);
+  const {
+    data: detail, isLoading,
+  } = useMarketDetail({ id: params.id });
 
   return (
     <BaseLayout>

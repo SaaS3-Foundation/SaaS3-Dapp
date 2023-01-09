@@ -15,7 +15,7 @@ import { checkHttpUrl } from '@/utils/check';
 import LoadingButton from '@/components/custom/LoadingButton';
 import ApiResultWrap from '../components/ApiResultWrap';
 import { POLKADOT_NETWORK_NODES } from '@/config/network';
-import { ArrayToObjectByKeyValue, typeTransferToSaaS3Type } from '@/utils/utils';
+import { ArrayToObjectByKeyValue, filterEmptyField, typeTransferToSaaS3Type } from '@/utils/utils';
 import { useUserInfo } from '@/hooks/provider';
 
 function Deploy() {
@@ -49,22 +49,8 @@ function Deploy() {
         const testResult = await testrun({
           uri: url,
           method: method.toUpperCase(),
-          headers: headers.reduce((ret, curr) => {
-            const { key = '', value = '' } = curr || {};
-            if (!key && !value) {
-              return ret;
-            }
-            ret[key] = value;
-            return ret;
-          }, {}),
-          body: body.reduce((ret, curr) => {
-            const { key = '', value = '' } = curr || {};
-            if (!key && !value) {
-              return ret;
-            }
-            ret[key] = value;
-            return ret;
-          }, {}),
+          headers: filterEmptyField(headers),
+          body: filterEmptyField(body),
         });
         setTestData(testResult);
       }
@@ -168,6 +154,7 @@ function Deploy() {
         content: result?.msg || 'Deployment failed',
       });
     } catch (error) {
+      console.log(error);
       Notification.error({
         title: 'Deployment',
         content: error?.msg || 'Deployment failed',

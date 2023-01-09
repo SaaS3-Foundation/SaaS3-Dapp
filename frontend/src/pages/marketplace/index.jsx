@@ -2,7 +2,9 @@ import {
   Button, Col, Image, Pagination, Row, Spin, Typography,
 } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router';
 import BaseLayout from '@/components/layout/BaseLayout';
@@ -12,43 +14,22 @@ import MarketItem from './components/MarketItem';
 import { StyledCancelButton, StyledSearchWrap } from './styled';
 import { StyledSemiTable } from '@/components/styled/table';
 import defaultItemAvatar from '@/assets/imgs/default-item-avatar.png';
-import { getMarketplaceList } from '@/api/marketplace';
 import { formatDate } from '@/utils/utils';
 import ChainIcon from '@/components/comm/ChainIcon';
 import NotResultImg from '@/assets/imgs/not-result.png';
+import { useMarketList } from '@/hooks/api/makeplace';
 
 function Marketplace() {
   const nav = useNavigate();
+  const searchValueRef = useRef();
   const [isGridView, setIsGridView] = useState(true);
-  const [data, setData] = useState([]);
-  const [fetching, setFetching] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
-  const [searchValue, setSearchValue] = useState('');
-  const [total, setTotal] = useState();
-
-  const fetchMarketPlace = async () => {
-    try {
-      setFetching(true);
-      const ret = await getMarketplaceList({
-        page: pageIndex,
-        size: pageSize,
-        searchValue,
-      });
-      if (ret.code === 200) {
-        const { total: _total, list } = ret.data;
-        setTotal(_total);
-        setData(list);
-      }
-    } catch (error) {
-
-    }
-    setFetching(false);
-  };
-
-  useEffect(() => {
-    fetchMarketPlace();
-  }, [pageIndex, pageSize]);
+  const { data: { list = [], total = 0 }, isLoading, mutate } = useMarketList({
+    page: pageIndex,
+    size: pageSize,
+    searchValue: searchValueRef.current,
+  });
 
   const columns = [
     {
@@ -146,23 +127,33 @@ function Marketplace() {
   ];
 
   const onSearch = () => {
-    fetchMarketPlace();
+    const opt = {
+      page: pageIndex,
+      size: pageSize,
+      searchValue: searchValueRef.current,
+    };
+    mutate(opt);
   };
 
   const ListRender = useMemo(() => (
     <div className="text-center">
-      <Spin wrapperClassName="py-4" spinning={fetching} size="large" tip="Fetching data">
-        {!data.length
+      <Spin
+        wrapperClassName="py-4"
+        spinning={isLoading}
+        size="large"
+        tip="Fetching data"
+      >
+        {!list.length
         && (
           <>
             <img className="block mx-auto w-[160px] mb-2" src={NotResultImg} alt="Not Result " />
-            <Typography.Title heading={2}>Not Result</Typography.Title>
+            <Typography.Text>No Result</Typography.Text>
           </>
         )}
         {isGridView ? (
           <Row gutter={[10, 18]}>
             {
-              data.map((item, i) => (
+              list.map((item, i) => (
                 <Col
                   key={i}
                   xl={6}
@@ -175,10 +166,10 @@ function Marketplace() {
               ))
             }
           </Row>
-        ) : <StyledSemiTable className="filter" pagination={false} columns={columns} dataSource={data} />}
+        ) : <StyledSemiTable className="filter" pagination={false} columns={columns} dataSource={list} />}
       </Spin>
     </div>
-  ), [data, isGridView, fetching]);
+  ), [list, isGridView, isLoading]);
 
   useEffect(() => {
     const onresize = () => {
@@ -202,7 +193,9 @@ function Marketplace() {
             <StyledSearchWrap>
               <input
                 className="flex-1"
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  searchValueRef.current = e.target.value;
+                }}
                 onSubmit={onSearch}
                 onKeyUp={(e) => {
                   if (e.key === 'Enter') onSearch();

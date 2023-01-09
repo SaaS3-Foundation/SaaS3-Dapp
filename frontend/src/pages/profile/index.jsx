@@ -2,6 +2,8 @@ import {
   Button, Form, Notification, Typography,
 } from '@douyinfe/semi-ui';
 import { useRef, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { ProfileContentWrap, ProfileShadowBox } from './styled';
 import DefaultAvatar from '@/assets/imgs/default-avatar.png';
@@ -27,7 +29,10 @@ function Profile() {
   const [FreeCallEdit, setFreeEdit] = useState(false);
 
   const [editing, setEditing] = useState(false);
-  const { userInfo, loginUser } = useUserInfo();
+  const { userInfo, mutate } = useUserInfo();
+
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const onSave = () => {
     if (!Object.keys(profileFormRef.current.formApi.getFormState().touched).length) {
@@ -39,13 +44,12 @@ function Profile() {
           description: '',
           email: '',
           github: '',
-          name: '',
           telegram: '',
           twitter: '',
           ...values,
         });
         if (updateRet.code === 200) {
-          await loginUser();
+          mutate();
           Notification.success({
             title: 'modify user info.',
             content: 'Successfully modified personal data.',
@@ -86,7 +90,10 @@ function Profile() {
                   className="w-[4.5rem] h-[2rem] !text-white !border !border-white rounded-full self-center nmd:hidden "
                   size="large"
                   type="primary"
-                  onClick={() => (!editing ? setEditing(!editing) : onSave())}
+                  onClick={() => {
+                    if (!isConnected) return openConnectModal();
+                    !editing ? setEditing(!editing) : onSave();
+                  }}
                 >
                   {!editing ? 'Edit' : 'Save'}
                 </Button>
@@ -94,12 +101,12 @@ function Profile() {
               <div className="nmd:ml-7 nmd:mr-20 flex-1">
                 <div className="xmd:hidden ">
                   {editing ? <Form.Input initValue={userInfo?.name} rules={[{ required: true }]} field="name" noLabel placeholder="name" />
-                    : <Typography.Text className="block text-xl font-bold">{userInfo?.name}</Typography.Text>}
+                    : <Typography.Text className="block text-xl font-bold">{userInfo?.name || '--'}</Typography.Text>}
                 </div>
                 <div className="mt-4">
                   {
                     editing ? <Form.TextArea initValue={userInfo?.description} field="description" noLabel placeholder="description" /> : (
-                      <Typography.Paragraph>{userInfo?.description}</Typography.Paragraph>
+                      <Typography.Paragraph>{userInfo?.description || '--'}</Typography.Paragraph>
                     )
                   }
                 </div>
@@ -136,7 +143,10 @@ function Profile() {
                   className="w-[100px] !text-white !border !border-white rounded-full xmd:hidden"
                   size="large"
                   type="primary"
-                  onClick={() => (!editing ? setEditing(!editing) : onSave())}
+                  onClick={() => {
+                    if (!isConnected) return openConnectModal();
+                    !editing ? setEditing(!editing) : onSave();
+                  }}
                 >
                   {!editing ? 'Edit' : 'Save'}
                 </Button>

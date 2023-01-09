@@ -41,6 +41,7 @@
     "react-router-dom": "^6.4.0",
     "stream-browserify": "^3.0.0",
     "styled-components": "^5.3.5",
+    "swr": "^2.0.0",
     "url-search-params-polyfill": "^8.1.1",
     "util": "^0.12.5",
     "wagmi": "^0.8.7"

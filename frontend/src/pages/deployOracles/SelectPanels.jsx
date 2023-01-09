@@ -2,7 +2,7 @@ import {
   Col, Image, Row, Typography,
 } from '@douyinfe/semi-ui';
 import { useNavigate } from 'react-router';
-import { useAccount, useConnect } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import BaseLayout from '@/components/layout/BaseLayout';
 import dataFree from '@/assets/imgs/deploy-oracles/datafree.png';
@@ -15,6 +15,7 @@ function SelectPanels() {
   const nav = useNavigate();
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
+
   const toDelopyPage = (type) => {
     if (!isConnected) {
       return openConnectModal();
@@ -45,7 +46,6 @@ function SelectPanels() {
             </StyledPanel>
           </Col>
           <Col lg={12} span={24}>
-
             <StyledPanel onClick={() => toDelopyPage('Web2-Integration')}>
               <Image preview={false} width="100" src={apis} alt="" />
               <Typography.Text>Function Emitter Web2 Integration. <br />Call Web2 APIS based on Web3 activity.</Typography.Text>
