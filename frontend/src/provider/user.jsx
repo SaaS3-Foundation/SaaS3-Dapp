@@ -26,7 +26,12 @@ function UserInfoProvider(props) {
   const { isConnected } = useAccount();
   const {
     data, error, isLoading, mutate,
-  } = useLogin(isConnected && chain ? address : null);
+  } = useLogin(isConnected && chain ? address : null, {
+    wallets: [{
+      chain: { chainId: chain.id },
+      address,
+    }],
+  });
 
   const value = useMemo(() => ({
     userInfo: data,

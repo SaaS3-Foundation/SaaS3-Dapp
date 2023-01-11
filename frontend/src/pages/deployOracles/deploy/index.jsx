@@ -329,7 +329,7 @@ function Deploy() {
               </Form.Upload>
               <Typography.Title heading={6} className="text-[#5B5B5D]">
                 Drop file here or
-                <span onClick={() => uploadRef.current.onClick()} className="text-primary-2 underline cursor-pointer">Choose File</span>
+                &nbsp;<span onClick={() => uploadRef.current.onClick()} className="text-primary-2 underline cursor-pointer">Choose File</span>
               </Typography.Title>
             </DeployWrap>
 
