@@ -22,6 +22,7 @@ function Deploy() {
   const nav = useNavigate();
   const formRef = useRef();
   const apiResultRef = useRef();
+  const uploadRef = useRef();
   const [isParamsBoxOpen, setIsParamsBoxOpen] = useState(false);
   const [testData, setTestData] = useState({});
   const [fetching, setFetching] = useState(false);
@@ -30,11 +31,12 @@ function Deploy() {
   const { chain } = useNetwork();
   const { userInfo } = useUserInfo();
 
-  const onFileDrap = (event) => {
-    event.preventDefault();
-    const [_file] = event.dataTransfer.files;
-    formRef.current.formApi.setValue('createrAvatar', [_file]);
-  };
+  // const onFileDrap = (event) => {
+  //   event.preventDefault();
+  //   const [_file] = event.dataTransfer.files;
+  //   console.log(_file);
+  //   // formRef.current.formApi.setValue('createrAvatar', [_file]);
+  // };
 
   const onTestRun = async () => {
     try {
@@ -152,12 +154,8 @@ function Deploy() {
         }, 2000);
         return;
       }
-      Notification.error({
-        title: 'Deployment',
-        content: result?.msg || 'Deployment failed',
-      });
+      throw result;
     } catch (error) {
-      console.log(error);
       Notification.error({
         title: 'Deployment',
         content: error?.msg || 'Deployment failed',
@@ -314,29 +312,31 @@ function Deploy() {
             <Typography.Title heading={2}>
               UPLOAD IMAGE
             </Typography.Title>
-            <DeployWrap className="text-center" onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+            <DeployWrap className="text-center">
               <Form.Upload
+                ref={uploadRef}
                 className="justify-center"
                 field="logo"
                 noLabel
                 limit={1}
-                rules={[
-                  { required: true, message: 'Required error' },
-                ]}
                 action=""
                 accept="image/*"
                 uploadTrigger="custom"
                 listType="picture"
+                draggable
               >
                 upload
               </Form.Upload>
-              <Typography.Title heading={6} className="text-[#5B5B5D]">Drop file here or <span className="text-primary-2 underline">Choose File</span></Typography.Title>
+              <Typography.Title heading={6} className="text-[#5B5B5D]">
+                Drop file here or
+                <span onClick={() => uploadRef.current.onClick()} className="text-primary-2 underline cursor-pointer">Choose File</span>
+              </Typography.Title>
             </DeployWrap>
 
             <Typography.Title heading={2}>
               CREATOR’S NOTE
             </Typography.Title>
-            <DeployWrap className="text-center" onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+            <DeployWrap className="text-center">
               <Form.TextArea
                 rules={[
                   { required: true, message: 'Required error' },
@@ -351,7 +351,7 @@ function Deploy() {
             <Typography.Title heading={2}>
               SOURCE NETWORK
             </Typography.Title>
-            <DeployWrap onDragOver={(event) => event.preventDefault()} onDrop={onFileDrap}>
+            <DeployWrap>
               <Form.Select
                 field="sourceChainId"
                 className="rounded-full"
