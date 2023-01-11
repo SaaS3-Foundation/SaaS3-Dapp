@@ -55,7 +55,10 @@ function Deploy() {
         setTestData(testResult);
       }
     } catch (error) {
-
+      setTestData({
+        code: 500,
+        msg: error.message || 'Network Error',
+      });
     }
     setFetching(false);
   };

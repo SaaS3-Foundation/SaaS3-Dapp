@@ -31,7 +31,7 @@ function ApiResultWrap(props, ref) {
     return (
       <>
         <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT PATH:  {[...endpointPath].reverse().join('.') || '--'}</Typography.Text>
-        <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValueASString}</Typography.Text>
+        {/* <Typography.Text className="border round py-2 px-3 font-bold">DATA ENDPOINT:  {endpointValueASString}</Typography.Text> */}
       </>
     );
   }, [endpointPath, endpointValue, fetching, testData]);

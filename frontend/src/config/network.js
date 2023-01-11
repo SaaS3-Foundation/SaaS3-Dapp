@@ -1,6 +1,7 @@
 import { khala } from '@phala/typedefs';
 import { chain } from 'wagmi';
 import bscIcon from '@/assets/imgs/icon/bsc.png';
+import moonbaseIcon from '@/assets/imgs/icon/moonbase.png';
 import { ReactComponent as Bsc } from '@/assets/imgs/svg/Icon/BAN.svg';
 import { ReactComponent as Eth } from '@/assets/imgs/svg/Icon/Ethereum.svg';
 
@@ -50,6 +51,7 @@ export const POLKADOT_PRUNTIME_URL_DEFAULT = 'https://poc5.phala.network/tee-api
 export const EVM_CHAINID = {
   ETH: 1,
   BSC: 56,
+  MOONBASEALPHA: 1287,
 };
 
 export const EVMNETWORKS = {
@@ -87,6 +89,33 @@ export const EVMNETWORKS = {
       name: 'BSC Mainnet',
     },
   },
+  [EVM_CHAINID.MOONBASEALPHA]: {
+    name: 'Moonbase Alpha',
+    SvgComponent: Bsc,
+    chain: {
+      iconUrl: moonbaseIcon,
+      iconBackground: '#fff',
+      id: EVM_CHAINID.MOONBASEALPHA,
+      blockExplorers: {
+        default: {
+          name: 'moonbase scan',
+          url: 'https://moonbase.moonscan.io',
+        },
+      },
+      // ens: { address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' },
+      multicall: {
+        address: '0xca11bde05977b3631167028862be2a173976ca11',
+        blockCreated: 14353601,
+      },
+      nativeCurrency: {
+        decimals: 18,
+        name: 'DEV',
+        symbol: 'DEV',
+      },
+      rpcUrls: {
+        default: 'https://rpc.api.moonbase.moonbeam.network',
+      },
+      name: 'Moonbase Alpha',
+    },
+  },
 };
-
-console.log(EVMNETWORKS);
