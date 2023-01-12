@@ -29,7 +29,7 @@ const fetcher = (options) => axios({
 function App() {
   return (
     <SWRConfig value={{
-      errorRetryCount: 3,
+      errorRetryCount: 0,
       revalidateOnFocus: false,
       fetcher,
     }}

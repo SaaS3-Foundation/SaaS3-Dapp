@@ -36,9 +36,10 @@ export function typeTransferToSaaS3Type(value) {
 
 export function ArrayToObjectByKeyValue(data = []) {
   return data.reduce((ret, item) => {
+    if (!item) return ret;
     const { key, value } = item;
     if (key === undefined || key === null) return ret;
-    ret[key] = value;
+    ret[key] = value || '';
     return ret;
   }, {});
 }

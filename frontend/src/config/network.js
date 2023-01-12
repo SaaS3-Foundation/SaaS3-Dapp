@@ -6,13 +6,13 @@ import { ReactComponent as Bsc } from '@/assets/imgs/svg/Icon/BAN.svg';
 import { ReactComponent as Eth } from '@/assets/imgs/svg/Icon/Ethereum.svg';
 
 export const POLKADOT_NETWORK_NODES = [
-  {
-    id: 'phala-via-phala',
-    name: 'Phala Mainnet',
-    endpoint: 'wss://api.phala.network/ws',
-    types: khala,
-    kind: 'phala',
-  },
+  // {
+  //   id: 'phala-via-phala',
+  //   name: 'Phala Mainnet',
+  //   endpoint: 'wss://api.phala.network/ws',
+  //   types: khala,
+  //   kind: 'phala',
+  // },
   // {
   //   id: 'khala-via-phala',
   //   name: 'Khala via Phala',
@@ -34,15 +34,15 @@ export const POLKADOT_NETWORK_NODES = [
   //   types: khala,
   //   kind: 'khala',
   // },
-  (import.meta.env.MODE === 'development')
-    && ({
-      id: 'pc-test-3',
-      name: 'Phala Testnet',
-      endpoint: 'wss://pc-test-3.phala.network/khala/ws',
-      types: khala,
-      kind: 'test',
-    }),
-].filter((node) => node !== false);
+  {
+    id: 'Phala Testnet',
+    name: 'Phala Testnet',
+    endpoint: 'wss://poc5.phala.network/ws',
+    pruntime: 'https://poc5.phala.network/tee-api-1',
+    types: khala,
+    kind: 'test',
+  },
+];
 
 export const POLKADOT_ENDPOINT_DEFAULT = 'wss://poc5.phala.network/ws';
 

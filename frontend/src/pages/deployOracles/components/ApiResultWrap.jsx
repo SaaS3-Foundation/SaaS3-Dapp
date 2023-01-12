@@ -51,7 +51,7 @@ function ApiResultWrap(props, ref) {
           />
         </StyledJsonTreeWrap>
       </Collapsible>
-    )), [showDemo, isJSONBoxOpen, testData]);
+    )), [endpointPath, showDemo, isJSONBoxOpen, testData]);
 
   return (
     <div>

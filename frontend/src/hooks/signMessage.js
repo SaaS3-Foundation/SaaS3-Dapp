@@ -16,20 +16,22 @@ export const useUserSignMessage = () => {
 
   useEffect(() => {
     if (address && isConnected && connector) {
-      let __uuid = localStorage.getItem('__nonce');
+      let __nonce = localStorage.getItem('__nonce');
       const __userSign = localStorage.getItem('__userSign');
-      if (verifyMessage(address, __uuid, __userSign)) {
-        setNonce(__uuid);
+      if (verifyMessage(address, __nonce, __userSign)) {
+        setNonce(__nonce);
         setSignMessage(__userSign);
         return;
       }
-      __uuid = guid();
+      setSignMessage(null);
+
+      __nonce = guid();
       localStorage.setItem('__address', address);
-      localStorage.setItem('__nonce', __uuid);
-      const message = decodeTemplate(SIGN_MESSAGE, { address, nonce: __uuid });
+      localStorage.setItem('__nonce', __nonce);
+      const message = decodeTemplate(SIGN_MESSAGE, { address, nonce: __nonce });
 
       signMessageAsync({ message }).then((sign) => {
-        setNonce(__uuid);
+        setNonce(__nonce);
         setSignMessage(sign);
         localStorage.setItem('__userSign', sign);
       }).catch(() => {

@@ -18,6 +18,15 @@ import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { ArrayToObjectByKeyValue, filterEmptyField, typeTransferToSaaS3Type } from '@/utils/utils';
 import { useUserInfo } from '@/hooks/provider';
 
+const getFixedParamsObject = (arr = []) => arr.reduce((ret, curr) => {
+  if (!curr) return ret;
+  const { fixed, key } = curr;
+  if (fixed) {
+    ret[key] = true;
+  }
+  return ret;
+}, {});
+
 function Deploy() {
   const nav = useNavigate();
   const formRef = useRef();
@@ -30,13 +39,6 @@ function Deploy() {
   const [deploying, setDeploying] = useState(false);
   const { chain } = useNetwork();
   const { userInfo } = useUserInfo();
-
-  // const onFileDrap = (event) => {
-  //   event.preventDefault();
-  //   const [_file] = event.dataTransfer.files;
-  //   console.log(_file);
-  //   // formRef.current.formApi.setValue('createrAvatar', [_file]);
-  // };
 
   const onTestRun = async () => {
     try {
@@ -113,7 +115,8 @@ function Deploy() {
       });
       return;
     }
-    const sourceNetwork = POLKADOT_NETWORK_NODES.find((node) => node.id === sourceChainId);
+    console.log(oracleInfo.web2Info);
+    // const sourceNetwork = POLKADOT_NETWORK_NODES.find((node) => node.id === sourceChainId);
     const _type = typeTransferToSaaS3Type(value);
     const params = {
       ...ArrayToObjectByKeyValue(oracleInfo.web2Info.params),
@@ -126,13 +129,15 @@ function Deploy() {
     const data = {
       oracleInfo: {
         ...oracleInfo,
-        sourceChain: { chainId: sourceNetwork.name },
+        sourceChain: { chainId: sourceChainId },
         targetChain: { chainId: chain.id },
         web2Info: {
           ...oracleInfo.web2Info,
           params,
           body,
           headers,
+          fixedParams: getFixedParamsObject(oracleInfo.web2Info.params),
+          fixedHeaders: getFixedParamsObject(oracleInfo.web2Info.headers),
           uri: url.split('?')[0],
         },
       },
@@ -216,10 +221,20 @@ function Deploy() {
                         <UrlHeaderInputs field="oracleInfo.web2Info.body" />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Params" itemKey="Params">
-                        <UrlHeaderInputs field="oracleInfo.web2Info.params" onChangeKey={onChangeParams} onChangeValue={onChangeParams} />
+                        <UrlHeaderInputs
+                          isLock
+                          field="oracleInfo.web2Info.params"
+                          onChangeKey={onChangeParams}
+                          onChangeValue={onChangeParams}
+                          onLockChange={(key, state) => formRef.current.formApi.setValue(key, state)}
+                        />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Headers" itemKey="Headers">
-                        <UrlHeaderInputs field="oracleInfo.web2Info.headers" />
+                        <UrlHeaderInputs
+                          isLock
+                          field="oracleInfo.web2Info.headers"
+                          onLockChange={(key, state) => formRef.current.formApi.setValue(key, state)}
+                        />
                       </Tabs.TabPane>
                     </Tabs>
                   </div>
@@ -360,7 +375,14 @@ function Deploy() {
                 noLabel
               >
                 {
-                  POLKADOT_NETWORK_NODES.map((network) => <Form.Select.Option value={network.id} key={network.id}>{network.name}</Form.Select.Option>)
+                  POLKADOT_NETWORK_NODES.map((network) => (
+                    <Form.Select.Option
+                      value={network.id}
+                      key={network.id}
+                    >
+                      {network.name}
+                    </Form.Select.Option>
+                  ))
                 }
               </Form.Select>
             </DeployWrap>
