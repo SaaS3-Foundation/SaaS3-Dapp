@@ -20,6 +20,19 @@ import { ArrayToObjectByKeyValue, filterEmptyField, typeTransferToSaaS3Type } fr
 import { useUserInfo } from '@/hooks/provider';
 import Authorization from '../components/Authorization';
 
+const AuthType = {
+  NoAuth: 0,
+  ApiKey: 1,
+  BearerToken: 2,
+};
+
+const getAuthType = (type = '') => {
+  if (type.toLowerCase().includes('apikey')) {
+    return AuthType.ApiKey;
+  }
+  return AuthType[type];
+};
+
 const getFixedParamsObject = (arr = []) => arr.reduce((ret, curr) => {
   if (!curr) return ret;
   const { fixed, key } = curr;
@@ -133,6 +146,7 @@ function Deploy() {
       body: ArrayToObjectByKeyValue(body),
       headers: ArrayToObjectByKeyValue(headers),
     };
+
     setAuth(apiInfo, auth);
 
     const data = {
@@ -146,7 +160,7 @@ function Deploy() {
           fixedParams: getFixedParamsObject(oracleInfo.web2Info.params),
           fixedHeaders: getFixedParamsObject(oracleInfo.web2Info.headers),
           uri: url.split('?')[0],
-          authType: auth.type,
+          authType: getAuthType(auth.type),
         },
       },
       creatorNote,
@@ -432,10 +446,39 @@ function Deploy() {
                     },
                   },
                 ]}
-                field="oracleInfo.submitterAddress"
+                field="oracleInfo.wallet"
                 size="large"
                 noLabel
                 placeholder="Submitter Address"
+                showClear
+              />
+            </DeployWrap>
+
+            <Typography.Title heading={2}>
+              Submitter PrivateKey
+            </Typography.Title>
+            <DeployWrap>
+              <Form.Input
+                rules={[
+                  {
+                    validator: (_, value, callback) => {
+                      if (!value) {
+                        return callback(new Error('Required error.'));
+                      }
+                      try {
+                        // eslint-disable-next-line no-new
+                        new ethers.Wallet(value);
+                        return callback();
+                      } catch (error) {
+                        return callback(new Error('Illegal private key.'));
+                      }
+                    },
+                  },
+                ]}
+                field="oracleInfo.privateKey"
+                size="large"
+                noLabel
+                placeholder="Submitter PrivateKey"
                 showClear
               />
             </DeployWrap>

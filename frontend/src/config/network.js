@@ -42,6 +42,14 @@ export const POLKADOT_NETWORK_NODES = [
     types: khala,
     kind: 'test',
   },
+  {
+    id: 'Phala PreAlpha',
+    name: 'Phala PreAlpha',
+    endpoint: 'ws://localhost:19944',
+    // pruntime: 'https://poc5.phala.network/tee-api-1',
+    // types: khala,
+    kind: 'test',
+  },
 ];
 
 export const POLKADOT_ENDPOINT_DEFAULT = 'wss://poc5.phala.network/ws';

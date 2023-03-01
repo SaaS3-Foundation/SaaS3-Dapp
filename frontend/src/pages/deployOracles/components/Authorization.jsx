@@ -3,11 +3,11 @@ import { Form } from '@douyinfe/semi-ui';
 import classNames from 'classnames';
 
 export default function Authorization() {
-  const [authType, setAuthType] = useState(null);
+  const [authType, setAuthType] = useState('NoAuth');
   const optionList = useMemo(
     () => [
       {
-        value: null,
+        value: 'NoAuth',
         label: 'NoAuth',
       },
       {
