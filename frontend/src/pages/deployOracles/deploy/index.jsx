@@ -148,6 +148,7 @@ function Deploy() {
     };
 
     setAuth(apiInfo, auth);
+    delete oracleInfo.web2Info.auth;
 
     const data = {
       oracleInfo: {
