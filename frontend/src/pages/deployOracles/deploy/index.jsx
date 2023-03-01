@@ -6,6 +6,7 @@ import { useState, useRef } from 'react';
 import classNames from 'classnames';
 import { useNavigate } from 'react-router';
 import { useNetwork } from 'wagmi';
+import { ethers } from 'ethers';
 import BaseLayout from '@/components/layout/BaseLayout';
 import { DeployWrap } from '../styled';
 import UrlHeaderInputs from '../components/UrlHeaderInputs';
@@ -17,6 +18,7 @@ import ApiResultWrap from '../components/ApiResultWrap';
 import { POLKADOT_NETWORK_NODES } from '@/config/network';
 import { ArrayToObjectByKeyValue, filterEmptyField, typeTransferToSaaS3Type } from '@/utils/utils';
 import { useUserInfo } from '@/hooks/provider';
+import Authorization from '../components/Authorization';
 
 const getFixedParamsObject = (arr = []) => arr.reduce((ret, curr) => {
   if (!curr) return ret;
@@ -106,6 +108,7 @@ function Deploy() {
     const {
       sourceChainId, oracleInfo, creatorNote, logo, url,
     } = values;
+
     const { path: _path, value } = apiResultRef.current;
     if (!_path?.length) {
       formRef.current.formApi.scrollToField('url');
@@ -115,16 +118,22 @@ function Deploy() {
       });
       return;
     }
-    console.log(oracleInfo.web2Info);
-    // const sourceNetwork = POLKADOT_NETWORK_NODES.find((node) => node.id === sourceChainId);
+
+    const {
+      params, body, headers, auth,
+    } = oracleInfo.web2Info;
+
     const _type = typeTransferToSaaS3Type(value);
-    const params = {
-      ...ArrayToObjectByKeyValue(oracleInfo.web2Info.params),
-      _type,
-      _path: _path.reverse().join('.'),
+    const apiInfo = {
+      params: {
+        ...ArrayToObjectByKeyValue(params),
+        _type,
+        _path: _path.reverse().join('.'),
+      },
+      body: ArrayToObjectByKeyValue(body),
+      headers: ArrayToObjectByKeyValue(headers),
     };
-    const body = ArrayToObjectByKeyValue(oracleInfo.web2Info.body);
-    const headers = ArrayToObjectByKeyValue(oracleInfo.web2Info.headers);
+    setAuth(apiInfo, auth);
 
     const data = {
       oracleInfo: {
@@ -133,12 +142,11 @@ function Deploy() {
         targetChain: { chainId: chain.id },
         web2Info: {
           ...oracleInfo.web2Info,
-          params,
-          body,
-          headers,
+          ...apiInfo,
           fixedParams: getFixedParamsObject(oracleInfo.web2Info.params),
           fixedHeaders: getFixedParamsObject(oracleInfo.web2Info.headers),
           uri: url.split('?')[0],
+          authType: auth.type,
         },
       },
       creatorNote,
@@ -167,6 +175,21 @@ function Deploy() {
       });
     }
     setDeploying(false);
+  };
+
+  const setAuth = (apiInfo, auth = {}) => {
+    const { type, apiKey, BearerToken } = auth;
+    if (!type) return;
+    const apikey_Key = '__saas3_apikey_';
+    const _key = !apiKey?.key ? null : `${apikey_Key}${apiKey.key}`;
+    if (type === 'ApiKeyInUrl' && _key) {
+      apiInfo.params[apiKey.key] = apiKey.value;
+    } else if (type === 'ApiKeyInHeader' && _key) {
+      apiInfo.headers[_key] = apiKey.value;
+    } else if (type === 'BearerToken' && BearerToken?.value) {
+      const token = BearerToken.value.replace(/^Bearer\s/, '');
+      apiInfo.headers.Authorization = `Bearer ${token}`;
+    }
   };
 
   return (
@@ -235,6 +258,10 @@ function Deploy() {
                           field="oracleInfo.web2Info.headers"
                           onLockChange={(key, state) => formRef.current.formApi.setValue(key, state)}
                         />
+
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Authorization" itemKey="Authorization">
+                        <Authorization />
                       </Tabs.TabPane>
                     </Tabs>
                   </div>
@@ -385,6 +412,32 @@ function Deploy() {
                   ))
                 }
               </Form.Select>
+            </DeployWrap>
+
+            <Typography.Title heading={2}>
+              Submitter Address
+            </Typography.Title>
+            <DeployWrap>
+              <Form.Input
+                rules={[
+                  {
+                    validator: (_, value, callback) => {
+                      if (!value) {
+                        return callback(new Error('Required error.'));
+                      }
+                      if (!ethers.utils.isAddress(value)) {
+                        return callback(new Error('Illegal address.'));
+                      }
+                      return callback();
+                    },
+                  },
+                ]}
+                field="oracleInfo.web2Info.submitterAddress"
+                size="large"
+                noLabel
+                placeholder="Submitter Address"
+                showClear
+              />
             </DeployWrap>
 
             <div className="text-center">

@@ -141,9 +141,9 @@ function Marketplace() {
         wrapperClassName="py-4"
         spinning={isLoading}
         size="large"
-        tip="Fetching data"
+        tip="Fetching marketplace"
       >
-        {!list.length
+        {!list.length && !isLoading
         && (
           <>
             <img className="block mx-auto w-[160px] mb-2" src={NotResultImg} alt="Not Result " />

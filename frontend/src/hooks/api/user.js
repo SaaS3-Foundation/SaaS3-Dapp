@@ -5,5 +5,5 @@ export const useLogin = (address, data) => useSWR(address ? {
   method: 'POST',
   data,
 } : null, {
-  revalidateOnFocus: true,
+  // revalidateOnFocus: true,
 });

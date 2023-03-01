@@ -19,6 +19,7 @@ function LockField(props) {
 
 function UrlHeaderInputs(props) {
   const {
+    className,
     field: arrayFieldName, onChangeKey, onChangeValue, isLock, onLockChange,
   } = props;
 
@@ -29,7 +30,7 @@ function UrlHeaderInputs(props) {
   };
 
   return (
-    <div>
+    <div className={className}>
       <ArrayField field={arrayFieldName} initValue={[{}]}>
         {({ add, arrayFields }) => (
           <>
