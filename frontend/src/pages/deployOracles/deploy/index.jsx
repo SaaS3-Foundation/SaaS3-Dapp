@@ -432,7 +432,7 @@ function Deploy() {
                     },
                   },
                 ]}
-                field="oracleInfo.web2Info.submitterAddress"
+                field="oracleInfo.submitterAddress"
                 size="large"
                 noLabel
                 placeholder="Submitter Address"
