@@ -1,5 +1,5 @@
 import {
-  Button, Collapsible, Form, Notification, Tabs, Typography,
+  Button, Collapsible, Form, Notification, Tabs, Toast, Typography,
 } from '@douyinfe/semi-ui';
 import { IconChevronDown } from '@douyinfe/semi-icons';
 import { useState, useRef } from 'react';
@@ -133,8 +133,16 @@ function Deploy() {
     }
 
     const {
-      params, body, headers, auth,
+      params, bodyRaw, headers, auth,
     } = oracleInfo.web2Info;
+    let body = {};
+    try {
+      if (bodyRaw) {
+        body = JSON.parse(bodyRaw);
+      }
+    } catch (error) {
+      return Toast.error('Body Raw illegal.');
+    }
 
     const _type = typeTransferToSaaS3Type(value);
     const apiInfo = {
@@ -143,7 +151,8 @@ function Deploy() {
         _type,
         _path: _path.reverse().join('.'),
       },
-      body: ArrayToObjectByKeyValue(body),
+      body,
+      // body: ArrayToObjectByKeyValue(body),
       headers: ArrayToObjectByKeyValue(headers),
     };
 
@@ -256,7 +265,15 @@ function Deploy() {
                   <div className="rounded-[20px] p-5 overflow-hidden">
                     <Tabs className="w-full" style={{ '--semi-color-primary': 'var(--color-primary-2)' }}>
                       <Tabs.TabPane tab="Body" itemKey="Body">
-                        <UrlHeaderInputs field="oracleInfo.web2Info.body" />
+                        {/* <UrlHeaderInputs field="oracleInfo.web2Info.body" /> */}
+                        <Form.TextArea
+                          field="oracleInfo.web2Info.bodyRaw"
+                          noLabel
+                          showClear
+                          className="rounded-xl"
+                          size="large"
+                          placeholder="BODY RAW"
+                        />
                       </Tabs.TabPane>
                       <Tabs.TabPane tab="Params" itemKey="Params">
                         <UrlHeaderInputs
@@ -485,7 +502,14 @@ function Deploy() {
             </DeployWrap>
 
             <div className="text-center">
-              <Button loading={deploying} htmlType="submit" className="bg-primary-linear !text-white rounded-full w-[160px]" size="large">DEPLOY</Button>
+              <Button
+                loading={deploying}
+                htmlType="submit"
+                className="bg-primary-linear !text-white rounded-full w-[160px]"
+                size="large"
+              >
+                DEPLOY
+              </Button>
             </div>
           </div>
         </Form>
