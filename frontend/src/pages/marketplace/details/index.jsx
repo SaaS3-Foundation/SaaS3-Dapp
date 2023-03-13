@@ -137,6 +137,63 @@ function MarketplaceDetails() {
   return (
     <BaseLayout>
       <div className="container pb-16">
+
+        <StyledChartsWrap className="!bg-white/10 mt-8">
+          <Typography.Title heading={3} className="indent-1">INFORMATION</Typography.Title>
+          <div className="!py-10 mt-4">
+            <div className="flex">
+              <div className="flex-1">
+                <Typography.Title heading={5}>API DETAILS</Typography.Title>
+                <StyledCollapse className="mt-5" accordion>
+                  <Collapse.Panel header={detail.oracleInfo.web2Info.title || '--'} itemKey="1">
+                    <div className="flex mt-2 items-center">
+                      <Typography.Text>{detail.oracleInfo.web2Info.method}</Typography.Text>
+                      <div className="ml-4 flex-1 flex items-center justify-between  border border-white/30 bg-black/30 rounded-md p-2">
+                        <Typography.Text
+                          style={{ '--semi-color-link': 'white' }}
+                        >
+                          {detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--'}
+                        </Typography.Text>
+                        <IconCopy
+                          className="cursor-pointer hover:text-gray-500"
+                          onClick={() => copy(detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--')}
+                        />
+                      </div>
+                    </div>
+                    <Tabs>
+                      <Tabs.TabPane tab="Body" itemKey="Body">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.body} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Params" itemKey="Params">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.params} />
+                      </Tabs.TabPane>
+                      <Tabs.TabPane tab="Headers" itemKey="Headers">
+                        <UrlPropsView data={detail.oracleInfo.web2Info.headers} />
+                      </Tabs.TabPane>
+                    </Tabs>
+                  </Collapse.Panel>
+                </StyledCollapse>
+              </div>
+              <div className="flex-1 ml-[72px]">
+                <div className="mb-5 flex items-center">
+                  <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
+                  <div className="flex ml-auto">
+                    <ChainIcon className="active" chainId={detail.oracleInfo.targetChain.chainId || 1} />
+                  </div>
+                </div>
+                <StyledAddressItem>
+                  <Typography.Text>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</Typography.Text>
+                  <IconCopy onClick={() => copy('0x4A418110c1cd4391784508abF2c534Be887a61F7')} />
+                </StyledAddressItem>
+              </div>
+            </div>
+          </div>
+          <Typography.Title heading={3} className="indent-1">CREATORS NOTES</Typography.Title>
+          <div className="mt-4 !py-6">
+            <Typography.Text className="text-lg">{detail.creatorNote}</Typography.Text>
+          </div>
+        </StyledChartsWrap>
+
         <Row className="!mt-5" type="flex" gutter={[0, 50]}>
           <Col lg={12} span={24} className="py-7 px-16">
             <div className="flex flex-col h-full">
@@ -234,61 +291,6 @@ function MarketplaceDetails() {
           </Col>
         </Row>
 
-        <StyledChartsWrap className="!bg-white/10 mt-8">
-          <Typography.Title heading={3} className="indent-1">INFORMATION</Typography.Title>
-          <div className="!py-10 mt-4">
-            <div className="flex">
-              <div className="flex-1">
-                <Typography.Title heading={5}>API DETAILS</Typography.Title>
-                <StyledCollapse className="mt-5" accordion>
-                  <Collapse.Panel header={detail.oracleInfo.web2Info.title} itemKey="1">
-                    <div className="flex mt-2 items-center">
-                      <Typography.Text>{detail.oracleInfo.web2Info.method}</Typography.Text>
-                      <div className="ml-4 flex-1 flex items-center justify-between  border border-white/30 bg-black/30 rounded-md p-2">
-                        <Typography.Text
-                          style={{ '--semi-color-link': 'white' }}
-                        >
-                          {detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--'}
-                        </Typography.Text>
-                        <IconCopy
-                          className="cursor-pointer hover:text-gray-500"
-                          onClick={() => copy(detail.oracleInfo.web2Info.uri?.split('?')?.[0] || '--')}
-                        />
-                      </div>
-                    </div>
-                    <Tabs>
-                      <Tabs.TabPane tab="Body" itemKey="Body">
-                        <UrlPropsView data={detail.oracleInfo.web2Info.body} />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="Params" itemKey="Params">
-                        <UrlPropsView data={detail.oracleInfo.web2Info.params} />
-                      </Tabs.TabPane>
-                      <Tabs.TabPane tab="Headers" itemKey="Headers">
-                        <UrlPropsView data={detail.oracleInfo.web2Info.headers} />
-                      </Tabs.TabPane>
-                    </Tabs>
-                  </Collapse.Panel>
-                </StyledCollapse>
-              </div>
-              <div className="flex-1 ml-[72px]">
-                <div className="mb-5 flex items-center">
-                  <Typography.Title heading={5}>DEPLOYMENT DETAILS</Typography.Title>
-                  <div className="flex ml-auto">
-                    <ChainIcon className="active" chainId={detail.oracleInfo.targetChain.chainId || 1} />
-                  </div>
-                </div>
-                <StyledAddressItem>
-                  <Typography.Text>1. 0x4A418110c1cd4391784508abF2c534Be887a61F7</Typography.Text>
-                  <IconCopy onClick={() => copy('0x4A418110c1cd4391784508abF2c534Be887a61F7')} />
-                </StyledAddressItem>
-              </div>
-            </div>
-          </div>
-          <Typography.Title heading={3} className="indent-1">CREATORS NOTES</Typography.Title>
-          <div className="mt-4 !py-6">
-            <Typography.Text className="text-lg">{detail.creatorNote}</Typography.Text>
-          </div>
-        </StyledChartsWrap>
       </div>
     </BaseLayout>
   );

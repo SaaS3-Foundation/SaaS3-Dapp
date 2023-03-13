@@ -447,58 +447,62 @@ function Deploy() {
             </DeployWrap>
 
             <Typography.Title heading={2}>
-              Submitter Address
+              TARGET NETWORK
             </Typography.Title>
             <DeployWrap>
-              <Form.Input
-                rules={[
-                  {
-                    validator: (_, value, callback) => {
-                      if (!value) {
-                        return callback(new Error('Required error.'));
-                      }
-                      if (!ethers.utils.isAddress(value)) {
-                        return callback(new Error('Illegal address.'));
-                      }
-                      return callback();
-                    },
-                  },
-                ]}
-                field="oracleInfo.wallet"
-                size="large"
-                noLabel
-                placeholder="Submitter Address"
-                showClear
-              />
-            </DeployWrap>
-
-            <Typography.Title heading={2}>
-              Submitter PrivateKey
-            </Typography.Title>
-            <DeployWrap>
-              <Form.Input
-                rules={[
-                  {
-                    validator: (_, value, callback) => {
-                      if (!value) {
-                        return callback(new Error('Required error.'));
-                      }
-                      try {
-                        // eslint-disable-next-line no-new
-                        new ethers.Wallet(value);
+              <div>
+                <Typography.Title heading={5}>
+                  Submitter Address
+                </Typography.Title>
+                <Form.Input
+                  rules={[
+                    {
+                      validator: (_, value, callback) => {
+                        if (!value) {
+                          return callback(new Error('Required error.'));
+                        }
+                        if (!ethers.utils.isAddress(value)) {
+                          return callback(new Error('Illegal address.'));
+                        }
                         return callback();
-                      } catch (error) {
-                        return callback(new Error('Illegal private key.'));
-                      }
+                      },
                     },
-                  },
-                ]}
-                field="oracleInfo.privateKey"
-                size="large"
-                noLabel
-                placeholder="Submitter PrivateKey"
-                showClear
-              />
+                  ]}
+                  field="oracleInfo.wallet"
+                  size="large"
+                  noLabel
+                  placeholder="Submitter Address"
+                  showClear
+                />
+              </div>
+              <div className="mt-4">
+                <Typography.Title heading={5}>
+                  Submitter PrivateKey
+                </Typography.Title>
+                <Form.Input
+                  rules={[
+                    {
+                      validator: (_, value, callback) => {
+                        if (!value) {
+                          return callback(new Error('Required error.'));
+                        }
+                        try {
+                        // eslint-disable-next-line no-new
+                          new ethers.Wallet(value);
+                          return callback();
+                        } catch (error) {
+                          return callback(new Error('Illegal private key.'));
+                        }
+                      },
+                    },
+                  ]}
+                  field="oracleInfo.privateKey"
+                  size="large"
+                  noLabel
+                  placeholder="Submitter PrivateKey"
+                  showClear
+                />
+              </div>
             </DeployWrap>
 
             <div className="text-center">
