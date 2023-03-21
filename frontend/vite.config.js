@@ -40,10 +40,10 @@ export default defineConfig({
       algorithm: 'gzip',
       ext: '.gz',
     }),
-    legacyPlugin({
-      targets: ['chrome 52'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-    }),
+    // legacyPlugin({
+    //   targets: ['chrome 52'],
+    //   additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    // }),
   ],
   build: {
     sourcemap: false,
@@ -64,13 +64,13 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_debugger: true,
-        drop_console: true,
-      },
-    },
+    // minify: 'terser',
+    // terserOptions: {
+    //   compress: {
+    //     drop_debugger: true,
+    //     drop_console: true,
+    //   },
+    // },
   },
   css: {
     postcss: {
