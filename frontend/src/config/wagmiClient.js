@@ -4,8 +4,10 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
 import { EVMNETWORKS } from './network';
 
+const _chains = Object.keys(EVMNETWORKS).map((key) => EVMNETWORKS[key].chain);
+
 export const { chains, provider, webSocketProvider } = configureChains(
-  Object.keys(EVMNETWORKS).map((key) => EVMNETWORKS[key].chain),
+  _chains,
   [
     jsonRpcProvider({ rpc: (_chain) => ({ http: _chain.rpcUrls.default }) }),
     publicProvider(),

@@ -1,12 +1,9 @@
 import { khala } from '@phala/typedefs';
 import {
-  okc, bsc, moonbaseAlpha, mainnet,
-} from 'wagmi/chains';
+  mainnet, bsc, okc, moonbaseAlpha,
+} from '@wagmi/core/chains';
 import moonbaseIcon from '@/assets/imgs/icon/moonbase.png';
 import okexIcon from '@/assets/imgs/icon/okex.webp';
-// import {
-//   mainnet, bsc, okc, moonbaseAlpha,
-// } from '@wagmi/core/chains';
 import { ReactComponent as Bsc } from '@/assets/imgs/svg/Icon/BAN.svg';
 import { ReactComponent as Eth } from '@/assets/imgs/svg/Icon/Ethereum.svg';
 
@@ -67,7 +64,7 @@ export const EVM_CHAINID = {
   OKX: 66,
   MOONBASEALPHA: 1287,
 };
-console.log(mainnet);
+
 moonbaseAlpha.iconUrl = moonbaseIcon;
 okc.iconUrl = okexIcon;
 

@@ -12,8 +12,7 @@ import Profile from './pages/profile';
 import SelectPanels from './pages/deployOracles/SelectPanels';
 import Deploy from './pages/deployOracles/deploy';
 import Providers from './provider';
-import { wagmiClient } from './config/wagmiClient';
-import { EVMNETWORKS } from './config/network';
+import { chains, wagmiClient } from './config/wagmiClient';
 import axios from './utils/ajax';
 
 const fetcher = (options) => axios({
@@ -36,7 +35,7 @@ function App() {
     >
       <LocaleProvider locale={en_US}>
         <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={Object.keys(EVMNETWORKS).map((key) => EVMNETWORKS[key].chain)} theme={darkTheme()}>
+          <RainbowKitProvider chains={chains} theme={darkTheme()}>
             <Providers>
               <BrowserRouter>
                 <Routes>
