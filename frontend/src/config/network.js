@@ -68,6 +68,8 @@ export const EVM_CHAINID = {
 moonbaseAlpha.iconUrl = moonbaseIcon;
 okc.iconUrl = okexIcon;
 
+okc.iconBackground = '#fff';
+
 export const EVMNETWORKS = {
   [EVM_CHAINID.ETH]: {
     name: 'ethereum',
