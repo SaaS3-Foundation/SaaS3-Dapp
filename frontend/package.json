@@ -20,8 +20,9 @@
     "@polkadot/util": "^10.1.11",
     "@polkadot/util-crypto": "^10.1.11",
     "@polkadot/wasm-crypto": "6.3.1",
-    "@rainbow-me/rainbowkit": "^0.8.0",
+    "@rainbow-me/rainbowkit": "^0.12.4",
     "@talismn/connect-wallets": "^1.2.1",
+    "@wagmi/core": "^0.10.6",
     "axios": "^1.2.1",
     "bignumber.js": "^9.1.0",
     "browserify-zlib": "^0.2.0",
@@ -44,7 +45,7 @@
     "swr": "^2.0.0",
     "url-search-params-polyfill": "^8.1.1",
     "util": "^0.12.5",
-    "wagmi": "^0.8.7"
+    "wagmi": "^0.12.6"
   },
   "devDependencies": {
     "@rollup/plugin-inject": "^5.0.0",

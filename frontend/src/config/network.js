@@ -1,7 +1,12 @@
 import { khala } from '@phala/typedefs';
-import { chain } from 'wagmi';
-import bscIcon from '@/assets/imgs/icon/bsc.png';
+import {
+  okc, bsc, moonbaseAlpha, mainnet,
+} from 'wagmi/chains';
 import moonbaseIcon from '@/assets/imgs/icon/moonbase.png';
+import okexIcon from '@/assets/imgs/icon/okex.webp';
+// import {
+//   mainnet, bsc, okc, moonbaseAlpha,
+// } from '@wagmi/core/chains';
 import { ReactComponent as Bsc } from '@/assets/imgs/svg/Icon/BAN.svg';
 import { ReactComponent as Eth } from '@/assets/imgs/svg/Icon/Ethereum.svg';
 
@@ -59,71 +64,32 @@ export const POLKADOT_PRUNTIME_URL_DEFAULT = 'https://poc5.phala.network/tee-api
 export const EVM_CHAINID = {
   ETH: 1,
   BSC: 56,
+  OKX: 66,
   MOONBASEALPHA: 1287,
 };
+console.log(mainnet);
+moonbaseAlpha.iconUrl = moonbaseIcon;
+okc.iconUrl = okexIcon;
 
 export const EVMNETWORKS = {
   [EVM_CHAINID.ETH]: {
     name: 'ethereum',
     SvgComponent: Eth,
-    chain: chain.mainnet,
+    chain: mainnet,
   },
   [EVM_CHAINID.BSC]: {
     name: 'BSC Mainnet',
     SvgComponent: Bsc,
-    chain: {
-      iconUrl: bscIcon,
-      iconBackground: '#fff',
-      id: 56,
-      blockExplorers: {
-        default: {
-          name: 'BSCscan',
-          url: 'https://bscscan.com',
-        },
-      },
-      // ens: { address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' },
-      multicall: {
-        address: '0xca11bde05977b3631167028862be2a173976ca11',
-        blockCreated: 14353601,
-      },
-      nativeCurrency: {
-        decimals: 18,
-        name: 'BNB',
-        symbol: 'BNB',
-      },
-      rpcUrls: {
-        default: 'https://bsc.mytokenpocket.vip',
-      },
-      name: 'BSC Mainnet',
-    },
+    chain: bsc,
+  },
+  [EVM_CHAINID.OKX]: {
+    name: 'OKExChain Mainnet',
+    SvgComponent: Bsc,
+    chain: okc,
   },
   [EVM_CHAINID.MOONBASEALPHA]: {
     name: 'Moonbase Alpha',
     SvgComponent: Bsc,
-    chain: {
-      iconUrl: moonbaseIcon,
-      iconBackground: '#fff',
-      id: EVM_CHAINID.MOONBASEALPHA,
-      blockExplorers: {
-        default: {
-          name: 'moonbase scan',
-          url: 'https://moonbase.moonscan.io',
-        },
-      },
-      // ens: { address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' },
-      multicall: {
-        address: '0xca11bde05977b3631167028862be2a173976ca11',
-        blockCreated: 14353601,
-      },
-      nativeCurrency: {
-        decimals: 18,
-        name: 'DEV',
-        symbol: 'DEV',
-      },
-      rpcUrls: {
-        default: 'https://rpc.api.moonbase.moonbeam.network',
-      },
-      name: 'Moonbase Alpha',
-    },
+    chain: moonbaseAlpha,
   },
 };
