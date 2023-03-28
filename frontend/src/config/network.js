@@ -4,6 +4,7 @@ import {
 } from '@wagmi/core/chains';
 import moonbaseIcon from '@/assets/imgs/icon/moonbase.png';
 import okexIcon from '@/assets/imgs/icon/okex.webp';
+import mapoIcon from '@/assets/imgs/icon/mapo.webp';
 import { ReactComponent as Bsc } from '@/assets/imgs/svg/Icon/BAN.svg';
 import { ReactComponent as Eth } from '@/assets/imgs/svg/Icon/Ethereum.svg';
 
@@ -63,12 +64,9 @@ export const EVM_CHAINID = {
   BSC: 56,
   OKX: 66,
   MOONBASEALPHA: 1287,
+  MAPO_Mainnet: 22776,
+  MAPO_TEST: 212,
 };
-
-moonbaseAlpha.iconUrl = moonbaseIcon;
-okc.iconUrl = okexIcon;
-
-okc.iconBackground = '#fff';
 
 export const EVMNETWORKS = {
   [EVM_CHAINID.ETH]: {
@@ -84,11 +82,76 @@ export const EVMNETWORKS = {
   [EVM_CHAINID.OKX]: {
     name: 'OKExChain Mainnet',
     SvgComponent: Bsc,
-    chain: okc,
+    chain: {
+      ...okc,
+      iconUrl: okexIcon,
+      iconBackground: '#fff',
+    },
   },
   [EVM_CHAINID.MOONBASEALPHA]: {
     name: 'Moonbase Alpha',
     SvgComponent: Bsc,
-    chain: moonbaseAlpha,
+    chain: {
+      iconUrl: moonbaseIcon,
+      ...moonbaseAlpha,
+    },
+  },
+  [EVM_CHAINID.MAPO_Mainnet]: {
+    name: 'MAPO Mainnet',
+    SvgComponent: Bsc,
+    chain: {
+      iconUrl: mapoIcon,
+      id: EVM_CHAINID.MAPO_Mainnet,
+      name: 'MAPO Mainnet',
+      network: 'mapo-mainnet',
+      nativeCurrency: {
+        decimals: 18,
+        name: 'MAPO',
+        symbol: 'MAPO',
+      },
+      rpcUrls: {
+        default: {
+          http: ['https://rpc.maplabs.io'],
+        },
+        public: {
+          http: ['https://rpc.maplabs.io'],
+        },
+      },
+      blockExplorers: {
+        default: {
+          name: 'MAPO Mainnet Explorer',
+          url: 'https://makalu.mapscan.io',
+        },
+      },
+    },
+  },
+  [EVM_CHAINID.MAPO_TEST]: {
+    name: 'MAPO Makalu Testnet',
+    SvgComponent: Bsc,
+    chain: {
+      iconUrl: mapoIcon,
+      id: EVM_CHAINID.MAPO_TEST,
+      name: 'MAPO Testnet',
+      network: 'mapo-testnet',
+      nativeCurrency: {
+        decimals: 18,
+        name: 'MAPO',
+        symbol: 'MAPO',
+      },
+      rpcUrls: {
+        default: {
+          http: ['https://testnet-rpc.maplabs.io'],
+        },
+        public: {
+          http: ['https://testnet-rpc.maplabs.io'],
+        },
+      },
+      blockExplorers: {
+        default: {
+          name: 'MAPO testnet Explorer',
+          url: 'https://testnet.maposcan.io',
+        },
+      },
+    },
   },
 };
